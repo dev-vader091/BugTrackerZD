@@ -17,7 +17,7 @@ namespace BugHunterBugTrackerZD.Models
         public DateTime Created { get; set; }
         public string? OldValue { get; set; }
         public string? NewValue { get; set;}
-        public int UserId { get; set; }
+        public string? UserId { get; set; }
 
         // Navigation Properties
         public virtual Ticket? Ticket { get; set; }

@@ -22,7 +22,7 @@ namespace BugHunterBugTrackerZD.Models
         // Foreign Keys
         public int ProjectId { get; set; }
         public int TicketTypeId { get; set; }
-        public int TickStatusId { get; set; }
+        public int TicketStatusId { get; set; }
         public int TicketPriorityId { get; set; }
         public string? DeveloperUserId { get; set; }
         [Required]
@@ -36,7 +36,7 @@ namespace BugHunterBugTrackerZD.Models
         public virtual BTUser? DeveloperUser { get; set; }
         public virtual BTUser? SubmitterUser { get; set; }
         public virtual ICollection<TicketComment> Comments { get; set; } = new HashSet<TicketComment>();
-        public virtual ICollection<Attachment> Attachments { get; set; } = new HashSet<Attachment>();
+        public virtual ICollection<TicketAttachment> Attachments { get; set; } = new HashSet<TicketAttachment>();
         public virtual ICollection<TicketHistory>? History { get; set; } = new HashSet<TicketHistory>();
 
 
