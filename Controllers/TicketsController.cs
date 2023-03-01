@@ -7,11 +7,14 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BugHunterBugTrackerZD.Data;
 using BugHunterBugTrackerZD.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BugHunterBugTrackerZD.Controllers
 {
+    [Authorize]
     public class TicketsController : Controller
     {
+
         private readonly ApplicationDbContext _context;
 
         public TicketsController(ApplicationDbContext context)

@@ -1,5 +1,6 @@
 using BugHunterBugTrackerZD.Data;
 using BugHunterBugTrackerZD.Models;
+using BugHunterBugTrackerZD.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +18,19 @@ builder.Services.AddIdentity<BTUser, IdentityRole>(options => options.SignIn.Req
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
+// Custom Services
+builder.Services.AddScoped<IBTFileService, BTFileService>();
+
+
+builder.Services.AddMvc();
+
+
+
+
 var app = builder.Build();
+
+var scope = app.Services.CreateScope();
+await DataUtility.ManageDataAsync(scope.ServiceProvider);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

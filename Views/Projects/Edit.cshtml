@@ -48,7 +48,7 @@
                 <select asp-for="ProjectPriorityId" class="form-control" asp-items="ViewBag.ProjectPriorityId"></select>
                 <span asp-validation-for="ProjectPriorityId" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            @*<div class="form-group">
                 <label asp-for="ImageFileData" class="control-label"></label>
                 <input asp-for="ImageFileData" class="form-control" />
                 <span asp-validation-for="ImageFileData" class="text-danger"></span>
@@ -57,7 +57,7 @@
                 <label asp-for="ImageFileType" class="control-label"></label>
                 <input asp-for="ImageFileType" class="form-control" />
                 <span asp-validation-for="ImageFileType" class="text-danger"></span>
-            </div>
+            </div>*@
             <div class="form-group form-check">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="Archived" /> @Html.DisplayNameFor(model => model.Archived)

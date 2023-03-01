@@ -7,28 +7,37 @@ namespace BugHunterBugTrackerZD.Models
     {
         // Primary Key 
         public int Id { get; set; }
+
         // Foreign Key
         public int CompanyId { get; set; }
+
         [Required]
         [Display(Name = "Project Name")]
         [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at most {1} characters", MinimumLength = 2)]
         public string? Name { get; set; }
+
         [Required]
         [StringLength(600, ErrorMessage = "The {0} must be at least {2} and at most {1} characters", MinimumLength = 2)]
         public string? Description { get; set; }
-        [DataType(DataType.DateTime)]
+
+        [DataType(DataType.Date)]
         public DateTime Created { get; set; }
-        [DataType(DataType.DateTime)]
+
+        [DataType(DataType.Date)]
         [Display(Name = "Start Date")]
-        public DateTime StartDate { get; set; }
-        [DataType(DataType.DateTime)]
+        public DateTime? StartDate { get; set; }
+
+        [DataType(DataType.Date)]
         [Display(Name = "End Date")]
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
+
         // Foreign Key
         public int ProjectPriorityId { get; set; }
+
         // Image Data
         [NotMapped]
         public IFormFile? ImageFormFile { get; set; }
+
         public byte[]? ImageFileData { get; set; }
 
         public string? ImageFileType { get; set; }

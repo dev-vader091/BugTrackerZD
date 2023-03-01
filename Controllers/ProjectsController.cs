@@ -7,16 +7,21 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BugHunterBugTrackerZD.Data;
 using BugHunterBugTrackerZD.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BugHunterBugTrackerZD.Controllers
 {
+    [Authorize]
     public class ProjectsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<BTUser> _userManager;
 
-        public ProjectsController(ApplicationDbContext context)
+        public ProjectsController(ApplicationDbContext context, UserManager<BTUser> usermanager)
         {
             _context = context;
+            _userManager = usermanager;
         }
 
         // GET: Projects
@@ -49,6 +54,8 @@ namespace BugHunterBugTrackerZD.Controllers
         // GET: Projects/Create
         public IActionResult Create()
         {
+           string? userId = _userManager.GetUserId(User);
+
             ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name");
             ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Id");
             return View();
@@ -63,6 +70,18 @@ namespace BugHunterBugTrackerZD.Controllers
         {
             if (ModelState.IsValid)
             {
+                project.Created = DateTime.UtcNow;
+
+                if (project.StartDate != null)
+                {
+                    project.StartDate = DateTime.SpecifyKind(project.StartDate.Value, DateTimeKind.Utc);
+                }
+
+                if (project.EndDate != null)
+                {
+                    project.EndDate = DateTime.SpecifyKind(project.EndDate.Value, DateTimeKind.Utc);
+                }
+
                 _context.Add(project);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
