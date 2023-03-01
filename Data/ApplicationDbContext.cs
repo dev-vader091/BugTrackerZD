@@ -13,6 +13,7 @@ namespace BugHunterBugTrackerZD.Data
         }
 
         public virtual DbSet<Project> Projects { get; set; } = default!;
+        public virtual DbSet<BTUser> Members { get; set; } = default!;
         public virtual DbSet<Invite> Invites { get; set; } = default!;
         public virtual DbSet<Ticket> Tickets { get; set; } = default!;
         public virtual DbSet<TicketComment> Comments { get; set; } = default!;

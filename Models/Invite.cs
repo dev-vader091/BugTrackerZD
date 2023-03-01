@@ -19,10 +19,13 @@ namespace BugHunterBugTrackerZD.Models
         public string? InviteeId { get; set; }
         // Foreign Keys End
         [Required]
+        [Display(Name = "Sender Email")]
         public string? InviteeEmail { get; set; }
         [Required]
+        [Display(Name = "Sender First Name")]
         public string? InviteeFirstName { get; set; }
         [Required]
+        [Display(Name = "Sender Last Name")]
         public string? InviteeLastName { get; set; }
         public string? Message { get; set; }
         public bool IsValid { get; set; }

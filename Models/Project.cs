@@ -17,9 +17,12 @@ namespace BugHunterBugTrackerZD.Models
         [DataType(DataType.DateTime)]
         public DateTime Created { get; set; }
         [DataType(DataType.DateTime)]
+        [Display(Name = "Start Date")]
         public DateTime StartDate { get; set; }
         [DataType(DataType.DateTime)]
+        [Display(Name = "End Date")]
         public DateTime EndDate { get; set; }
+        // Foreign Key
         public int ProjectPriorityId { get; set; }
         // Image Data
         [NotMapped]
