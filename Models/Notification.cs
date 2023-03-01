@@ -14,6 +14,7 @@ namespace BugHunterBugTrackerZD.Models
         [Required]
         public string? Title { get; set; }
         [Required]
+        [StringLength(600, ErrorMessage = "The {0} must be at least {2} and at most {1} characters", MinimumLength = 2)]
         public string? Message { get; set; }
         [DataType(DataType.DateTime)]
         public DateTime Created { get; set; }
@@ -33,9 +34,5 @@ namespace BugHunterBugTrackerZD.Models
         public virtual Project? Project { get; set; }
         public virtual BTUser? Sender { get; set; }
         public virtual BTUser? Recipient { get; set; }
-
-
-
-
     }
 }
