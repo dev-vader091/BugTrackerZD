@@ -52,9 +52,11 @@ namespace BugHunterBugTrackerZD.Controllers
         }
 
         // GET: Projects/Create
-        public IActionResult Create()
+        public async Task<IActionResult> CreateAsync()
         {
            string? userId = _userManager.GetUserId(User);
+
+           BTUser? user = await _userManager.GetUserAsync(User);
 
             ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name");
             ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Id");
@@ -70,16 +72,17 @@ namespace BugHunterBugTrackerZD.Controllers
         {
             if (ModelState.IsValid)
             {
-                project.Created = DateTime.UtcNow;
+                // Format Date(s)
+                project.Created = DataUtility.GetPostGresDate(DateTime.UtcNow);
 
                 if (project.StartDate != null)
                 {
-                    project.StartDate = DateTime.SpecifyKind(project.StartDate.Value, DateTimeKind.Utc);
+                    project.StartDate = DataUtility.GetPostGresDate(DateTime.UtcNow);
                 }
 
                 if (project.EndDate != null)
                 {
-                    project.EndDate = DateTime.SpecifyKind(project.EndDate.Value, DateTimeKind.Utc);
+                    project.EndDate = DataUtility.GetPostGresDate(DateTime.UtcNow);
                 }
 
                 _context.Add(project);
@@ -125,6 +128,21 @@ namespace BugHunterBugTrackerZD.Controllers
             {
                 try
                 {
+                    // Reformat Created Date
+                    project.Created = DataUtility.GetPostGresDate(project.Created);
+
+                    // Reformat Start Date
+                    if (project.StartDate != null)
+                    {
+                        project.StartDate = DateTime.SpecifyKind(project.StartDate.Value, DateTimeKind.Utc);
+                    }
+
+                    // Reformat End Date
+                    if (project.EndDate != null)
+                    {
+                        project.EndDate = DateTime.SpecifyKind(project.EndDate.Value, DateTimeKind.Utc);
+                    }
+
                     _context.Update(project);
                     await _context.SaveChangesAsync();
                 }

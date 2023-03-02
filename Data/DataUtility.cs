@@ -819,7 +819,8 @@ namespace BugHunterBugTrackerZD.Data
                 IList<Ticket> tickets = new List<Ticket>()
             {
                 //PORTFOLIO
-                new Ticket() {SubmitterUserId=company1AdminId,
+                new Ticket() {
+                    SubmitterUserId=company1AdminId,
                     Title = "Portfolio Ticket 1",
                     Description = "Ticket details for portfolio ticket 1",
                     Created = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc),

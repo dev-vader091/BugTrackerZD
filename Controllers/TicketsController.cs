@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using BugHunterBugTrackerZD.Data;
 using BugHunterBugTrackerZD.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace BugHunterBugTrackerZD.Controllers
 {
@@ -16,10 +17,12 @@ namespace BugHunterBugTrackerZD.Controllers
     {
 
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<BTUser> _userManager;
 
-        public TicketsController(ApplicationDbContext context)
+        public TicketsController(ApplicationDbContext context, UserManager<BTUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Tickets
@@ -74,6 +77,17 @@ namespace BugHunterBugTrackerZD.Controllers
         {
             if (ModelState.IsValid)
             {
+                string? userId = _userManager.GetUserId(User);
+
+                ticket.Created = DataUtility.GetPostGresDate(DateTime.UtcNow);
+
+                //ticket.SubmitterUserId = userId;
+
+                if (!User.IsInRole("Developer"))
+                {
+                    ticket.DeveloperUserId = null;
+                }
+
                 _context.Add(ticket);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -125,6 +139,15 @@ namespace BugHunterBugTrackerZD.Controllers
             {
                 try
                 {
+                    // Reformat Created/Updated Dates
+                    ticket.Created = DataUtility.GetPostGresDate(ticket.Created);
+                    ticket.Updated = DataUtility.GetPostGresDate(DateTime.UtcNow);
+
+                    if (!User.IsInRole("Developer"))
+                    {
+                        ticket.DeveloperUserId = null;
+                    }
+
                     _context.Update(ticket);
                     await _context.SaveChangesAsync();
                 }
