@@ -9,6 +9,7 @@ using BugHunterBugTrackerZD.Data;
 using BugHunterBugTrackerZD.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using BugHunterBugTrackerZD.Models.Enums;
 
 namespace BugHunterBugTrackerZD.Controllers
 {
@@ -52,14 +53,13 @@ namespace BugHunterBugTrackerZD.Controllers
         }
 
         // GET: Projects/Create
-        public async Task<IActionResult> CreateAsync()
+        public IActionResult Create()
         {
-           string? userId = _userManager.GetUserId(User);
+            
 
-           BTUser? user = await _userManager.GetUserAsync(User);
 
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name");
-            ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Id");
+            //ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name");
+            ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Name");
             return View();
         }
 
@@ -72,25 +72,31 @@ namespace BugHunterBugTrackerZD.Controllers
         {
             if (ModelState.IsValid)
             {
+                
+                BTUser? user = await _userManager.GetUserAsync(User);
+
+
+
+                project.CompanyId = user!.CompanyId;
+
                 // Format Date(s)
-                project.Created = DataUtility.GetPostGresDate(DateTime.UtcNow);
+                project.Created = DataUtility.GetPostGresDate(DateTime.Now);
 
                 if (project.StartDate != null)
                 {
-                    project.StartDate = DataUtility.GetPostGresDate(DateTime.UtcNow);
+                    project.StartDate = DataUtility.GetPostGresDate(project.StartDate.Value);
                 }
 
                 if (project.EndDate != null)
                 {
-                    project.EndDate = DataUtility.GetPostGresDate(DateTime.UtcNow);
+                    project.EndDate = DataUtility.GetPostGresDate(project.EndDate.Value);
                 }
 
                 _context.Add(project);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", project.CompanyId);
-            ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Id", project.ProjectPriorityId);
+            ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Name", project.ProjectPriorityId);
             return View(project);
         }
 
@@ -134,13 +140,12 @@ namespace BugHunterBugTrackerZD.Controllers
                     // Reformat Start Date
                     if (project.StartDate != null)
                     {
-                        project.StartDate = DateTime.SpecifyKind(project.StartDate.Value, DateTimeKind.Utc);
+                        project.StartDate = DataUtility.GetPostGresDate(project.StartDate.Value);
                     }
-
-                    // Reformat End Date
+                    // Reformat End Date 
                     if (project.EndDate != null)
                     {
-                        project.EndDate = DateTime.SpecifyKind(project.EndDate.Value, DateTimeKind.Utc);
+                        project.EndDate = DataUtility.GetPostGresDate(project.EndDate.Value);
                     }
 
                     _context.Update(project);
