@@ -23,6 +23,11 @@ namespace BugHunterBugTrackerZD.Controllers
             return View();
         }
 
+        public IActionResult Porto()
+        {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

@@ -58,7 +58,7 @@ namespace BugHunterBugTrackerZD.Controllers
             
 
 
-            //ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name");
+            
             ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Name");
             return View();
         }
@@ -113,7 +113,7 @@ namespace BugHunterBugTrackerZD.Controllers
             {
                 return NotFound();
             }
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", project.CompanyId);
+            //ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", project.CompanyId);
             ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Id", project.ProjectPriorityId);
             return View(project);
         }
@@ -129,11 +129,13 @@ namespace BugHunterBugTrackerZD.Controllers
             {
                 return NotFound();
             }
-
+            
             if (ModelState.IsValid)
             {
                 try
                 {
+                    BTUser? user = await _userManager.GetUserAsync(User);
+                    project.CompanyId = user!.CompanyId;
                     // Reformat Created Date
                     project.Created = DataUtility.GetPostGresDate(project.Created);
 
@@ -164,7 +166,7 @@ namespace BugHunterBugTrackerZD.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", project.CompanyId);
+            //ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", project.CompanyId);
             ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Id", project.ProjectPriorityId);
             return View(project);
         }
