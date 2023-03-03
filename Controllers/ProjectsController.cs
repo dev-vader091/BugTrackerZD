@@ -32,6 +32,24 @@ namespace BugHunterBugTrackerZD.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
+        // GET: My Projects 
+        public async Task<IActionResult> MyProjects()
+        {
+            BTUser? user = await _userManager.GetUserAsync(User);
+
+            List<Project> projects = new List<Project>();
+
+            projects = await _context.Projects
+                                     .Where(p => p.CompanyId == user!.CompanyId)
+                                     .Include(p => p.Company)
+                                     .Include(p => p.Tickets)
+                                     .Include(p => p.ProjectPriority)
+                                     .ToListAsync();
+
+            return View(projects);
+        }
+
+
         // GET: Projects/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -108,7 +126,8 @@ namespace BugHunterBugTrackerZD.Controllers
                 return NotFound();
             }
 
-            var project = await _context.Projects.FindAsync(id);
+            Project? project = await _context.Projects.FindAsync(id);
+
             if (project == null)
             {
                 return NotFound();

@@ -9,6 +9,7 @@ using BugHunterBugTrackerZD.Data;
 using BugHunterBugTrackerZD.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using BugHunterBugTrackerZD.Models.Enums;
 
 namespace BugHunterBugTrackerZD.Controllers
 {
@@ -32,6 +33,13 @@ namespace BugHunterBugTrackerZD.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
+        // GET: My Tickets
+        public async Task<IActionResult> MyTickets()
+        {
+
+            
+            return View();
+        }
         // GET: Tickets/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -59,12 +67,12 @@ namespace BugHunterBugTrackerZD.Controllers
         // GET: Tickets/Create
         public IActionResult Create()
         {
-            ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id");
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Description");
-            ViewData["SubmitterUserId"] = new SelectList(_context.Users, "Id", "Id");
-            ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Id");
-            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Id");
-            ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Id");
+            //ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name");
+            //ViewData["SubmitterUserId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Name");
+            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Name");
+            ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Name");
             return View();
         }
 
@@ -75,9 +83,18 @@ namespace BugHunterBugTrackerZD.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,Description,Created,Updated,Archived,ArchivedByProject,ProjectId,TicketTypeId,TicketStatusId,TicketPriorityId,DeveloperUserId,SubmitterUserId")] Ticket ticket)
         {
+            ModelState.Remove("SubmitterUserId");
             if (ModelState.IsValid)
             {
-                string? userId = _userManager.GetUserId(User);
+                BTUser? user = await _userManager.GetUserAsync(User);
+
+                ticket.SubmitterUserId = user!.Id;
+
+
+                if (User.IsInRole(BTRoles.Developer.ToString()))
+                {
+                    ticket.DeveloperUserId = user!.Id;
+                }
 
                 ticket.Created = DataUtility.GetPostGresDate(DateTime.UtcNow);
 
@@ -92,9 +109,9 @@ namespace BugHunterBugTrackerZD.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
+            //ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
             ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Description", ticket.ProjectId);
-            ViewData["SubmitterUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.SubmitterUserId);
+            //ViewData["SubmitterUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.SubmitterUserId);
             ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Id", ticket.TicketPriorityId);
             ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Id", ticket.TicketStatusId);
             ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Id", ticket.TicketTypeId);

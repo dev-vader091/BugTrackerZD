@@ -820,11 +820,12 @@ namespace BugHunterBugTrackerZD.Data
             {
                 //PORTFOLIO
                 new Ticket() {
-                    SubmitterUserId=company1AdminId,
+                    SubmitterUserId = company1AdminId,
                     Title = "Portfolio Ticket 1",
                     Description = "Ticket details for portfolio ticket 1",
                     Created = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc),
-                    ProjectId = portfolioId, TicketPriorityId = priorityLow,
+                    ProjectId = portfolioId, 
+                    TicketPriorityId = priorityLow,
                     TicketStatusId = statusNew,
                     TicketTypeId = typeNewDev},
                 new Ticket() {SubmitterUserId=company1AdminId, Title = "Portfolio Ticket 2", Description = "Ticket details for portfolio ticket 2", Created = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc), ProjectId = portfolioId, TicketPriorityId = priorityMedium, TicketStatusId = statusNew, TicketTypeId = typeChangeRequest},
