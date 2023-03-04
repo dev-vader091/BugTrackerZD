@@ -28,8 +28,22 @@ namespace BugHunterBugTrackerZD.Controllers
         // GET: Projects
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Projects.Include(p => p.Company).Include(p => p.ProjectPriority);
-            return View(await applicationDbContext.ToListAsync());
+            BTUser? user = await _userManager.GetUserAsync(User);
+
+            List<Project> projects = new List<Project>();
+
+            projects = await _context.Projects
+                                     .Where(p => p.CompanyId == user!.CompanyId)
+                                     .Include(p => p.Company)
+                                     .Include(p => p.Tickets)
+                                     .Include(p => p.ProjectPriority)
+                                     .ToListAsync();
+
+            return View(projects);
+
+
+            //var applicationDbContext = _context.Projects.Include(p => p.Company).Include(p => p.ProjectPriority);
+            //return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: My Projects 
