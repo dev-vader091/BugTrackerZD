@@ -9,7 +9,126 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
+<div class="row">
+    <div class="col-lg-12">
+        <section class="card">
+            <header class="card-header">
+                <div class="card-actions">
+                    <a href="#" class="card-action card-action-toggle" data-card-toggle></a>
+                    <a href="#" class="card-action card-action-dismiss" data-card-dismiss></a>
+                </div>
+
+                <h2 class="card-title">Hover Rows + Actions Hover with Fade</h2>
+            </header>
+            <div class="card-body">
+                <table class="table table-responsive-md table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Title)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Description)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Created)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Updated)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Archived)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.ArchivedByProject)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Project)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.TicketPriority)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.TicketType)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.TicketStatus)
+                            </th>
+                            <th>
+                                @*@Html.DisplayNameFor(model => model.DeveloperUser)*@
+                                Developer
+                            </th>
+                            <th>
+                                @*@Html.DisplayNameFor(model => model.SubmitterUser)*@
+                                Submitter
+                            </th>
+                            <th>
+                                Actions
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Title)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Description)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Created)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Updated)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Archived)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ArchivedByProject)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Project!.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.TicketPriority!.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.TicketType!.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.TicketStatus!.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DeveloperUser!.FullName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.SubmitterUser!.FullName)
+                                </td>
+                                <td colspan="2" class="actions-hover actions-fade">
+                                    <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt"></i> </a>
+                                    <a asp-action="Details" asp-route-id="@item.Id"> <i class='bx bx-detail'></i> </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt"></i> </a>
+                                </td>
+                               @* <td>
+                                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                </td>*@
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+@*<table class="table">
     <thead>
         <tr>
             <th>
@@ -99,3 +218,9 @@
 }
     </tbody>
 </table>
+
+<td class="actions-hover actions-fade">
+                                <a href=""><i class="fas fa-pencil-alt"></i></a>
+                                <a href="" class="delete-row"><i class="far fa-trash-alt"></i></a>
+                            </td>
+*@
