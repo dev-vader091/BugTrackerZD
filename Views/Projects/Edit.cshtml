@@ -8,7 +8,7 @@
 
 @*<h4>Project</h4>*@
 <hr />
-@*<div class="row">
+<div class="row">
     <div class="col-md-8">
         <section class="card">
             <header class="card-header">
@@ -53,7 +53,7 @@
                     <div class="form-group row pb-4">
                         <label asp-for="ProjectPriorityId" class="col-lg-3 control-label text-lg-end pt-2"></label>
                         <div class="col-lg-6">
-                            <select asp-for="ProjectPriorityId" data-plugin-selectTwo class="form-control populate" asp-items="ViewBag.ProjectPriorityId"></select>
+                            <select asp-for="ProjectPriorityId" class="form-control populate" asp-items="ViewBag.ProjectPriorityId"></select>
                         </div>
                     </div>
                     <footer class="card-footer text-end">
@@ -65,8 +65,8 @@
         </section>
     </div>
 </div>
-*@
-<div class="row">
+
+@*<div class="row">
     <div class="col-md-4">
         <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -109,7 +109,7 @@
         </form>
     </div>
 </div>
-
+*@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
