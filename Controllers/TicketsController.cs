@@ -10,6 +10,7 @@ using BugHunterBugTrackerZD.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using BugHunterBugTrackerZD.Models.Enums;
+using BugHunterBugTrackerZD.Services.Interfaces;
 
 namespace BugHunterBugTrackerZD.Controllers
 {
@@ -19,11 +20,13 @@ namespace BugHunterBugTrackerZD.Controllers
 
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BTUser> _userManager;
+        private readonly IBTTicketService _ticketService;
 
-        public TicketsController(ApplicationDbContext context, UserManager<BTUser> userManager)
+        public TicketsController(ApplicationDbContext context, UserManager<BTUser> userManager, IBTTicketService ticketService)
         {
             _context = context;
             _userManager = userManager;
+            _ticketService = ticketService;
         }
 
         // GET: Tickets
@@ -44,10 +47,7 @@ namespace BugHunterBugTrackerZD.Controllers
                                     .ToListAsync();
 
             return View(tickets);
-
-
-            //var applicationDbContext = _context.Tickets.Include(t => t.DeveloperUser).Include(t => t.Project).Include(t => t.SubmitterUser).Include(t => t.TicketPriority).Include(t => t.TicketStatus).Include(t => t.TicketType);
-            //return View(await applicationDbContext.ToListAsync());
+            
         }
 
         // GET: My Tickets
@@ -77,14 +77,16 @@ namespace BugHunterBugTrackerZD.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets
-                .Include(t => t.DeveloperUser)
-                .Include(t => t.Project)
-                .Include(t => t.SubmitterUser)
-                .Include(t => t.TicketPriority)
-                .Include(t => t.TicketStatus)
-                .Include(t => t.TicketType)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Ticket ticket = await _ticketService.GetTicketAsync(id);
+
+            //var ticket = await _context.Tickets
+            //    .Include(t => t.DeveloperUser)
+            //    .Include(t => t.Project)
+            //    .Include(t => t.SubmitterUser)
+            //    .Include(t => t.TicketPriority)
+            //    .Include(t => t.TicketStatus)
+            //    .Include(t => t.TicketType)
+            //    .FirstOrDefaultAsync(m => m.Id == id);
             if (ticket == null)
             {
                 return NotFound();
@@ -94,10 +96,21 @@ namespace BugHunterBugTrackerZD.Controllers
         }
 
         // GET: Tickets/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            BTUser? user = await _userManager.GetUserAsync(User);
+
+            IEnumerable<Project> projects = new List<Project>();
+
+            projects = await _context.Projects
+                                     .Where(p => p.CompanyId == user!.CompanyId)
+                                     .Include(p => p.Company)
+                                     .Include(p => p.Tickets)
+                                     .Include(p => p.ProjectPriority)
+                                     .ToListAsync();
+
             //ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id");
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name");
+            ViewData["ProjectId"] = new SelectList(projects, "Id", "Name");
             //ViewData["SubmitterUserId"] = new SelectList(_context.Users, "Id", "Id");
             ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Name");
             ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Name");
@@ -127,23 +140,22 @@ namespace BugHunterBugTrackerZD.Controllers
 
                 ticket.Created = DataUtility.GetPostGresDate(DateTime.UtcNow);
 
-                //ticket.SubmitterUserId = userId;
-
                 if (!User.IsInRole("Developer"))
                 {
                     ticket.DeveloperUserId = null;
                 }
 
-                _context.Add(ticket);
-                await _context.SaveChangesAsync();
+                await _ticketService.AddTicketAsync(ticket);
+                //_context.Add(ticket);
+                //await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             //ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Description", ticket.ProjectId);
+            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", ticket.ProjectId);
             //ViewData["SubmitterUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.SubmitterUserId);
-            ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Id", ticket.TicketPriorityId);
-            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Id", ticket.TicketStatusId);
-            ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Id", ticket.TicketTypeId);
+            ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Name", ticket.TicketPriorityId);
+            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Name", ticket.TicketStatusId);
+            ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Name", ticket.TicketTypeId);
             return View(ticket);
         }
 
@@ -155,17 +167,19 @@ namespace BugHunterBugTrackerZD.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.FindAsync(id);
+            Ticket ticket = await _ticketService.GetTicketAsync(id);
+
+            //var ticket = await _context.Tickets.FindAsync(id);
             if (ticket == null)
             {
                 return NotFound();
             }
-            ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Description", ticket.ProjectId);
-            ViewData["SubmitterUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.SubmitterUserId);
-            ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Id", ticket.TicketPriorityId);
-            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Id", ticket.TicketStatusId);
-            ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Id", ticket.TicketTypeId);
+            //ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
+            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", ticket.ProjectId);
+            //ViewData["SubmitterUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.SubmitterUserId);
+            ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Name", ticket.TicketPriorityId);
+            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Name", ticket.TicketStatusId);
+            ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Name", ticket.TicketTypeId);
             return View(ticket);
         }
 
@@ -193,9 +207,9 @@ namespace BugHunterBugTrackerZD.Controllers
                     {
                         ticket.DeveloperUserId = null;
                     }
-
-                    _context.Update(ticket);
-                    await _context.SaveChangesAsync();
+                    await _ticketService.UpdateTicketAsync(ticket);
+                    //_context.Update(ticket);
+                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -227,14 +241,17 @@ namespace BugHunterBugTrackerZD.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets
-                .Include(t => t.DeveloperUser)
-                .Include(t => t.Project)
-                .Include(t => t.SubmitterUser)
-                .Include(t => t.TicketPriority)
-                .Include(t => t.TicketStatus)
-                .Include(t => t.TicketType)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Ticket ticket = await _ticketService.GetTicketAsync(id);
+
+
+            //var ticket = await _context.Tickets
+            //    .Include(t => t.DeveloperUser)
+            //    .Include(t => t.Project)
+            //    .Include(t => t.SubmitterUser)
+            //    .Include(t => t.TicketPriority)
+            //    .Include(t => t.TicketStatus)
+            //    .Include(t => t.TicketType)
+            //    .FirstOrDefaultAsync(m => m.Id == id);
             if (ticket == null)
             {
                 return NotFound();
@@ -252,13 +269,17 @@ namespace BugHunterBugTrackerZD.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Tickets'  is null.");
             }
-            var ticket = await _context.Tickets.FindAsync(id);
+
+            Ticket ticket = await _ticketService.GetTicketAsync(id);
+
+            //var ticket = await _context.Tickets.FindAsync(id);
             if (ticket != null)
             {
-                _context.Tickets.Remove(ticket);
+                ticket.Archived = true;
+                await _ticketService.UpdateTicketAsync(ticket);
             }
             
-            await _context.SaveChangesAsync();
+            //await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

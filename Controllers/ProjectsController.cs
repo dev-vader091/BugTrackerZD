@@ -10,6 +10,7 @@ using BugHunterBugTrackerZD.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using BugHunterBugTrackerZD.Models.Enums;
+using BugHunterBugTrackerZD.Services.Interfaces;
 
 namespace BugHunterBugTrackerZD.Controllers
 {
@@ -18,11 +19,13 @@ namespace BugHunterBugTrackerZD.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BTUser> _userManager;
+        private readonly IBTProjectService _projectService;
 
-        public ProjectsController(ApplicationDbContext context, UserManager<BTUser> usermanager)
+        public ProjectsController(ApplicationDbContext context, UserManager<BTUser> usermanager, IBTProjectService projectService)
         {
             _context = context;
             _userManager = usermanager;
+            _projectService = projectService;
         }
 
         // GET: Projects
@@ -124,8 +127,8 @@ namespace BugHunterBugTrackerZD.Controllers
                     project.EndDate = DataUtility.GetPostGresDate(project.EndDate.Value);
                 }
 
-                _context.Add(project);
-                await _context.SaveChangesAsync();
+                await _projectService.AddProjectAsync(project);
+                
                 return RedirectToAction(nameof(Index));
             }
             ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Name", project.ProjectPriorityId);
@@ -140,14 +143,14 @@ namespace BugHunterBugTrackerZD.Controllers
                 return NotFound();
             }
 
-            Project? project = await _context.Projects.FindAsync(id);
+            Project project = await _projectService.GetProjectAsync(id);
 
             if (project == null)
             {
                 return NotFound();
             }
             //ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", project.CompanyId);
-            ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Id", project.ProjectPriorityId);
+            ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Name", project.ProjectPriorityId);
             return View(project);
         }
 
@@ -183,8 +186,8 @@ namespace BugHunterBugTrackerZD.Controllers
                         project.EndDate = DataUtility.GetPostGresDate(project.EndDate.Value);
                     }
 
-                    _context.Update(project);
-                    await _context.SaveChangesAsync();
+                    await _projectService.UpdateProjectAsync(project);
+                  
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -200,7 +203,7 @@ namespace BugHunterBugTrackerZD.Controllers
                 return RedirectToAction(nameof(Index));
             }
             //ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", project.CompanyId);
-            ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Id", project.ProjectPriorityId);
+            ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Name", project.ProjectPriorityId);
             return View(project);
         }
 
@@ -212,10 +215,8 @@ namespace BugHunterBugTrackerZD.Controllers
                 return NotFound();
             }
 
-            var project = await _context.Projects
-                .Include(p => p.Company)
-                .Include(p => p.ProjectPriority)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Project project = await _projectService.GetProjectAsync(id);
+           
             if (project == null)
             {
                 return NotFound();
@@ -233,13 +234,16 @@ namespace BugHunterBugTrackerZD.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Projects'  is null.");
             }
-            var project = await _context.Projects.FindAsync(id);
+
+            Project project = await _projectService.GetProjectAsync(id);
+            //var project = await _context.Projects.FindAsync(id);
             if (project != null)
             {
-                _context.Projects.Remove(project);
+                project.Archived = true;
+                await _projectService.UpdateProjectAsync(project);
             }
             
-            await _context.SaveChangesAsync();
+            //await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
