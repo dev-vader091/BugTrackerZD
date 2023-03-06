@@ -14,7 +14,7 @@ using BugHunterBugTrackerZD.Services.Interfaces;
 
 namespace BugHunterBugTrackerZD.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin, ProjectManager")]
     public class ProjectsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -58,7 +58,8 @@ namespace BugHunterBugTrackerZD.Controllers
 
             projects = await _context.Projects
                                      .Where(p => p.CompanyId == user!.CompanyId)
-                                     .Include(p => p.Company)
+                                     .Include(p => p.Company)                                    
+                                     .Include(p => p.Members)
                                      .Include(p => p.Tickets)
                                      .Include(p => p.ProjectPriority)
                                      .ToListAsync();
