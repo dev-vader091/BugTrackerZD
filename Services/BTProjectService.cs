@@ -53,9 +53,17 @@ namespace BugHunterBugTrackerZD.Services
                                                  .Include(p => p.Company)
                                                  .Include(p => p.Members)
                                                  .Include(p => p.Tickets)
-                                                    .ThenInclude(p => p.DeveloperUser)
+                                                    .ThenInclude(t => t.DeveloperUser)
+                                                   
                                                 .Include(p => p.Tickets)
-                                                    .ThenInclude(p => p.SubmitterUser)
+                                                    .ThenInclude(t => t.SubmitterUser)
+                                                    
+                                                .Include(p => p.Tickets)
+                                                    .ThenInclude(t => t.TicketPriority)
+                                                    .Include(p => p.Tickets)
+                                                    .ThenInclude(t => t.TicketStatus)
+                                                .Include(p => p.Tickets)
+                                                    .ThenInclude(t => t.TicketType)
                                                  .Include(p => p.ProjectPriority)
                                                  .FirstOrDefaultAsync(p => p.Id == id);
                                                  
@@ -119,6 +127,40 @@ namespace BugHunterBugTrackerZD.Services
                 throw;
             }
         }
+
+        public async Task AddMemberToProjectAsync(IEnumerable<string> memberIds, int projectId)
+        {
+            try
+            {
+                // Get project from database
+                // Include() is pulling in an ICollection of members above,
+                // which is a collection of BTUser objects,
+                // the hash set is just there so it's never null, just empty.
+                Project? project = await _context.Projects
+                                                  .Include(p => p.Members)
+                                                  .FirstOrDefaultAsync(p => p.Id == projectId);
+
+                foreach (string memberId in memberIds)
+                {
+                    // Get the member
+                    BTUser? member = await _context.Users.FindAsync(memberId);
+
+                    if (project != null && member != null)
+                    {
+                        project.Members.Add(member);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
     }
 
 }
