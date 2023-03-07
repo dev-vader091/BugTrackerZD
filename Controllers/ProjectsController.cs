@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using BugHunterBugTrackerZD.Models.Enums;
 using BugHunterBugTrackerZD.Services.Interfaces;
+using BugHunterBugTrackerZD.Extensions;
+using System.ComponentModel.Design;
+using BugHunterBugTrackerZD.Models.ViewModels;
 
 namespace BugHunterBugTrackerZD.Controllers
 {
@@ -20,28 +23,24 @@ namespace BugHunterBugTrackerZD.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BTUser> _userManager;
         private readonly IBTProjectService _projectService;
+        private readonly IBTRolesService _rolesService;
 
-        public ProjectsController(ApplicationDbContext context, UserManager<BTUser> usermanager, IBTProjectService projectService)
+        public ProjectsController(ApplicationDbContext context, UserManager<BTUser> usermanager, IBTProjectService projectService, IBTRolesService rolesService)
         {
             _context = context;
             _userManager = usermanager;
             _projectService = projectService;
+            _rolesService = rolesService;
         }
 
         // GET: Projects
         public async Task<IActionResult> Index()
         {
-            BTUser? user = await _userManager.GetUserAsync(User);
+            int companyId = User.Identity!.GetCompanyId();
 
-            List<Project> projects = new List<Project>();
-
-            projects = await _context.Projects
-                                     .Where(p => p.CompanyId == user!.CompanyId)
-                                     .Include(p => p.Company)
-                                     .Include(p => p.Tickets)
-                                     .Include(p => p.ProjectPriority)
-                                     .ToListAsync();
-
+            IEnumerable<Project> projects = await _projectService.GetProjectsAsync(companyId);
+                                     
+            
             return View(projects);
 
 
@@ -49,37 +48,103 @@ namespace BugHunterBugTrackerZD.Controllers
             //return View(await applicationDbContext.ToListAsync());
         }
 
+        // GET: AssignPM
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AssignPM(int? id)
+        {
+            // 1. Validate id
+            // 2. Get companyId
+            // 3.Get & Assign Project property of the view Model
+            // 4. Find current PM if on is assigned 
+            // 5. Create SelectList of company's PMs (highlight the current PM if one is assigned)
+            // 6. Create/Instantiate PMViewModel
+            // 7. Return View() using PMViewModel as the model 
+
+            if (id == null)
+            {
+                return NotFound();
+
+            }
+
+            // Get CompanyId
+            int companyId = User.Identity!.GetCompanyId();
+
+            IEnumerable<BTUser> projectManagers = await _rolesService.GetUsersInRoleAsync(nameof(BTRoles.ProjectManager), companyId);
+            BTUser? currentPM = await _projectService.GetProjectManagerAsync(id);
+            AssignPMViewModel viewModel = new()
+            {
+                Project = await _projectService.GetProjectByIdAsync(id, companyId),
+                PMList = new SelectList(projectManagers, "Id", "FullName", currentPM?.Id),
+                PMId = currentPM?.Id
+            };
+
+            return View(viewModel);
+
+
+        }
+
+        // POST: AssignPM
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AssignPM(AssignPMViewModel viewModel)
+        {
+            if (!string.IsNullOrEmpty(viewModel.PMId))
+            {
+                await _projectService.AddProjectManagerAsync(viewModel.PMId, viewModel.Project?.Id);
+
+                return RedirectToAction("Details", new { id = viewModel.Project?.Id });
+            
+            }
+
+            ModelState.AddModelError("PMId", "No Project Manager chosen. Please select a PM.");
+            int companyId = User.Identity!.GetCompanyId();
+
+            IEnumerable<BTUser> projectManagers = await _rolesService.GetUsersInRoleAsync(nameof(BTRoles.ProjectManager), companyId);
+            BTUser? currentPM = await _projectService.GetProjectManagerAsync(viewModel.Project?.Id);
+            viewModel.Project = await _projectService.GetProjectByIdAsync(viewModel.Project?.Id, companyId);
+            viewModel.PMList = new SelectList(projectManagers, "Id", "FullName", currentPM?.Id);
+            viewModel.PMId = currentPM?.Id;
+
+            return View(viewModel);
+        }
+
         // GET: My Projects 
         public async Task<IActionResult> MyProjects()
         {
             BTUser? user = await _userManager.GetUserAsync(User);
 
+            int companyId = User.Identity!.GetCompanyId();
+
             List<Project> projects = new List<Project>();
 
+            List<Project> myProjects = new List<Project>();
+
             projects = await _context.Projects
-                                     .Where(p => p.CompanyId == user!.CompanyId)
-                                     .Include(p => p.Company)                                    
+                                     .Where(p => p.CompanyId == companyId)
+                                     .Include(p => p.Company)
                                      .Include(p => p.Members)
                                      .Include(p => p.Tickets)
                                      .Include(p => p.ProjectPriority)
                                      .ToListAsync();
 
+            
             return View(projects);
         }
 
 
         // GET: Projects/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, int companyId)
         {
-            if (id == null || _context.Projects == null)
+            if (id == null)
             {
                 return NotFound();
             }
+            companyId = User.Identity!.GetCompanyId();
 
-            var project = await _context.Projects
-                .Include(p => p.Company)
-                .Include(p => p.ProjectPriority)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Project project = await _projectService.GetProjectAsync(id, companyId);        
+
             if (project == null)
             {
                 return NotFound();
@@ -89,12 +154,21 @@ namespace BugHunterBugTrackerZD.Controllers
         }
 
         // GET: Projects/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            
+            BTUser? user = await _userManager.GetUserAsync(User);
+
+            //Project project = new Project();
+
+            //project.CompanyId = user!.CompanyId;
+
+            IEnumerable<BTUser> members = await _context.Users
+                                      .Where(m => m.CompanyId == user!.CompanyId)
+                                      .ToListAsync();
+
+            ViewData["MembersList"] = new MultiSelectList(members, "Id", "UserName");
 
 
-            
             ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Name");
             return View();
         }
@@ -104,14 +178,12 @@ namespace BugHunterBugTrackerZD.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CompanyId,Name,Description,Created,StartDate,EndDate,ProjectPriorityId,ImageFileData,ImageFileType,Archived")] Project project)
+        public async Task<IActionResult> Create([Bind("Id,CompanyId,Name,Description,Created,StartDate,EndDate,ProjectPriorityId,ImageFileData,ImageFileType,Archived")] Project project, IEnumerable<string> selected)
         {
             if (ModelState.IsValid)
             {
                 
                 BTUser? user = await _userManager.GetUserAsync(User);
-
-
 
                 project.CompanyId = user!.CompanyId;
 
@@ -127,24 +199,31 @@ namespace BugHunterBugTrackerZD.Controllers
                 {
                     project.EndDate = DataUtility.GetPostGresDate(project.EndDate.Value);
                 }
-
+                
                 await _projectService.AddProjectAsync(project);
+
+                // TODO: add members to project
+                //await _projectService.AddMemberToProjectAsync(selected, project.Id);
                 
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Name", project.ProjectPriorityId);
             return View(project);
         }
 
         // GET: Projects/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, int companyId)
         {
             if (id == null || _context.Projects == null)
             {
                 return NotFound();
             }
 
-            Project project = await _projectService.GetProjectAsync(id);
+            companyId = User.Identity!.GetCompanyId();
+
+
+            Project project = await _projectService.GetProjectAsync(id, companyId);
 
             if (project == null)
             {
@@ -209,14 +288,17 @@ namespace BugHunterBugTrackerZD.Controllers
         }
 
         // GET: Projects/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id, int companyId)
         {
             if (id == null || _context.Projects == null)
             {
                 return NotFound();
             }
 
-            Project project = await _projectService.GetProjectAsync(id);
+            companyId = User.Identity!.GetCompanyId();
+
+
+            Project project = await _projectService.GetProjectAsync(id, companyId);
            
             if (project == null)
             {
@@ -229,14 +311,17 @@ namespace BugHunterBugTrackerZD.Controllers
         // POST: Projects/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, int companyId)
         {
             if (_context.Projects == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Projects'  is null.");
             }
 
-            Project project = await _projectService.GetProjectAsync(id);
+            companyId = User.Identity!.GetCompanyId();
+
+
+            Project project = await _projectService.GetProjectAsync(id, companyId);
             //var project = await _context.Projects.FindAsync(id);
             if (project != null)
             {
