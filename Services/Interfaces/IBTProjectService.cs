@@ -10,10 +10,21 @@ namespace BugHunterBugTrackerZD.Services.Interfaces
         public Task<IEnumerable<Project>> GetProjectsAsync(int companyId);
 
         public Task<Project> GetProjectAsync(int? id, int companyId);
+
         public Task DeleteProjectAsync(Project project);
 
-       public Task<IEnumerable<Ticket>> GetProjectTicketsAsync(int companyId);
+       public Task<IEnumerable<Ticket>> GetProjectTicketsAsync(int? id);
 
-        public Task AddMemberToProjectAsync(IEnumerable<string> memberIds, int projectId);
+        public Task<bool> AddMemberToProjectAsync(BTUser? member, int? projectId);
+
+        public Task<bool> AddProjectManagerAsync(string? userId, int? projectId);
+
+        public Task<Project> GetProjectByIdAsync(int? projectId, int? companyId);
+
+        public Task<BTUser> GetProjectManagerAsync(int? projectId);
+        
+        public Task RemoveProjectManagerAsync(int? projectId);
+
+        public Task<bool> RemoveMemberFromProjectAsync(BTUser? member, int? projectId);
     }
 }

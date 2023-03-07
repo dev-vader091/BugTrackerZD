@@ -17,6 +17,6 @@ namespace BugHunterBugTrackerZD.Services.Interfaces
 
         public Task<bool> RemoveUserFromRoleAsync(BTUser user, string roleName);
 
-        public Task<bool> RemoveUserFromRolesAsync(string roleNames, IEnumerable<string> roleName);    
+        public Task<bool> RemoveUserFromRolesAsync(BTUser user, IEnumerable<string> roleNames);    
     }
 }
