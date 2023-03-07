@@ -38,6 +38,8 @@ namespace BugHunterBugTrackerZD.Services
                                               .Include(t => t.TicketPriority)
                                               .Include(t => t.TicketStatus)
                                               .Include(t => t.TicketType)
+                                              .Include(t => t.Comments)
+                                                .ThenInclude(c => c.User) 
                                               .FirstOrDefaultAsync(ticket => ticket.Id == id);
                                     
 
