@@ -52,6 +52,9 @@
                                 @Html.DisplayNameFor(model => model.ProjectPriority)
                             </th>
                             <th>
+                                @Html.DisplayNameFor(model => model.Members)
+                            </th>
+                            <th>
                                 Actions
                             </th>
                             <th></th>
@@ -85,6 +88,16 @@
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.ProjectPriority!.Name)
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            @foreach (var member in item.Members)
+                                            {
+                                                <li class="">
+                                                    @member.FullName
+                                                </li>
+                                            }
+                                        </ul>
                                     </td>
                                     <td colspan="2" class="actions-hover actions-fade">
                                         <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt"></i> </a>

@@ -9,12 +9,16 @@
 		<meta name="keywords" content="HTML5 Admin Template" />
 		<meta name="description" content="Porto Admin - Responsive HTML5 Template">
 		<meta name="author" content="okler.net">
+       
 
 		<!-- Mobile Metas -->
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
 		<!-- Web Fonts  -->
 		<link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
 		<!-- Vendor CSS -->
 		<link rel="stylesheet" href="~/template/vendor/bootstrap/css/bootstrap.css" />
@@ -33,13 +37,14 @@
 
 		<!-- Theme Layout -->
 		<link rel="stylesheet" href="~/template/css/layouts/modern.css" />
-        <link rel="stylesheet" href="~/template/css/theme.css" />
+        @*<link rel="stylesheet" href="~/template/css/theme.css" />*@
 
 		<!-- Skin CSS -->
 		<link rel="stylesheet" href="~/template/css/skins/default.css" />
 
 		<!-- Theme Custom CSS -->
 		<link rel="stylesheet" href="~/template/css/custom.css">
+
 
 		<!-- Head Libs -->
 		<script src="~/template/vendor/modernizr/modernizr.js"></script>
@@ -120,7 +125,7 @@
 					<ul class="notifications">
 						<li>
 							<a href="#" class="dropdown-toggle notification-icon" data-bs-toggle="dropdown">
-								<i class="bx bx-task"></i>
+								<i class="bx bx-task text-dark"></i>
 								<span class="badge">3</span>
 							</a>
 
@@ -167,7 +172,7 @@
 						</li>
 						<li>
 							<a href="#" class="dropdown-toggle notification-icon" data-bs-toggle="dropdown">
-								<i class="bx bx-envelope"></i>
+								<i class="bx bx-envelope text-dark"></i>
 								<span class="badge">4</span>
 							</a>
 
@@ -227,7 +232,7 @@
 						</li>
 						<li>
 							<a href="#" class="dropdown-toggle notification-icon" data-bs-toggle="dropdown">
-								<i class="bx bx-bell"></i>
+								<i class="bx bx-bell text-dark"></i>
 								<span class="badge">3</span>
 							</a>
 
@@ -283,12 +288,12 @@
 					<div id="userbox" class="userbox">
 						<a href="#" data-bs-toggle="dropdown">
 
-							@*<span class="profile-picture profile-picture-as-text">JD</span>
+							<span class="profile-picture profile-picture-as-text">JD</span>
 							<div class="profile-info profile-info-no-role" data-lock-name="John Doe" data-lock-email="johndoe@okler.com">
 								<span class="name">Hi, <strong class="font-weight-semibold">John Doe</strong></span>
-							</div>*@
+							</div>
 
-                        <partial name="_LoginPartial" />
+                        @*<partial name="_LoginPartial" />*@
 
 							<i class="fas fa-chevron-down text-color-dark"></i>
 						</a>
@@ -314,7 +319,7 @@
 
 			<div class="inner-wrapper">
 				<!-- start: sidebar -->
-				<aside id="sidebar-left" class="sidebar-left">
+				<aside id="sidebar-left" class="sidebar-left pt-3">
 
 				    <div class="sidebar-header">
 				        <div class="sidebar-toggle d-none d-md-flex" data-toggle-class="sidebar-left-collapsed" data-target="html" data-fire-event="sidebar-left-toggle">
