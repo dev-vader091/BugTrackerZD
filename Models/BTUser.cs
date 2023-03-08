@@ -18,16 +18,21 @@ namespace BugHunterBugTrackerZD.Models
 
         [NotMapped]
         public string? FullName { get { return $"{FirstName} {LastName}"; } }
+
         // Image Data
         [NotMapped]
         public IFormFile? ImageFormFile { get; set; }
+
         public byte[]? ImageFileData { get; set; }
+
         public string? ImageFileType { get; set; }
+
         // Foreign Key
         public int CompanyId { get; set; }
 
         // Navigation Properties
         public virtual Company? Company { get; set; }
+
         public virtual ICollection<Project> Projects { get; set; } = new HashSet<Project>();
     }
 }
