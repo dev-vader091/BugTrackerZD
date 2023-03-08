@@ -279,6 +279,62 @@ namespace BugHunterBugTrackerZD.Services
                 throw;
             }
         }
+
+        public async Task AddMembersToProjectAsync(IEnumerable<string> userIds, int? projectId, int? companyId)
+        {
+            try
+            {
+                Project? project = await GetProjectByIdAsync(projectId, companyId);
+
+                foreach (string userId in userIds)
+                {
+                    BTUser? btUser = await _context.Users.FindAsync(userId);
+
+                    if (project != null && btUser != null) 
+                    {
+                        bool IsOnProject = project.Members.Any(m => m.Id == userId);
+
+                        if (!IsOnProject)
+                        {
+                            project.Members.Add(btUser);
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                }
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task RemoveMembersFromProjectAsync(int? projectId, int? companyId)
+        {
+            try
+            {
+                Project? project = await GetProjectByIdAsync(projectId, companyId);
+
+                foreach (BTUser member in project.Members)
+                {
+                    if (!await _roleService.IsUserInRoleAsync(member, nameof(BTRoles.ProjectManager)))
+                    {
+                        project.Members.Remove(member);
+                    }   
+                }
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 
 }
