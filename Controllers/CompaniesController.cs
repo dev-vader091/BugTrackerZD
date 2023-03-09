@@ -11,6 +11,7 @@ using BugHunterBugTrackerZD.Models.ViewModels;
 using BugHunterBugTrackerZD.Extensions;
 using BugHunterBugTrackerZD.Services.Interfaces;
 using BugHunterBugTrackerZD.Models.Enums;
+using Microsoft.AspNetCore.Identity;
 
 namespace BugHunterBugTrackerZD.Controllers
 {
@@ -73,16 +74,18 @@ namespace BugHunterBugTrackerZD.Controllers
             //         - add the viewmodel to model list
 
 
+               
 
             foreach (BTUser companyUser in companyUsers)
             {
-               
+
+                //List<IdentityRole> rolesList = await _rolesService.GetRolesAsync();
                 List<string> currentRoles = (await _rolesService.GetUserRolesAsync(companyUser)).ToList();
 
                 ManageUserRolesViewModel viewModel = new()
                 {
                     BTUser = companyUser,
-                    Roles = new MultiSelectList(await _rolesService.GetRolesAsync(), "Id", "Name", currentRoles)
+                    Roles = new MultiSelectList(await _rolesService.GetRolesAsync(), "Name", "Name", currentRoles)
                     
                 };
 
@@ -120,11 +123,12 @@ namespace BugHunterBugTrackerZD.Controllers
                     await _rolesService.AddUserToRoleAsync(btUser!, role);
                 }
             
+            // 6. - Navigate 
+            return RedirectToAction("Details", "Companies", new { id = companyId});
+
             }
 
-            // 6. - Navigate 
-            return RedirectToAction(nameof(Details), new { id = viewModel.BTUser!.Id });
-
+            return View(viewModel);
         }
 
         // GET: Companies/Create
