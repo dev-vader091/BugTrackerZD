@@ -14,7 +14,7 @@
             <div class="col-md-12 col">
                 <div class="row col-cols-2 mt-5 bg-primary">
                     <div class="card col m-1 p-2">
-                        <div class="body">
+                        <div class="card-body">
 
                             @* Project Name *@
                             <h5>[@Model.Name]</h5>
@@ -34,7 +34,7 @@
                         </div>
                     </div>
                     <div class="card col m-1 p-2">
-                        <div class="body">
+                        <div class="card-body">
                             <ul class=" list-unstyled basic-list">
                                 <li class="text-dark">Start Date: <span class="text-dark">[@Model.StartDate]</span></li>
                                 <li class="text-dark">Deadline: <span class="text-dark">[@Model.EndDate]</span></li>
@@ -53,7 +53,7 @@
                             <h2>Project Manager</h2>
                             <hr />
                         </div>
-                        <div class="body" style="overflow-y:auto;height:300px;">
+                        <div class="card-body" style="overflow-y:auto;height:300px;">
                             [@(  (await _ProjectService.GetProjectManagerAsync(Model.Id))?.FullName ?? "Unassigned"  )]
                             @* if() logic for Avatar/Default etc *@
 
@@ -68,7 +68,7 @@
                             <h2>Project Team</h2>
                             <hr />
                         </div>
-                        <div class="body" style="overflow-y:auto;height:300px;">
+                        <div class="card-body" style="overflow-y:auto;height:300px;">
                             <ul class="right_chat list-unstyled mb-0 text-dark">
 
                                 [Project Members]
@@ -93,7 +93,7 @@
                             <h2>Project Activity</h2>
                             <hr />
                         </div>
-                        <div class="body" style="overflow-y:auto;height:300px;background-color:antiquewhite">
+                        <div class="card-body" style="overflow-y:auto;height:300px;background-color:antiquewhite">
                             @* Project Activity loop *@
                             [Project Activity  e.g. Ticket History]
                         </div>
@@ -107,7 +107,7 @@
                         <div class="">
                             <h2>Tickets</h2>
                         </div>
-                        <div class="body">
+                        <div class="card-body">
                             <div class="table-responsive" style="overflow-y:auto;height:600px;">
                                 <table class="table table-hover ticket-table">
                                     <thead class="">
@@ -194,9 +194,9 @@
                                                         @ticket.SubmitterUser!.FullName
                                                     </td>
                                                     <td colspan="2" class="actions-hover actions-fade">
-                                                        <a asp-action="Edit" asp-route-id="@ticket.Id"> <i class="fas fa-pencil-alt"></i> </a>
-                                                        <a asp-action="Details" asp-route-id="@ticket.Id"> <i class='bx bx-detail'></i> </a>
-                                                        <a asp-action="Delete" asp-route-id="@ticket.Id" class="delete-row"> <i class="far fa-trash-alt"></i> </a>
+                                                        <a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id"> <i class="fas fa-pencil-alt"></i> </a>
+                                                        <a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id"> <i class='bx bx-detail'></i> </a>
+                                                        <a asp-action="Delete" asp-controller="Tickets" asp-route-id="@ticket.Id" class="delete-row"> <i class="far fa-trash-alt"></i> </a>
                                                     </td>
 
                                                 </tr>
