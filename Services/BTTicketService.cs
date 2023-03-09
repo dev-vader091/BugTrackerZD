@@ -27,7 +27,7 @@ namespace BugHunterBugTrackerZD.Services
                 throw;
             }
         }
-        public async Task<Ticket> GetTicketAsync(int? id)
+        public async Task<Ticket> GetTicketByIdAsync(int? id)
         {
             try
             {

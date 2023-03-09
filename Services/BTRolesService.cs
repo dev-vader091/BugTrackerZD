@@ -24,6 +24,7 @@ namespace BugHunterBugTrackerZD.Services
             try
             {
                 bool result = (await _userManager.AddToRoleAsync(user, roleName)).Succeeded;
+                await _context.SaveChangesAsync();
                 return result;
             }
             catch (Exception)
@@ -118,6 +119,7 @@ namespace BugHunterBugTrackerZD.Services
             try
             {
                 bool result = (await _userManager.RemoveFromRolesAsync(user, roleNames)).Succeeded;
+                await _context.SaveChangesAsync();
 
                 return result;
             }
