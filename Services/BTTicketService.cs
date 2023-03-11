@@ -27,12 +27,15 @@ namespace BugHunterBugTrackerZD.Services
                 throw;
             }
         }
-        public async Task<Ticket> GetTicketByIdAsync(int? id)
+        public async Task<Ticket> GetTicketByIdAsync(int? id, int? companyId)
+            
         {
             try
             {
                 Ticket? ticket = await _context.Tickets
+                                              .Where(t => t.Project!.CompanyId == companyId)
                                               .Include(t => t.Project)
+                                                .ThenInclude(p => p!.Members)
                                               .Include(t => t.DeveloperUser)
                                               .Include(t => t.SubmitterUser)
                                               .Include(t => t.TicketPriority)
@@ -73,5 +76,74 @@ namespace BugHunterBugTrackerZD.Services
             throw new NotImplementedException();
         }
 
+        public async Task<List<Ticket>> GetTicketsByIdAsync(int? companyId)
+        {
+            try
+            {
+                List<Ticket> tickets = new();
+
+                tickets = await _context.Tickets
+                                    .Where(t => t.Project!.CompanyId == companyId)
+                                    .Include(t => t.Project)
+                                    .Include(t => t.DeveloperUser)
+                                    .Include(t => t.SubmitterUser)
+                                    .Include(t => t.TicketPriority)
+                                    .Include(t => t.TicketStatus)
+                                    .Include(t => t.TicketType)
+                                    .ToListAsync();
+
+                return tickets;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<List<Ticket>> GetUnassignedTicketsAsync(int? companyId)
+        {
+            try
+            {
+                List<Ticket> tickets = new();
+
+                tickets = await _context.Tickets
+                                    .Where(t => t.Project!.CompanyId == companyId && t.DeveloperUserId == null)
+                                    .Include(t => t.Project)
+                                    .Include(t => t.DeveloperUser)
+                                    .Include(t => t.SubmitterUser)
+                                    .Include(t => t.TicketPriority)
+                                    .Include(t => t.TicketStatus)
+                                    .Include(t => t.TicketType)
+                                    .ToListAsync();
+
+                return tickets;
+
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        //public async Task RemoveTicketDeveloperAsync(int? ticketId)
+        //{
+        //    try
+        //    {
+        //        Ticket? ticket = await _context.Tickets.Include(t => t.Project).FirstOrDefaultAsync(t => t.Id == ticketId);
+
+        //        if (ticket!.DeveloperUser != null)
+        //        {
+        //            ticket.DeveloperUser = null;
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
+
+        //        throw;
+        //    }
+        //}
     }
 }
