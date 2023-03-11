@@ -22,6 +22,7 @@
             <div class="card-body">
                 <form asp-action="Edit" class="form-horizontal form-bordered">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Created" />
                     <div class="form-group row pb-4">
                         <label asp-for="Name" class="col-lg-3 control-label text-lg-end pt-2"></label>
                         <div class="col-lg-6">

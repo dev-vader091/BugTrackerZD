@@ -98,6 +98,9 @@
                                     <td>
                                         @Html.DisplayFor(modelItem => item.SubmitterUser!.FullName)
                                     </td>
+                                    <td>
+                                        <a asp-action="AssignTicketToUser" asp-route-id="@item.Id">Assign Ticket</a>
+                                    </td>
                                     <td colspan="2" class="actions-hover actions-fade">
                                         <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt"></i> </a>
                                         <a asp-action="Details" asp-route-id="@item.Id"> <i class='bx bx-detail'></i> </a>
