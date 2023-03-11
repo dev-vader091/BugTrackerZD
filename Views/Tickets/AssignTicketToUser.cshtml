@@ -1,0 +1,25 @@
+﻿@model BugHunterBugTrackerZD.Models.ViewModels.TicketUsersViewModel
+
+@{
+    ViewData["Title"] = "Assign Ticket Users";
+}
+
+<div class="d-flex justify-content-center mt-5 flex-column align-items-center">
+    <h3 class="my-5">Assign Ticket Users</h3>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">@Model.Ticket!.Title</div>
+        </div>
+        <div class="card-body">
+            <form asp-action="AssignTicketToUser" asp-controller="Tickets" method="post" class="d-flex flex-column">
+                <input type="hidden" asp-for="Ticket!.Id" />
+                <select asp-items="Model.TicketUsers" asp-for="SelectedDeveloperId" class="form-control" required>
+                    <option value="">Select Users</option>
+                </select>
+                <span asp-validation-for="SelectedDeveloperId" class="text-danger"></span>
+                <button type="submit" class="btn btn-primary my-3">Save</button>
+                <a asp-action="Details" asp-route-id="@Model.Ticket!.Id" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
