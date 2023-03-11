@@ -11,6 +11,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using BugHunterBugTrackerZD.Models.Enums;
 using BugHunterBugTrackerZD.Services.Interfaces;
+using BugHunterBugTrackerZD.Extensions;
+using BugHunterBugTrackerZD.Models.ViewModels;
+using BugHunterBugTrackerZD.Services;
+using System.ComponentModel.Design;
 
 namespace BugHunterBugTrackerZD.Controllers
 {
@@ -21,30 +25,142 @@ namespace BugHunterBugTrackerZD.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BTUser> _userManager;
         private readonly IBTTicketService _ticketService;
+        private readonly IBTRolesService _rolesService;
+        private readonly IBTTicketHistoryService _historyService;
 
-        public TicketsController(ApplicationDbContext context, UserManager<BTUser> userManager, IBTTicketService ticketService)
+        public TicketsController(ApplicationDbContext context, 
+                                 UserManager<BTUser> userManager, 
+                                 IBTTicketService ticketService, 
+                                 IBTRolesService rolesService, 
+                                 IBTTicketHistoryService historyService)
         {
             _context = context;
             _userManager = userManager;
             _ticketService = ticketService;
+            _rolesService = rolesService;
+            _historyService = historyService;
         }
 
-        // GET: Tickets
-        public async Task<IActionResult> Index()
+        
+
+        // GET: Assign Ticket 
+        [HttpGet]
+        public async Task<IActionResult> AssignTicketToUser(int? id)
         {
-            BTUser? user = await _userManager.GetUserAsync(User);
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            int companyId = User.Identity!.GetCompanyId();
+
+            Ticket ticket = await _ticketService.GetTicketByIdAsync(id, companyId);
+
+            List<BTUser> projectMembers = ticket.Project!.Members.ToList();
+
+            List<BTUser> developers = new();
+
+            foreach (BTUser user in projectMembers)
+            {
+                if (await _rolesService.IsUserInRoleAsync(user, nameof(BTRoles.Developer)))
+                {
+                    developers.Add(user);
+                }
+            }
+
+            BTUser? currentDev = ticket.DeveloperUser;
+
+            TicketUsersViewModel viewModel = new()
+            {
+                Ticket = ticket,
+                TicketUsers = new SelectList(developers, "Id", "FullName", currentDev?.Id),
+                SelectedDeveloperId = currentDev?.Id
+                
+            };
+
+            return View(viewModel);
+        }
+
+        // POST: Assign Ticket 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignTicketToUser(TicketUsersViewModel viewModel)
+        {
+            int companyId = User.Identity!.GetCompanyId();
+
+            Ticket? ticket = await _ticketService.GetTicketByIdAsync(viewModel.Ticket!.Id, companyId);
+
+            if (!string.IsNullOrEmpty(viewModel.SelectedDeveloperId))
+            {
+
+                // Add developerId to ticket
+                ticket!.DeveloperUserId = viewModel.SelectedDeveloperId;
+
+                //_context.Update(ticket);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Details", new { id = viewModel.Ticket?.Id });
+
+            }
+
+            return View(viewModel);
+        }
+
+        // GET: Unassigned Tickets
+        [HttpGet]
+        [Authorize(Roles = "Admin, ProjectManager")]
+        public async Task<IActionResult> UnassignedTickets()
+        {
+            string? userId = _userManager.GetUserId(User);
+            BTUser? btUser = await _context.Users
+                                           .Include(u => u.Projects)
+                                             .ThenInclude(p => p.Tickets)
+                                             .ThenInclude(t => t.DeveloperUser)
+                                           .Include(u => u.Projects)
+                                             .ThenInclude(p => p.Tickets)
+                                             .ThenInclude(t => t.SubmitterUser)
+                                           .Include(u => u.Projects)
+                                             .ThenInclude(p => p.Tickets)
+                                             .ThenInclude(t => t.TicketPriority)
+                                           .Include(u => u.Projects)
+                                             .ThenInclude(p => p.Tickets)
+                                             .ThenInclude(t => t.TicketStatus)
+                                           .Include(u => u.Projects)
+                                             .ThenInclude(p => p.Tickets)
+                                             .ThenInclude(t => t.TicketType)
+                                           .FirstOrDefaultAsync(u => u.Id == userId);
+
+            int companyId = User.Identity!.GetCompanyId();
 
             IEnumerable<Ticket> tickets = new List<Ticket>();
 
-            tickets = await _context.Tickets
-                                    .Where(t => t.Project!.CompanyId == user!.CompanyId)
-                                    .Include(t => t.Project)
-                                    .Include(t => t.DeveloperUser)
-                                    .Include(t => t.SubmitterUser)
-                                    .Include(t => t.TicketPriority)
-                                    .Include(t => t.TicketStatus)
-                                    .Include(t => t.TicketType)
-                                    .ToListAsync();
+            if (await _rolesService.IsUserInRoleAsync(btUser!, nameof(BTRoles.Admin)))
+            {
+                tickets = await _ticketService.GetUnassignedTicketsAsync(companyId);
+
+            }
+
+            else if (await _rolesService.IsUserInRoleAsync(btUser!, nameof(BTRoles.ProjectManager)))
+            {
+                List<Ticket>? pmTickets = new();
+
+                pmTickets = btUser?.Projects.SelectMany(p => p.Tickets).ToList();
+
+                tickets = pmTickets!.Where(t => t.DeveloperUserId == null);                                         
+            }
+
+
+
+            return View(tickets);
+        }
+        // GET: Tickets
+        public async Task<IActionResult> Index()
+        {
+            int companyId = User.Identity!.GetCompanyId();
+
+            IEnumerable<Ticket> tickets = new List<Ticket>();
+
+            tickets = await _ticketService.GetTicketsByIdAsync(companyId);
 
             return View(tickets);
             
@@ -69,6 +185,7 @@ namespace BugHunterBugTrackerZD.Controllers
             
             return View(tickets);
         }
+
         // GET: Tickets/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -77,16 +194,10 @@ namespace BugHunterBugTrackerZD.Controllers
                 return NotFound();
             }
 
-            Ticket ticket = await _ticketService.GetTicketAsync(id);
+            int companyId = User.Identity!.GetCompanyId();
 
-            //var ticket = await _context.Tickets
-            //    .Include(t => t.DeveloperUser)
-            //    .Include(t => t.Project)
-            //    .Include(t => t.SubmitterUser)
-            //    .Include(t => t.TicketPriority)
-            //    .Include(t => t.TicketStatus)
-            //    .Include(t => t.TicketType)
-            //    .FirstOrDefaultAsync(m => m.Id == id);
+            Ticket ticket = await _ticketService.GetTicketByIdAsync(id, companyId);
+            
             if (ticket == null)
             {
                 return NotFound();
@@ -138,24 +249,40 @@ namespace BugHunterBugTrackerZD.Controllers
             {
                 BTUser? user = await _userManager.GetUserAsync(User);
 
+                ticket.Created = DataUtility.GetPostGresDate(DateTime.Now);
                 ticket.SubmitterUserId = user!.Id;
 
 
-                if (User.IsInRole(BTRoles.Developer.ToString()))
-                {
-                    ticket.DeveloperUserId = user!.Id;
-                }
+                //if (User.IsInRole(BTRoles.Developer.ToString()))
+                //{
+                //    ticket.DeveloperUserId = user!.Id;
+                //}
 
-                ticket.Created = DataUtility.GetPostGresDate(DateTime.UtcNow);
 
-                if (!User.IsInRole("Developer"))
-                {
-                    ticket.DeveloperUserId = null;
-                }
+                //if (!User.IsInRole("Developer"))
+                //{
+                //    ticket.DeveloperUserId = null;
+                //}
 
                 await _ticketService.AddTicketAsync(ticket);
-                //_context.Add(ticket);
-                //await _context.SaveChangesAsync();
+
+                int companyId = User.Identity!.GetCompanyId();
+                Ticket? newTicket = await _context.Tickets
+                                                 .Include(t => t.Project)
+                                                    .ThenInclude(p => p!.Company)
+                                                .Include(t => t.Attachments)
+                                                .Include(t => t.Comments)
+                                                .Include(t => t.DeveloperUser)
+                                                .Include(t => t.History)
+                                                .Include(t => t.SubmitterUser)
+                                                .Include(t => t.TicketPriority)
+                                                .Include(t => t.TicketStatus)
+                                                .Include(t => t.TicketType)
+                                                .AsNoTracking()
+                                                .FirstOrDefaultAsync(t => t.Id == ticket.Id && t.Project!.CompanyId == companyId && t.Archived == false);
+
+                await _historyService.AddHistoryAsync(null, newTicket, user.Id);                                  
+                
                 return RedirectToAction(nameof(Index));
             }
             //ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
@@ -175,14 +302,16 @@ namespace BugHunterBugTrackerZD.Controllers
                 return NotFound();
             }
 
-            Ticket ticket = await _ticketService.GetTicketAsync(id);
+            int companyId = User.Identity!.GetCompanyId();
+
+            Ticket ticket = await _ticketService.GetTicketByIdAsync(id, companyId);
 
             //var ticket = await _context.Tickets.FindAsync(id);
             if (ticket == null)
             {
                 return NotFound();
             }
-            //ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
+            ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
             ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", ticket.ProjectId);
             //ViewData["SubmitterUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.SubmitterUserId);
             ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Name", ticket.TicketPriorityId);
@@ -203,21 +332,52 @@ namespace BugHunterBugTrackerZD.Controllers
                 return NotFound();
             }
 
+            //ModelState.Remove("SubmitterUserId");
             if (ModelState.IsValid)
             {
+                BTUser? user = await _userManager.GetUserAsync(User);
                 try
                 {
+                    //ticket.SubmitterUserId = user!.Id;
+                    int companyId = User.Identity!.GetCompanyId();
+
+                    Ticket? oldTicket = await _context.Tickets
+                                                 .Include(t => t.Project)
+                                                    .ThenInclude(p => p!.Company)
+                                                .Include(t => t.Attachments)
+                                                .Include(t => t.Comments)
+                                                .Include(t => t.DeveloperUser)
+                                                .Include(t => t.History)
+                                                .Include(t => t.SubmitterUser)
+                                                .Include(t => t.TicketPriority)
+                                                .Include(t => t.TicketStatus)
+                                                .Include(t => t.TicketType)
+                                                .AsNoTracking()
+                                                .FirstOrDefaultAsync(t => t.Id == ticket.Id && t.Project!.CompanyId == companyId && t.Archived == false);
+
                     // Reformat Created/Updated Dates
                     ticket.Created = DataUtility.GetPostGresDate(ticket.Created);
                     ticket.Updated = DataUtility.GetPostGresDate(DateTime.UtcNow);
 
-                    if (!User.IsInRole("Developer"))
-                    {
-                        ticket.DeveloperUserId = null;
-                    }
+                   
                     await _ticketService.UpdateTicketAsync(ticket);
-                    //_context.Update(ticket);
-                    //await _context.SaveChangesAsync();
+
+                    Ticket? newTicket = await _context.Tickets
+                                                 .Include(t => t.Project)
+                                                    .ThenInclude(p => p!.Company)
+                                                .Include(t => t.Attachments)
+                                                .Include(t => t.Comments)
+                                                .Include(t => t.DeveloperUser)
+                                                .Include(t => t.History)
+                                                .Include(t => t.SubmitterUser)
+                                                .Include(t => t.TicketPriority)
+                                                .Include(t => t.TicketStatus)
+                                                .Include(t => t.TicketType)
+                                                .AsNoTracking()
+                                                .FirstOrDefaultAsync(t => t.Id == ticket.Id && t.Project!.CompanyId == companyId && t.Archived == false);
+
+                    await _historyService.AddHistoryAsync(oldTicket, newTicket, user.Id);
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -232,9 +392,9 @@ namespace BugHunterBugTrackerZD.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
+            //ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
             ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Description", ticket.ProjectId);
-            ViewData["SubmitterUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.SubmitterUserId);
+            //ViewData["SubmitterUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.SubmitterUserId);
             ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Id", ticket.TicketPriorityId);
             ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Id", ticket.TicketStatusId);
             ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Id", ticket.TicketTypeId);
@@ -249,7 +409,9 @@ namespace BugHunterBugTrackerZD.Controllers
                 return NotFound();
             }
 
-            Ticket ticket = await _ticketService.GetTicketAsync(id);
+            int companyId = User.Identity!.GetCompanyId();
+
+            Ticket ticket = await _ticketService.GetTicketByIdAsync(id, companyId);
 
 
             //var ticket = await _context.Tickets
@@ -278,7 +440,9 @@ namespace BugHunterBugTrackerZD.Controllers
                 return Problem("Entity set 'ApplicationDbContext.Tickets'  is null.");
             }
 
-            Ticket ticket = await _ticketService.GetTicketAsync(id);
+            int companyId = User.Identity!.GetCompanyId();
+
+            Ticket ticket = await _ticketService.GetTicketByIdAsync(id, companyId);
 
             //var ticket = await _context.Tickets.FindAsync(id);
             if (ticket != null)

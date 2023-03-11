@@ -121,7 +121,7 @@ namespace BugHunterBugTrackerZD.Controllers
             // 1. Validate id
             // 2. Get companyId
             // 3.Get & Assign Project property of the view Model
-            // 4. Find current PM if on is assigned 
+            // 4. Find current PM if one is assigned 
             // 5. Create SelectList of company's PMs (highlight the current PM if one is assigned)
             // 6. Create/Instantiate PMViewModel
             // 7. Return View() using PMViewModel as the model 
@@ -231,7 +231,7 @@ namespace BugHunterBugTrackerZD.Controllers
                                       .Where(m => m.CompanyId == user!.CompanyId)
                                       .ToListAsync();
 
-            ViewData["MembersList"] = new MultiSelectList(members, "Id", "UserName");
+           
 
 
             ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Name");
