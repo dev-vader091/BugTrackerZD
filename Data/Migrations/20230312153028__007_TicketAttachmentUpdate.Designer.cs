@@ -3,6 +3,7 @@ using System;
 using BugHunterBugTrackerZD.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BugHunterBugTrackerZD.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230312153028__007_TicketAttachmentUpdate")]
+    partial class _007_TicketAttachmentUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -437,9 +440,6 @@ namespace BugHunterBugTrackerZD.Data.Migrations
 
                     b.Property<byte[]>("FileData")
                         .HasColumnType("bytea");
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("text");
 
                     b.Property<string>("FileType")
                         .HasColumnType("text");
