@@ -43,6 +43,30 @@ namespace BugHunterBugTrackerZD.Controllers
 
         
 
+        // POST: Add Ticket Comment 
+        public async Task<IActionResult> AddTicketComment([Bind("Id,Comment,Created,TicketId,UserId")] TicketComment ticketComment)
+        {
+            ModelState.Remove("UserId");
+            if (ModelState.IsValid)
+            {
+                string? userId = _userManager.GetUserId(User);
+
+                ticketComment.UserId = userId;
+                ticketComment.Created = DataUtility.GetPostGresDate(DateTime.Now);
+
+
+                _context.Add(ticketComment);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            //ViewData["TicketId"] = new SelectList(_context.Tickets, "Id", "Description", ticketComment.TicketId);
+            //ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", ticketComment.UserId);
+            
+            return View(ticketComment);
+
+           
+        }
+        
         // GET: Assign Ticket 
         [HttpGet]
         public async Task<IActionResult> AssignTicketToUser(int? id)
@@ -152,6 +176,7 @@ namespace BugHunterBugTrackerZD.Controllers
 
 
             return View(tickets);
+        
         }
         // GET: Tickets
         public async Task<IActionResult> Index()
@@ -229,13 +254,7 @@ namespace BugHunterBugTrackerZD.Controllers
             return View();
         }
 
-        // Tickets/Comments
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult AddTicketComment()
-        {
-            return View();
-        }
+        
 
         // POST: Tickets/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -376,7 +395,7 @@ namespace BugHunterBugTrackerZD.Controllers
                                                 .AsNoTracking()
                                                 .FirstOrDefaultAsync(t => t.Id == ticket.Id && t.Project!.CompanyId == companyId && t.Archived == false);
 
-                    await _historyService.AddHistoryAsync(oldTicket, newTicket, user.Id);
+                    await _historyService.AddHistoryAsync(oldTicket, newTicket, user!.Id);
 
                 }
                 catch (DbUpdateConcurrencyException)
