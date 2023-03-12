@@ -1,4 +1,6 @@
-﻿namespace BugHunterBugTrackerZD.Services
+﻿using BugHunterBugTrackerZD.Services.Interfaces;
+
+namespace BugHunterBugTrackerZD.Services
 {
     public class BTFileService : IBTFileService
     {

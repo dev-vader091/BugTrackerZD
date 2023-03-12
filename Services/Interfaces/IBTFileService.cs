@@ -1,4 +1,4 @@
-﻿namespace BugHunterBugTrackerZD.Services
+﻿namespace BugHunterBugTrackerZD.Services.Interfaces
 {
     public interface IBTFileService
     {
