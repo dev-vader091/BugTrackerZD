@@ -14,6 +14,7 @@ using BugHunterBugTrackerZD.Services.Interfaces;
 using BugHunterBugTrackerZD.Extensions;
 using System.ComponentModel.Design;
 using BugHunterBugTrackerZD.Models.ViewModels;
+using BugHunterBugTrackerZD.Services;
 
 namespace BugHunterBugTrackerZD.Controllers
 {
@@ -24,13 +25,19 @@ namespace BugHunterBugTrackerZD.Controllers
         private readonly UserManager<BTUser> _userManager;
         private readonly IBTProjectService _projectService;
         private readonly IBTRolesService _rolesService;
+        private readonly IBTFileService _fileService;
 
-        public ProjectsController(ApplicationDbContext context, UserManager<BTUser> usermanager, IBTProjectService projectService, IBTRolesService rolesService)
+        public ProjectsController(ApplicationDbContext context, 
+                                  UserManager<BTUser> usermanager, 
+                                  IBTProjectService projectService, 
+                                  IBTRolesService rolesService, 
+                                  IBTFileService fileService)
         {
             _context = context;
             _userManager = usermanager;
             _projectService = projectService;
             _rolesService = rolesService;
+            _fileService = fileService;
         }
 
         // GET: Projects
@@ -254,6 +261,13 @@ namespace BugHunterBugTrackerZD.Controllers
 
                 // Format Date(s)
                 project.Created = DataUtility.GetPostGresDate(DateTime.Now);
+
+                // TODO: Image Service 
+                if (project.ImageFormFile!= null)
+                {
+                    project.ImageFileData = await _fileService.ConvertFileToByteArrayAsync(project.ImageFormFile);
+                    project.ImageFileType = project.ImageFormFile.ContentType;
+                }
 
                 if (project.StartDate != null)
                 {
