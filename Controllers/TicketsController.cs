@@ -15,6 +15,7 @@ using BugHunterBugTrackerZD.Extensions;
 using BugHunterBugTrackerZD.Models.ViewModels;
 using BugHunterBugTrackerZD.Services;
 using System.ComponentModel.Design;
+using System.IO;
 
 namespace BugHunterBugTrackerZD.Controllers
 {
@@ -27,21 +28,77 @@ namespace BugHunterBugTrackerZD.Controllers
         private readonly IBTTicketService _ticketService;
         private readonly IBTRolesService _rolesService;
         private readonly IBTTicketHistoryService _historyService;
+        private readonly IBTFileService _fileService;
 
-        public TicketsController(ApplicationDbContext context, 
-                                 UserManager<BTUser> userManager, 
-                                 IBTTicketService ticketService, 
-                                 IBTRolesService rolesService, 
-                                 IBTTicketHistoryService historyService)
+        public TicketsController(ApplicationDbContext context,
+                                 UserManager<BTUser> userManager,
+                                 IBTTicketService ticketService,
+                                 IBTRolesService rolesService,
+                                 IBTTicketHistoryService historyService,
+                                 IBTFileService fileService)
         {
             _context = context;
             _userManager = userManager;
             _ticketService = ticketService;
             _rolesService = rolesService;
             _historyService = historyService;
+            _fileService = fileService;
         }
 
-        
+
+
+        // POST: Add Ticket Attachment 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddTicketAttachment([Bind("Id,FormFile,Description,TicketId")] TicketAttachment ticketAttachment)
+        {
+            string statusMessage;
+
+            ModelState.Remove("BTUserId");
+            if (ModelState.IsValid && ticketAttachment.FormFile != null)
+            {
+                ticketAttachment.BTUserId = _userManager.GetUserId(User);
+
+                Ticket? ticket = await _context.Tickets
+                                               .Include(t => t.Attachments)
+                                               .Include(t => t.DeveloperUserId)
+                                               .Include(t => t.SubmitterUserId)
+                                               .FirstOrDefaultAsync(t => t.Id == ticketAttachment.TicketId);
+
+                //if (ticket!.DeveloperUserId == ticketAttachment.BTUserId || ticket.SubmitterUserId == ticketAttachment.BTUserId)
+                //{
+
+                //}
+
+                ticketAttachment.FileData = await _fileService.ConvertFileToByteArrayAsync(ticketAttachment.FormFile);
+                ticketAttachment.FileName = ticketAttachment.FormFile.FileName;
+                ticketAttachment.FileType = ticketAttachment.FormFile.ContentType;
+
+                ticketAttachment.Created = DataUtility.GetPostGresDate(DateTime.Now);
+                ticketAttachment.BTUserId = _userManager.GetUserId(User);
+
+                await _ticketService.AddTicketAttachmentAsync(ticketAttachment);
+                statusMessage = "Success: New attachment added to Ticket.";
+            }
+            else
+            {
+                statusMessage = "Error: Invalid data.";
+
+            }
+
+            return RedirectToAction("Details", new { id = ticketAttachment.TicketId, message = statusMessage });
+        }
+
+        public async Task<IActionResult> ShowFile(int id)
+        {
+            TicketAttachment ticketAttachment = await _ticketService.GetTicketAttachmentByIdAsync(id);
+            string fileName = ticketAttachment.FileName!;
+            byte[] fileData = ticketAttachment.FileData!;
+            string ext = Path.GetExtension(fileName)!.Replace(".", "");
+
+            Response.Headers.Add("Content-Disposition", $"inline; filename={fileName}");
+            return File(fileData, $"application/{ext}");
+        }
 
         // POST: Add Ticket Comment 
         public async Task<IActionResult> AddTicketComment([Bind("Id,Comment,Created,TicketId,UserId")] TicketComment ticketComment)
@@ -194,20 +251,36 @@ namespace BugHunterBugTrackerZD.Controllers
         // GET: My Tickets
         public async Task<IActionResult> MyTickets()
         {
-           BTUser? user = await _userManager.GetUserAsync(User);
+            //BTUser? user = await _userManager.GetUserAsync(User);
+
+            string? userId = _userManager.GetUserId(User);
+            BTUser? btUser = await _context.Users
+                                          .Include(u => u.Projects)
+                                            .ThenInclude(p => p.Tickets)
+                                            .ThenInclude(t => t.TicketPriority)
+                                          .Include(u => u.Projects)
+                                            .ThenInclude(p => p.Tickets)
+                                            .ThenInclude(t => t.TicketStatus)
+                                          .Include(u => u.Projects)
+                                            .ThenInclude(p => p.Tickets)
+                                            .ThenInclude(t => t.TicketType)
+                                          .Include(u => u.Projects)
+                                          .FirstOrDefaultAsync(u => u.Id == userId);
 
             List<Ticket> tickets = new List<Ticket>();
 
-            tickets = await _context.Tickets
-                                    .Where(t => t.DeveloperUserId == user!.Id || t.SubmitterUserId == user.Id && t.Project!.CompanyId == user.CompanyId)
-                                    .Include(t => t.Project)
-                                    .Include(t => t.DeveloperUser)
-                                    .Include(t => t.SubmitterUser)
-                                    .Include(t => t.TicketPriority)                                    
-                                    .Include(t => t.TicketStatus)
-                                    .Include(t => t.TicketType)
-                                    .ToListAsync();
-            
+            tickets = btUser!.Projects.SelectMany(p => p.Tickets).Where(t => t.DeveloperUserId == userId || t.SubmitterUserId == userId).ToList();
+
+            //tickets = await _context.Tickets
+            //                        .Where(t => t.DeveloperUserId == userId || t.SubmitterUserId == userId && t.Project!.CompanyId == user!.CompanyId)
+            //                        .Include(t => t.Project)
+            //                        .Include(t => t.DeveloperUser)
+            //                        .Include(t => t.SubmitterUser)
+            //                        .Include(t => t.TicketPriority)
+            //                        .Include(t => t.TicketStatus)
+            //                        .Include(t => t.TicketType)
+            //                        .ToListAsync();
+
             return View(tickets);
         }
 
@@ -314,6 +387,7 @@ namespace BugHunterBugTrackerZD.Controllers
         }
 
         // GET: Tickets/Edit/5
+        [Authorize(Roles = "ProjectManager, Developer")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Tickets == null)
@@ -330,7 +404,7 @@ namespace BugHunterBugTrackerZD.Controllers
             {
                 return NotFound();
             }
-            ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
+            //ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
             ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", ticket.ProjectId);
             //ViewData["SubmitterUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.SubmitterUserId);
             ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Name", ticket.TicketPriorityId);
@@ -344,6 +418,7 @@ namespace BugHunterBugTrackerZD.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "ProjectManager, Developer" )]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Created,Updated,Archived,ArchivedByProject,ProjectId,TicketTypeId,TicketStatusId,TicketPriorityId,DeveloperUserId,SubmitterUserId")] Ticket ticket)
         {
             if (id != ticket.Id)
@@ -360,19 +435,7 @@ namespace BugHunterBugTrackerZD.Controllers
                     //ticket.SubmitterUserId = user!.Id;
                     int companyId = User.Identity!.GetCompanyId();
 
-                    Ticket? oldTicket = await _context.Tickets
-                                                 .Include(t => t.Project)
-                                                    .ThenInclude(p => p!.Company)
-                                                .Include(t => t.Attachments)
-                                                .Include(t => t.Comments)
-                                                .Include(t => t.DeveloperUser)
-                                                .Include(t => t.History)
-                                                .Include(t => t.SubmitterUser)
-                                                .Include(t => t.TicketPriority)
-                                                .Include(t => t.TicketStatus)
-                                                .Include(t => t.TicketType)
-                                                .AsNoTracking()
-                                                .FirstOrDefaultAsync(t => t.Id == ticket.Id && t.Project!.CompanyId == companyId && t.Archived == false);
+                    Ticket? oldTicket = await _ticketService.GetTicketAsNoTrackingAsync(ticket.Id, companyId);
 
                     // Reformat Created/Updated Dates
                     ticket.Created = DataUtility.GetPostGresDate(ticket.Created);
@@ -381,19 +444,7 @@ namespace BugHunterBugTrackerZD.Controllers
                    
                     await _ticketService.UpdateTicketAsync(ticket);
 
-                    Ticket? newTicket = await _context.Tickets
-                                                 .Include(t => t.Project)
-                                                    .ThenInclude(p => p!.Company)
-                                                .Include(t => t.Attachments)
-                                                .Include(t => t.Comments)
-                                                .Include(t => t.DeveloperUser)
-                                                .Include(t => t.History)
-                                                .Include(t => t.SubmitterUser)
-                                                .Include(t => t.TicketPriority)
-                                                .Include(t => t.TicketStatus)
-                                                .Include(t => t.TicketType)
-                                                .AsNoTracking()
-                                                .FirstOrDefaultAsync(t => t.Id == ticket.Id && t.Project!.CompanyId == companyId && t.Archived == false);
+                    Ticket? newTicket = await _ticketService.GetTicketAsNoTrackingAsync(ticket.Id, companyId);
 
                     await _historyService.AddHistoryAsync(oldTicket, newTicket, user!.Id);
 
