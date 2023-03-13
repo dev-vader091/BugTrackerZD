@@ -18,7 +18,7 @@ using BugHunterBugTrackerZD.Services;
 
 namespace BugHunterBugTrackerZD.Controllers
 {
-    [Authorize(Roles = "Admin, ProjectManager")]
+    [Authorize]
     public class ProjectsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -185,24 +185,28 @@ namespace BugHunterBugTrackerZD.Controllers
         // GET: My Projects 
         public async Task<IActionResult> MyProjects()
         {
-            BTUser? user = await _userManager.GetUserAsync(User);
+            //BTUser? user = await _userManager.GetUserAsync(User);
+
+            string? userId = _userManager.GetUserId(User);
+
+            BTUser? user = await _context.Users   
+                                  .Include(u => u.Projects)
+                                    .ThenInclude(p => p.ProjectPriority)
+                                .Include(u => u.Company)
+                                .Include(u => u.Projects)
+                                    .ThenInclude(p => p.Members)
+                                  .FirstOrDefaultAsync(u => u.Id == userId); 
 
             int companyId = User.Identity!.GetCompanyId();
 
-            List<Project> projects = new List<Project>();
+            //List<Project> projects = new List<Project>();
 
             List<Project> myProjects = new List<Project>();
 
-            projects = await _context.Projects
-                                     .Where(p => p.CompanyId == companyId)
-                                     .Include(p => p.Company)
-                                     .Include(p => p.Members)
-                                     .Include(p => p.Tickets)
-                                     .Include(p => p.ProjectPriority)
-                                     .ToListAsync();
+            myProjects = user!.Projects.ToList();
 
             
-            return View(projects);
+            return View(myProjects);
         }
 
 
@@ -226,6 +230,7 @@ namespace BugHunterBugTrackerZD.Controllers
         }
 
         // GET: Projects/Create
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Create()
         {
             BTUser? user = await _userManager.GetUserAsync(User);
@@ -250,6 +255,7 @@ namespace BugHunterBugTrackerZD.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Create([Bind("Id,CompanyId,Name,Description,Created,StartDate,EndDate,ProjectPriorityId,ImageFileData,ImageFileType,Archived")] Project project, IEnumerable<string> selected)
         {
             if (ModelState.IsValid)
