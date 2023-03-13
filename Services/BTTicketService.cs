@@ -14,6 +14,7 @@ namespace BugHunterBugTrackerZD.Services
         {
             _context = context;
         }
+
         public async Task AddTicketAsync(Ticket ticket)
         {
             try
@@ -27,6 +28,7 @@ namespace BugHunterBugTrackerZD.Services
                 throw;
             }
         }
+
         public async Task<Ticket> GetTicketByIdAsync(int? id, int? companyId)
             
         {
@@ -41,9 +43,11 @@ namespace BugHunterBugTrackerZD.Services
                                               .Include(t => t.TicketPriority)
                                               .Include(t => t.TicketStatus)
                                               .Include(t => t.TicketType)
+                                              .Include(t => t.History)
+                                              .Include(t => t.Attachments)
                                               .Include(t => t.Comments)
                                                 .ThenInclude(c => c.User) 
-                                              .FirstOrDefaultAsync(ticket => ticket.Id == id);
+                                              .FirstOrDefaultAsync(t => t.Id == id);
                                     
 
 
@@ -71,6 +75,7 @@ namespace BugHunterBugTrackerZD.Services
                 throw;
             }
         }
+
         public Task DeleteTicketAsync(Ticket ticket)
         {
             throw new NotImplementedException();
@@ -128,22 +133,60 @@ namespace BugHunterBugTrackerZD.Services
             }
         }
 
-        //public async Task RemoveTicketDeveloperAsync(int? ticketId)
-        //{
-        //    try
-        //    {
-        //        Ticket? ticket = await _context.Tickets.Include(t => t.Project).FirstOrDefaultAsync(t => t.Id == ticketId);
+        public async Task AddTicketAttachmentAsync(TicketAttachment ticketAttachment)
+        {
+            try
+            {
+                await _context.AddAsync(ticketAttachment);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
 
-        //        if (ticket!.DeveloperUser != null)
-        //        {
-        //            ticket.DeveloperUser = null;
-        //        }
-        //    }
-        //    catch (Exception)
-        //    {
+                throw;
+            }
+        }
 
-        //        throw;
-        //    }
-        //}
+        public async Task<TicketAttachment> GetTicketAttachmentByIdAsync(int ticketAttachmentId)
+        {
+            try
+            {
+                TicketAttachment? ticketAttachment = await _context.Attachments
+                                                                  .Include(t => t.BTUser)
+                                                                  .FirstOrDefaultAsync(t => t.Id == ticketAttachmentId);
+                return ticketAttachment!;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<Ticket> GetTicketAsNoTrackingAsync(int? ticketId, int? companyId)
+        {
+            try
+            {
+                Ticket? ticket = await _context.Tickets
+                                                 .Include(t => t.Project)
+                                                    .ThenInclude(p => p!.Company)
+                                                .Include(t => t.Attachments)
+                                                .Include(t => t.Comments)
+                                                .Include(t => t.DeveloperUser)
+                                                .Include(t => t.History)
+                                                .Include(t => t.SubmitterUser)
+                                                .Include(t => t.TicketPriority)
+                                                .Include(t => t.TicketStatus)
+                                                .Include(t => t.TicketType)
+                                                .AsNoTracking()
+                                                .FirstOrDefaultAsync(t => t.Id == ticketId && t.Project!.CompanyId == companyId && t.Archived == false);
+                return ticket!;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }

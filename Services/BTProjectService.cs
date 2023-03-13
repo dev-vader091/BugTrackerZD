@@ -57,6 +57,7 @@ namespace BugHunterBugTrackerZD.Services
 
                 projects = await _context.Projects
                                      .Where(p => p.Archived == false && p.CompanyId == companyId)
+                                     .Include(p => p.Company)
                                      .Include(p => p.Members)
                                      .Include(p => p.ProjectPriority)
                                      .Include(p => p.Tickets)
