@@ -1,13 +1,17 @@
-﻿@model IEnumerable<BugHunterBugTrackerZD.Models.Project>
+﻿@using BugHunterBugTrackerZD.Models.Enums;
+@model IEnumerable<BugHunterBugTrackerZD.Models.Project>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Projects</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+   @if (User.IsInRole(nameof(BTRoles.Admin)) || User.IsInRole(nameof(BTRoles.ProjectManager)))
+    {
+        <a asp-action="Create">Create New</a>
+    }
 </p>
 
 <div class="row">
@@ -92,6 +96,12 @@
                                             <a asp-action="AssignPM" asp-route-id="@item.Id"> Assign PM</a>
                                         }
 
+                                    </td>                                  
+                                    <td colspan="2" class="actions-hover actions-fade">
+                                       
+                                        <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt"></i> </a>
+                                        <a asp-action="Details" asp-route-id="@item.Id"> <i class='bx bx-detail'></i> </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt"></i> </a>
                                     </td>
                                     <td>
                                         @if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
@@ -99,12 +109,6 @@
                                             <a asp-action="AssignProjectMembers" asp-route-id="@item.Id"> Assign Project Members</a>
                                         }
 
-                                    </td>
-                                    <td colspan="2" class="actions-hover actions-fade">
-                                       
-                                        <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt"></i> </a>
-                                        <a asp-action="Details" asp-route-id="@item.Id"> <i class='bx bx-detail'></i> </a>
-                                        <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt"></i> </a>
                                     </td>
 
                                 </tr>
