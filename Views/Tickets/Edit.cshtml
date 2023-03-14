@@ -1,4 +1,7 @@
 ﻿@model BugHunterBugTrackerZD.Models.Ticket
+@using BugHunterBugTrackerZD.Services.Interfaces
+
+
 
 @{
     ViewData["Title"] = "Edit";
@@ -8,12 +11,14 @@
 
 <h4>Ticket</h4>
 <hr />
+
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="Created" />
+            <input type="hidden" asp-for="SubmitterUserId" />
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
                 <input asp-for="Title" class="form-control" />
