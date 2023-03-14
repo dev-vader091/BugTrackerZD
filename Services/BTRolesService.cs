@@ -19,7 +19,7 @@ namespace BugHunterBugTrackerZD.Services
             _userManager = userManager;
         }
 
-        public async Task<bool> AddUserToRoleAsync(BTUser user, string roleName)
+        public async Task<bool> AddUserToRoleAsync(BTUser? user, string? roleName)
         {
             try
             {
@@ -50,7 +50,7 @@ namespace BugHunterBugTrackerZD.Services
             }
         }
 
-        public async Task<IEnumerable<string>> GetUserRolesAsync(BTUser user)
+        public async Task<IEnumerable<string>> GetUserRolesAsync(BTUser? user)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace BugHunterBugTrackerZD.Services
             }
         }
 
-        public async Task<List<BTUser>> GetUsersInRoleAsync(string roleName, int companyId)
+        public async Task<List<BTUser>> GetUsersInRoleAsync(string? roleName, int? companyId)
         {
             try
             {
@@ -84,7 +84,7 @@ namespace BugHunterBugTrackerZD.Services
             }
         }
 
-        public async Task<bool> IsUserInRoleAsync(BTUser member, string roleName)
+        public async Task<bool> IsUserInRoleAsync(BTUser? member, string? roleName)
         {
             try
             {
@@ -99,7 +99,7 @@ namespace BugHunterBugTrackerZD.Services
             }
         }
 
-        public async Task<bool> RemoveUserFromRoleAsync(BTUser user, string roleName)
+        public async Task<bool> RemoveUserFromRoleAsync(BTUser? user, string? roleName)
         {
             try
             {
@@ -114,7 +114,7 @@ namespace BugHunterBugTrackerZD.Services
             }
         }
 
-        public async Task<bool> RemoveUserFromRolesAsync(BTUser user, IEnumerable<string> roleNames)
+        public async Task<bool> RemoveUserFromRolesAsync(BTUser? user, IEnumerable<string?> roleNames)
         {
             try
             {
