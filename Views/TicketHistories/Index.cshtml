@@ -55,10 +55,10 @@
                 @Html.DisplayFor(modelItem => item.NewValue)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Ticket.Description)
+                @Html.DisplayFor(modelItem => item.Ticket!.Description)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.User.Id)
+                @Html.DisplayFor(modelItem => item.User!.Id)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

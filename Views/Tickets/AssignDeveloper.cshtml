@@ -1,7 +1,7 @@
 ﻿@model BugHunterBugTrackerZD.Models.ViewModels.TicketUsersViewModel
 
 @{
-    ViewData["Title"] = "Assign Ticket Users";
+    ViewData["Title"] = "Assign Ticket Developer";
 }
 
 <div class="d-flex justify-content-center mt-5 flex-column align-items-center">
@@ -11,7 +11,7 @@
             <div class="card-title">@Model.Ticket!.Title</div>
         </div>
         <div class="card-body">
-            <form asp-action="AssignTicketToUser" asp-controller="Tickets" method="post" class="d-flex flex-column">
+            <form asp-action="AssignDeveloper" asp-controller="Tickets" method="post" class="d-flex flex-column">
                 <input type="hidden" asp-for="Ticket!.Id" />
                 <select asp-items="Model.TicketUsers" asp-for="SelectedDeveloperId" class="form-control" required>
                     <option value="">Select Users</option>

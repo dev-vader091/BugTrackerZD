@@ -1,10 +1,16 @@
 ﻿@model BugHunterBugTrackerZD.Models.Ticket
+@using Microsoft.AspNetCore.Identity
 @using BugHunterBugTrackerZD.Services.Interfaces
 
+@inject UserManager<BTUser> UserManager
 @inject IBTFileService _BTFileService
 
 @{
     ViewData["Title"] = "Details";
+}
+
+@{
+    BTUser? user = await UserManager.GetUserAsync(User);
 }
 
 <style>
@@ -28,7 +34,7 @@
     <div class ="container-fluid">
         <div class="row gy-2">
             <div class="col-md-12 col">
-                <div class="row col-cols-2 mt-5 bg-primary">
+                <div class="row col-cols-2 mt-5 bg-primary"> 
                     <div class="card col m-1 p-2">
                         <div class="card-body">
                             @*Title of Ticket*@
@@ -76,7 +82,8 @@
                             </div>
                             <div class="card-body" style="overflow-y:auto;height:600px;">
                                 @*Form and Logic for authorized users to add comments*@
-                                @if (User.Identity!.IsAuthenticated)
+                                
+                                @if (User.Identity!.IsAuthenticated && Model.DeveloperUserId == UserManager.GetUserId(User) || Model.SubmitterUserId == UserManager.GetUserId(User) || Model.Project.Members.Contains(user!))
                                 {
                                     <form asp-controller="Tickets" asp-action="AddTicketComment" method="post">
                                         <input type="hidden" asp-for="Id" name="TicketId">
@@ -101,6 +108,9 @@
                                     @*Loop to show comments made for the Ticket*@
                                     @foreach (TicketComment comment in Model.Comments)
                                     {
+                                        if (User.Identity!.IsAuthenticated)
+                                        {
+                                            
                                         <!-- Start Single Comment  -->
                                         <li class="comment">
                                             <div class="comment-body">
@@ -108,10 +118,9 @@
                                                     <div class="comment-img">
                                                         @*<img src="@_BTFileService.ConvertByteArrayToFile(comment.Author!.ImageData!,comment.Author.ImageType!,(int)DefaultImage.BlogUserImage)" alt="Author Images" style="height:40px;width:40px">*@
                                                     </div>
-                                                    @if (User.IsInRole("ProjectManager") || User.IsInRole("Admin"))
-                                                    {
-                                                        <a>Anchor</a>
-                                                    }
+                                                   
+                                                        @*<a>Anchor</a>*@
+
                                                     <div class="comment-inner">
                                                         <h6 class="commenter">
                                                             <a class="hover-flip-item-wrapper" href="#">
@@ -142,6 +151,7 @@
                                             </div>
                                         </li>
                                         <!-- End Single Comment  -->
+                                        }
                                     }
                                 </ul>
                             </div>
@@ -161,10 +171,56 @@
                                 @* Refer to the Ticket Attachments document for this section *@
 
                                 @* Ticket attachments part 1 here *@
-
+                                @if (User.Identity!.IsAuthenticated && Model.DeveloperUserId == UserManager.GetUserId(User) || Model.SubmitterUserId == UserManager.GetUserId(User) || Model.Project.Members.Any(m => m.Id == UserManager.GetUserId(User)))
+                                {
+                                    <div class="row clearfix">
+                                        <div>
+                                            <form asp-action="AddTicketAttachment" asp-controller="Tickets" enctype="multipart/form-data" method="post">
+                                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                                <input type="hidden" asp-for="@Model.Id" name="TicketId">
+                                                <div class="media-body ml-3">
+                                                    <label>
+                                                        Description
+                                                        <input asp-for="@Model.Attachments.FirstOrDefault()!.Description" type="text" class="form-control" />
+                                                    </label><br />
+                                                    <label class="btn btn-outline-primary btn-sm">
+                                                        <input asp-for="@Model.Attachments.FirstOrDefault()!.FormFile" type="file" class="form-control-file" />
+                                                    </label>
+                                                    <button type="submit" class="btn btn-outline-secondary btn-sm md-btn-flat">Submit</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                }
+                                
 
                                 @* Ticket attachments part 2 here *@
-
+                                <hr />
+                                <h6>Attachments</h6>
+                                <div class="container">
+                                    <div class="row">
+                                        @foreach (TicketAttachment attachment in Model.Attachments)
+                                        {
+                                            if (User.Identity.IsAuthenticated)
+                                            {
+                                                <div class="col col-sm-2">
+                                                    <a asp-action="ShowFile" asp-controller="Tickets" asp-route-Id="@attachment.Id">
+                                                        <div class="icon">
+                                                            <img src="@_BTFileService.GetFileIcon(attachment.FileName!)" style="height:50px;width:50px" data-bs-toggle="tooltip" data-bs-placement="top" title="" data-bs-original-title="@attachment.FileName" />
+                                                        </div>
+                                                    </a>
+                                                    <div style="font-size:x-small">
+                                                        <div class="file-name">
+                                                            <strong>@attachment.Description</strong>
+                                                        </div>
+                                                        <small>Size: @_BTFileService.FormatFileSize(attachment.FileData!.Length) </small>
+                                                    </div>
+                                                </div>
+                                            }
+                                            
+                                        }
+                                    </div>
+                                </div>
                             </div>
                             <div class="card-footer">
                             </div>
@@ -180,7 +236,51 @@
                             <hr />
                         </div>
                         <div class="card-body" style="overflow-y:auto;height:1000px;background-color:antiquewhite">
+                            <!-- start: page -->
+                            <div class="timeline">
+                                <div class="tm-body">
+                                    <div class="tm-title">
+                                        <h5 class="m-0 pt-2 pb-2 text-dark font-weight-semibold text-uppercase">November 2021</h5>
+                                    </div>
+                                    <ol class="tm-items">
+                                        <li>
+                                            <div class="tm-info">
+                                                <div class="tm-icon"><i class="fas fa-star"></i></div>
+                                                <div class="tm-datetime" datetime="2021-11-22 19:13">
+                                                    <div class="tm-datetime-date">7 months ago</div>
+                                                    <div class="tm-datetime-time">07:13 PM</div>
+                                                </div>
+                                            </div>
+                                            <div class="tm-box appear-animation" data-appear-animation="fadeInRight" data-appear-animation-delay="100">
+                                                <p>
+                                                    It's awesome when we find a good solution for our projects, Porto Admin is <span class="text-primary">#awesome</span>
+                                                </p>
+                                                <div class="tm-meta">
+                                                    <span>
+                                                        <i class="bx bx-user-circle"></i> By <a href="#">John Doe</a>
+                                                    </span>
+                                                    <span>
+                                                        <i class="fas fa-tag"></i> <a href="#">Porto</a>, <a href="#">Awesome</a>
+                                                    </span>
+                                                    <span>
+                                                        <i class="fas fa-comments"></i> <a href="#">5652 Comments</a>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        
+                                    </ol>
+                                    <div class="tm-title">
+                                        <h5 class="m-0 pt-2 pb-2 text-dark font-weight-semibold text-uppercase">September 2021</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- end: page -->
                             @*Loop to show the history entries for the Ticket*@
+                           @*@foreach (TicketHistory history in Model.History!)
+                            {
+                                
+                            }*@
                         </div>
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 ﻿<!doctype html>
-<html class="modern dark fixed has-top-menu has-left-sidebar-half sidebar-left-collapsed">
+<html class="dark modern fixed has-left-sidebar-half sidebar-left-collapsed">
 	<head>
 
 		<!-- Basic -->
@@ -31,6 +31,7 @@
 		<link rel="stylesheet" href="~/template/vendor/jquery-ui/jquery-ui.theme.css" />
 		<link rel="stylesheet" href="~/template/vendor/bootstrap-multiselect/css/bootstrap-multiselect.css" />
 		<link rel="stylesheet" href="~/template/vendor/morris/morris.css" />
+        <link rel="stylesheet" href="~/template/vendor/datatables/media/css/dataTables.bootstrap5.css" />
 
 		<!-- Theme CSS -->
 		<link rel="stylesheet" href="~/template/css/theme.css" />
@@ -52,6 +53,7 @@
 	</head>
 	<body>
 		<section class="body">
+           <partial name="_LogoutPartial" />
 
 			<!-- start: header -->
 			<header class="header header-nav-menu header-nav-links">
@@ -1158,6 +1160,7 @@
 		<script src="~/template/vendor/magnific-popup/jquery.magnific-popup.js"></script>
 		<script src="~/template/vendor/jquery-placeholder/jquery.placeholder.js"></script>
 
+
 		<!-- Specific Page Vendor -->
 		<script src="~/template/vendor/jquery-ui/jquery-ui.js"></script>
 		<script src="~/template/vendor/jqueryui-touch-punch/jquery.ui.touch-punch.js"></script>
@@ -1185,6 +1188,18 @@
 		<script src="~/template/vendor/jqvmap/maps/continents/jquery.vmap.north-america.js"></script>
 		<script src="~/template/vendor/jqvmap/maps/continents/jquery.vmap.south-america.js"></script>
 
+        <!-- Specific Page Vendor -- Datatables -->
+        <script src="~/template/vendor/select2/js/select2.js"></script>
+        <script src="~/template/vendor/datatables/media/js/jquery.dataTables.min.js"></script>
+        <script src="~/template/vendor/datatables/media/js/dataTables.bootstrap5.min.js"></script>
+        <script src="~/template/vendor/datatables/extras/TableTools/Buttons-1.4.2/js/dataTables.buttons.min.js"></script>
+        <script src="~/template/vendor/datatables/extras/TableTools/Buttons-1.4.2/js/buttons.bootstrap4.min.js"></script>
+        <script src="~/template/vendor/datatables/extras/TableTools/Buttons-1.4.2/js/buttons.html5.min.js"></script>
+        <script src="~/template/vendor/datatables/extras/TableTools/Buttons-1.4.2/js/buttons.print.min.js"></script>
+        <script src="~/template/vendor/datatables/extras/TableTools/JSZip-2.5.0/jszip.min.js"></script>
+        <script src="~/template/vendor/datatables/extras/TableTools/pdfmake-0.1.32/pdfmake.min.js"></script>
+        <script src="~/template/vendor/datatables/extras/TableTools/pdfmake-0.1.32/vfs_fonts.js"></script>
+
 		<!-- Theme Base, Components and Settings -->
 		<script src="~/template/js/theme.js"></script>
 
@@ -1196,6 +1211,13 @@
 
 		<!-- Examples -->
 		<script src="~/template/js/examples/examples.dashboard.js"></script>
+        <script src="~/template/js/examples/examples.datatables.default.js"></script>
+        <script src="~/template/js/examples.datatables.row.with.details.js"></script>
+        <script src="~/template/js/examples.datatables.tabletools.js"></script>
+
+
         @await RenderSectionAsync("Scripts", required: false)
 	</body>
 </html>
+
+        
