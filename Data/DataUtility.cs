@@ -105,21 +105,21 @@ namespace BugHunterBugTrackerZD.Data
             try
             {
                 IList<Company> defaultcompanies = new List<Company>() {
-                    new Company() { Name = "Company1", Description="This is default Company 1" },
-                    new Company() { Name = "Company2", Description="This is default Company 2" },
-                    new Company() { Name = "Company3", Description="This is default Company 3" },
-                    new Company() { Name = "Company4", Description="This is default Company 4" },
-                    new Company() { Name = "Company5", Description="This is default Company 5" }
+                    new Company() { CompanyName = "Company1", CompanyDescription="This is default Company 1" },
+                    new Company() { CompanyName = "Company2", CompanyDescription="This is default Company 2" },
+                    new Company() { CompanyName = "Company3", CompanyDescription="This is default Company 3" },
+                    new Company() { CompanyName = "Company4", CompanyDescription="This is default Company 4" },
+                    new Company() { CompanyName = "Company5", CompanyDescription="This is default Company 5" }
                 };
-                var dbCompanies = context.Companies.Select(c => c.Name).ToList();
-                await context.Companies.AddRangeAsync(defaultcompanies.Where(c => !dbCompanies.Contains(c.Name)));
+                var dbCompanies = context.Companies.Select(c => c.CompanyName).ToList();
+                await context.Companies.AddRangeAsync(defaultcompanies.Where(c => !dbCompanies.Contains(c.CompanyName)));
                 await context.SaveChangesAsync();
                 //Get company Ids
-                company1Id = context.Companies.FirstOrDefault(p => p.Name == "Company1")!.Id;
-                company2Id = context.Companies.FirstOrDefault(p => p.Name == "Company2")!.Id;
-                company3Id = context.Companies.FirstOrDefault(p => p.Name == "Company3")!.Id;
-                company4Id = context.Companies.FirstOrDefault(p => p.Name == "Company4")!.Id;
-                company5Id = context.Companies.FirstOrDefault(p => p.Name == "Company5")!.Id;
+                company1Id = context.Companies.FirstOrDefault(p => p.CompanyName == "Company1")!.Id;
+                company2Id = context.Companies.FirstOrDefault(p => p.CompanyName == "Company2")!.Id;
+                company3Id = context.Companies.FirstOrDefault(p => p.CompanyName == "Company3")!.Id;
+                company4Id = context.Companies.FirstOrDefault(p => p.CompanyName == "Company4")!.Id;
+                company5Id = context.Companies.FirstOrDefault(p => p.CompanyName == "Company5")!.Id;
             }
             catch (Exception ex)
             {
