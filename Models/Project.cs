@@ -32,6 +32,7 @@ namespace BugHunterBugTrackerZD.Models
         public DateTime? EndDate { get; set; }
 
         // Foreign Key
+        [Display(Name = "Project Priority")]
         public int ProjectPriorityId { get; set; }
 
         // Image Data
