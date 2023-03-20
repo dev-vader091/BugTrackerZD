@@ -23,7 +23,7 @@ namespace BugHunterBugTrackerZD.Services
         {
             try
             {
-                bool result = (await _userManager.AddToRoleAsync(user, roleName)).Succeeded;
+                bool result = (await _userManager.AddToRoleAsync(user!, roleName!)).Succeeded;
                 await _context.SaveChangesAsync();
                 return result;
             }
@@ -54,7 +54,7 @@ namespace BugHunterBugTrackerZD.Services
         {
             try
             {
-                IEnumerable<string> result = await _userManager.GetRolesAsync(user);
+                IEnumerable<string> result = await _userManager.GetRolesAsync(user!);
 
                 return result;
             }
@@ -72,7 +72,7 @@ namespace BugHunterBugTrackerZD.Services
                 List<BTUser> result = new();
                 List<BTUser> users = new();
 
-                users = (await _userManager.GetUsersInRoleAsync(roleName)).ToList();
+                users = (await _userManager.GetUsersInRoleAsync(roleName!)).ToList();
                 result = users.Where(u => u.CompanyId == companyId).ToList();
 
                 return result;
@@ -88,7 +88,7 @@ namespace BugHunterBugTrackerZD.Services
         {
             try
             {
-                bool result = await _userManager.IsInRoleAsync(member, roleName);
+                bool result = await _userManager.IsInRoleAsync(member!, roleName!);
 
                 return result;
             }
@@ -103,7 +103,7 @@ namespace BugHunterBugTrackerZD.Services
         {
             try
             {
-                bool result = (await _userManager.RemoveFromRoleAsync(user, roleName)).Succeeded;
+                bool result = (await _userManager.RemoveFromRoleAsync(user!, roleName!)).Succeeded;
 
                 return result;
             }
@@ -118,7 +118,7 @@ namespace BugHunterBugTrackerZD.Services
         {
             try
             {
-                bool result = (await _userManager.RemoveFromRolesAsync(user, roleNames)).Succeeded;
+                bool result = (await _userManager.RemoveFromRolesAsync(user!, roleNames!)).Succeeded;
                 await _context.SaveChangesAsync();
 
                 return result;
