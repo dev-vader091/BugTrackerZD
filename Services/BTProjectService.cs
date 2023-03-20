@@ -73,6 +73,30 @@ namespace BugHunterBugTrackerZD.Services
             }
 
         }
+
+        public async Task<IEnumerable<Project>> GetArchivedProjectsAsync(int companyId)
+        {
+            try
+            {
+                IEnumerable<Project> projects = new List<Project>();
+
+                projects = await _context.Projects
+                                     .Where(p => p.Archived == true && p.CompanyId == companyId)
+                                     .Include(p => p.Company)
+                                     .Include(p => p.Members)
+                                     .Include(p => p.ProjectPriority)
+                                     .Include(p => p.Tickets)
+                                     .ToListAsync();
+
+                return projects;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
         public async Task<Project> GetProjectAsync(int? id, int companyId)
         {
             try
@@ -336,6 +360,8 @@ namespace BugHunterBugTrackerZD.Services
                 throw;
             }
         }
+
+       
     }
 
 }

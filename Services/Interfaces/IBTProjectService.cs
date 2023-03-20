@@ -9,6 +9,8 @@ namespace BugHunterBugTrackerZD.Services.Interfaces
 
         public Task<IEnumerable<Project>> GetProjectsAsync(int companyId);
 
+        public Task<IEnumerable<Project>> GetArchivedProjectsAsync(int companyId);
+
         public Task<Project> GetProjectAsync(int? id, int companyId);
 
         public Task DeleteProjectAsync(Project project);
