@@ -16,6 +16,8 @@ namespace BugHunterBugTrackerZD.Services.Interfaces
         
         public Task<List<Ticket>> GetTicketsByIdAsync(int? companyId);
 
+        public Task<List<Ticket>> GetArchivedTicketsAsync(int? companyId);
+
         public Task<List<Ticket>> GetUnassignedTicketsAsync(int? companyId);
 
         public Task DeleteTicketAsync(Ticket ticket);
@@ -23,5 +25,8 @@ namespace BugHunterBugTrackerZD.Services.Interfaces
         public Task AddTicketAttachmentAsync(TicketAttachment ticketAttachment);
 
         public Task<TicketAttachment> GetTicketAttachmentByIdAsync(int ticketAttachmentId);
+
+        public Task<Ticket> AssignTicketToDeveloperAsync(int? ticketId, string? developerId, int? companyId);
+
     }
 }

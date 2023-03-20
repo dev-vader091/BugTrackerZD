@@ -1,6 +1,7 @@
 ﻿using BugHunterBugTrackerZD.Data;
 using BugHunterBugTrackerZD.Models;
 using BugHunterBugTrackerZD.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace BugHunterBugTrackerZD.Services
@@ -8,11 +9,13 @@ namespace BugHunterBugTrackerZD.Services
     public class BTTicketService : IBTTicketService
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<BTUser> _userManager;
 
 
-        public BTTicketService(ApplicationDbContext context)
+        public BTTicketService(ApplicationDbContext context, UserManager<BTUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public async Task AddTicketAsync(Ticket ticket)
@@ -37,7 +40,7 @@ namespace BugHunterBugTrackerZD.Services
                 Ticket? ticket = await _context.Tickets
                                               .Where(t => t.Project!.CompanyId == companyId)
                                               .Include(t => t.Project)
-                                                .ThenInclude(p => p!.Members)
+                                                .ThenInclude(p => p!.Members)                                             
                                               .Include(t => t.DeveloperUser)
                                               .Include(t => t.SubmitterUser)
                                               .Include(t => t.TicketPriority)
@@ -79,6 +82,31 @@ namespace BugHunterBugTrackerZD.Services
         public Task DeleteTicketAsync(Ticket ticket)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<List<Ticket>> GetArchivedTicketsAsync(int? companyId)
+        {
+            try
+            {
+                List<Ticket> tickets = new();
+
+                tickets = await _context.Tickets
+                                    .Where(t => t.Project!.CompanyId == companyId && t.Archived == true)
+                                    .Include(t => t.Project)
+                                    .Include(t => t.DeveloperUser)
+                                    .Include(t => t.SubmitterUser)
+                                    .Include(t => t.TicketPriority)
+                                    .Include(t => t.TicketStatus)
+                                    .Include(t => t.TicketType)
+                                    .ToListAsync();
+
+                return tickets;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public async Task<List<Ticket>> GetTicketsByIdAsync(int? companyId)
@@ -188,5 +216,17 @@ namespace BugHunterBugTrackerZD.Services
                 throw;
             }
         }
+
+        public async Task<Ticket> AssignTicketToDeveloperAsync(int? ticketId, string? developerId, int? companyId)
+        {
+            Ticket? ticket = await GetTicketByIdAsync(ticketId, companyId);
+
+            ticket.DeveloperUserId = developerId;
+            await _context.SaveChangesAsync();
+
+            return ticket;
+        }
+
+        
     }
 }
