@@ -1,5 +1,4 @@
-﻿@using BugHunterBugTrackerZD.Models
-@model Company
+﻿@using BugHunterBugTrackerZD.Models.Enums
 @using Microsoft.AspNetCore.Identity
 
 @inject SignInManager<BTUser> SignInManager
@@ -20,7 +19,7 @@
 <strong>[@btUser?.FullName]</strong>
 <span class="text-muted" style="font-size:x-small;">
     @* Company Name *@
-    <strong>[@btUser?.Company!.CompanyName]</strong>
+    <strong>[Show CompanyName]</strong>
 </span>
 
 

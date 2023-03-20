@@ -15,12 +15,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.InviteDate)
             </th>
-            <th>
+            @*<th>
                 @Html.DisplayNameFor(model => model.JoinDate)
-            </th>
-            <th>
+            </th>*@
+            @*<th>
                 @Html.DisplayNameFor(model => model.CompanyToken)
-            </th>
+            </th>*@
             <th>
                 @Html.DisplayNameFor(model => model.InviteeEmail)
             </th>
@@ -30,12 +30,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.InviteeLastName)
             </th>
-            <th>
+            @*<th>
                 @Html.DisplayNameFor(model => model.Message)
-            </th>
-            <th>
+            </th>*@
+           @* <th>
                 @Html.DisplayNameFor(model => model.IsValid)
-            </th>
+            </th>*@
             <th>
                 @Html.DisplayNameFor(model => model.Company)
             </th>
@@ -57,12 +57,12 @@
             <td>
                 @Html.DisplayFor(modelItem => item.InviteDate)
             </td>
-            <td>
+            @*<td>
                 @Html.DisplayFor(modelItem => item.JoinDate)
-            </td>
-            <td>
+            </td>*@
+            @*<td>
                 @Html.DisplayFor(modelItem => item.CompanyToken)
-            </td>
+            </td>*@
             <td>
                 @Html.DisplayFor(modelItem => item.InviteeEmail)
             </td>
@@ -72,23 +72,23 @@
             <td>
                 @Html.DisplayFor(modelItem => item.InviteeLastName)
             </td>
-            <td>
+            @*<td>
                 @Html.DisplayFor(modelItem => item.Message)
-            </td>
-            <td>
+            </td>*@
+            @*<td>
                 @Html.DisplayFor(modelItem => item.IsValid)
-            </td>
+            </td>*@
             <td>
                 @Html.DisplayFor(modelItem => item.Company!.CompanyName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Project!.Description)
+                @Html.DisplayFor(modelItem => item.Project!.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Invitor!.Id)
+                @Html.DisplayFor(modelItem => item.Invitor!.FullName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Invitee!.Id)
+                @Html.DisplayFor(modelItem => item.Invitee!.FullName)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
