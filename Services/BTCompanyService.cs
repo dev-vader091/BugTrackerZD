@@ -1,5 +1,6 @@
 ﻿using BugHunterBugTrackerZD.Data;
 using BugHunterBugTrackerZD.Models;
+using BugHunterBugTrackerZD.Models.Enums;
 using BugHunterBugTrackerZD.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,10 +9,33 @@ namespace BugHunterBugTrackerZD.Services
     public class BTCompanyService : IBTCompanyService
     {
         private readonly ApplicationDbContext _context;
-        public BTCompanyService(ApplicationDbContext context) 
+        private readonly IBTRolesService _rolesService;
+        public BTCompanyService(ApplicationDbContext context, IBTRolesService rolesService)
         {
             _context = context;
+            _rolesService = rolesService;
         }
+
+        public async Task<BTUser> GetCompanyAdmin(int? companyId, string? userId)
+        {
+           List<BTUser> members = new List<BTUser>();
+
+            BTUser? admin = new();
+
+            members = await GetMembersAsync(companyId);
+
+            foreach (BTUser member in members) 
+            {
+                if (await _rolesService.IsUserInRoleAsync(member, nameof(BTRoles.Admin)) && member.Id == userId)
+                {
+                    admin = member;
+                }
+            }
+
+            return admin;
+            
+        }
+
         public async Task<Company> GetCompanyInfoAsync(int? companyId)
         {
             try
@@ -53,5 +77,7 @@ namespace BugHunterBugTrackerZD.Services
                 throw;
             }
         }
+
+
     }
 }

@@ -7,5 +7,7 @@ namespace BugHunterBugTrackerZD.Services.Interfaces
         public Task<Company> GetCompanyInfoAsync(int? companyId);
 
         public Task<List<BTUser>> GetMembersAsync(int? companyId);
+
+        public Task<BTUser> GetCompanyAdmin(int? companyId, string? userId);
     }
 }
