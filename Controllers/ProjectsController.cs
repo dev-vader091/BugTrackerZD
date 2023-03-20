@@ -26,18 +26,21 @@ namespace BugHunterBugTrackerZD.Controllers
         private readonly IBTProjectService _projectService;
         private readonly IBTRolesService _rolesService;
         private readonly IBTFileService _fileService;
+        private readonly IBTTicketService _ticketService;
 
-        public ProjectsController(ApplicationDbContext context, 
-                                  UserManager<BTUser> usermanager, 
-                                  IBTProjectService projectService, 
-                                  IBTRolesService rolesService, 
-                                  IBTFileService fileService)
+        public ProjectsController(ApplicationDbContext context,
+                                  UserManager<BTUser> usermanager,
+                                  IBTProjectService projectService,
+                                  IBTRolesService rolesService,
+                                  IBTFileService fileService,
+                                  IBTTicketService ticketService)
         {
             _context = context;
             _userManager = usermanager;
             _projectService = projectService;
             _rolesService = rolesService;
             _fileService = fileService;
+            _ticketService = ticketService;
         }
 
         // GET: Projects
@@ -207,6 +210,50 @@ namespace BugHunterBugTrackerZD.Controllers
 
             
             return View(myProjects);
+        }
+
+        // GET: Archived Projects
+        public async Task<IActionResult> ArchivedProjects()
+        {
+            int companyId = User.Identity!.GetCompanyId();
+
+
+            IEnumerable<Project> archivedProjects = await _projectService.GetArchivedProjectsAsync(companyId);
+
+
+
+            return View(archivedProjects);
+
+            //int companyId = User.Identity!.GetCompanyId();
+
+            //IEnumerable<Project> projects = await _projectService.GetProjectsAsync(companyId);
+
+
+            //return View(projects);
+
+        }
+
+        // GET: Unassigned Projects 
+        public async Task<IActionResult> UnassignedProjects()
+        {
+            int companyId = User.Identity!.GetCompanyId();
+
+            IEnumerable<Project> projects = await _projectService.GetProjectsAsync(companyId);
+
+            List<Project> unassignedProjects = new List<Project>();
+
+            foreach (Project project in projects)
+            {
+                BTUser projectManager = await _projectService.GetProjectManagerAsync(companyId);
+               
+                    if (!project.Members.Any(m => m.Id == projectManager.Id) || project.Members.Count == 0)
+                    {
+                        unassignedProjects.Add(project);
+                    }
+                
+            }
+
+            return View(unassignedProjects);  
         }
 
 
@@ -407,6 +454,18 @@ namespace BugHunterBugTrackerZD.Controllers
 
 
             Project project = await _projectService.GetProjectAsync(id, companyId);
+            List<Ticket> tickets = await _context.Tickets.Where(t => t.ProjectId == project.Id)
+                                                         .Include(t => t.Project)
+                                                         .Include(t => t.DeveloperUser)
+                                                         .Include(t => t.SubmitterUser)
+                                                         .ToListAsync();
+            foreach (Ticket ticket in tickets)
+            {
+                ticket.Archived = true;
+                ticket.ArchivedByProject = true;
+                await _ticketService.UpdateTicketAsync(ticket);
+            }
+
             //var project = await _context.Projects.FindAsync(id);
             if (project != null)
             {
