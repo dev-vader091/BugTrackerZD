@@ -21,7 +21,7 @@
                 <h2 class="card-title"></h2>
             </header>
             <div class="card-body">
-                <table class="table table-responsive-md table-hover mb-0">
+                <table class="table table-bordered table-striped table-responsive-md table-hover mb-0" id="datatable-default">
                     <thead>
                         <tr>
                             <th>
@@ -40,13 +40,16 @@
                                 @Html.DisplayNameFor(model => model.Project)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.TicketPriority)
+                                @*@Html.DisplayNameFor(model => model.TicketPriority)*@
+                                Ticket Priority
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.TicketType)
+                               @* @Html.DisplayNameFor(model => model.TicketType)*@
+                               Ticket Type
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.TicketStatus)
+                                @*@Html.DisplayNameFor(model => model.TicketStatus)*@
+                                Ticket Status
                             </th>
                             <th>
                                 @*@Html.DisplayNameFor(model => model.DeveloperUser)*@
@@ -98,13 +101,14 @@
                                     <td>
                                         @Html.DisplayFor(modelItem => item.SubmitterUser!.FullName)
                                     </td>
+                                    
+                                    <td class="actions-hover actions-fade">
+                                        <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt text-warning fa-sm"></i> </a>
+                                        <a asp-action="Details" asp-route-id="@item.Id"> <i class="bx bx-detail text-info fa-sm"></i> </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt text-danger fa-sm"></i> </a>
+                                    </td>
                                     <td>
                                         <a asp-action="AssignTicketToUser" asp-route-id="@item.Id">Assign Ticket</a>
-                                    </td>
-                                    <td colspan="3" class="actions-hover actions-fade">
-                                        <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt"></i> </a>
-                                        <a asp-action="Details" asp-route-id="@item.Id"> <i class='bx bx-detail'></i> </a>
-                                        <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt"></i> </a>
                                     </td>
 
                                 </tr>
@@ -118,3 +122,11 @@
         </section>
     </div>
 </div>
+
+
+
+
+
+
+
+                                        

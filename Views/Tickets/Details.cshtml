@@ -235,6 +235,18 @@
                             <h2>History</h2>
                             <hr />
                         </div>
+                        @{
+                            foreach(var history in Model.History!.GroupBy(h=>h.Created))
+                            {
+                                    <ul>
+                                @foreach (var item in history)
+                                {
+                                    <li>@item.PropertyName</li>
+                                }
+                                    </ul>
+                            }
+                        }
+
                         <div class="card-body" style="overflow-y:auto;height:1000px;background-color:antiquewhite">
                             <!-- start: page -->
                             <div class="timeline">
@@ -243,31 +255,36 @@
                                         <h5 class="m-0 pt-2 pb-2 text-dark font-weight-semibold text-uppercase">November 2021</h5>
                                     </div>
                                     <ol class="tm-items">
-                                        <li>
+                                        @*Loop to show the history entries for the Ticket*@
+                                        @*@foreach (TicketHistory history in Model.History!)
+                                        {
+                                        }*@
+                                            <li>
                                             <div class="tm-info">
-                                                <div class="tm-icon"><i class="fas fa-star"></i></div>
-                                                <div class="tm-datetime" datetime="2021-11-22 19:13">
-                                                    <div class="tm-datetime-date">7 months ago</div>
-                                                    <div class="tm-datetime-time">07:13 PM</div>
-                                                </div>
+                                            <div class="tm-icon"><i class="fas fa-star"></i></div>
+                                            <div class="tm-datetime" datetime="2021-11-22 19:13">
+                                            <div class="tm-datetime-date">7 months ago</div>
+                                            <div class="tm-datetime-time">07:13 PM</div>
+                                            </div>
                                             </div>
                                             <div class="tm-box appear-animation" data-appear-animation="fadeInRight" data-appear-animation-delay="100">
-                                                <p>
-                                                    It's awesome when we find a good solution for our projects, Porto Admin is <span class="text-primary">#awesome</span>
-                                                </p>
-                                                <div class="tm-meta">
-                                                    <span>
-                                                        <i class="bx bx-user-circle"></i> By <a href="#">John Doe</a>
-                                                    </span>
-                                                    <span>
-                                                        <i class="fas fa-tag"></i> <a href="#">Porto</a>, <a href="#">Awesome</a>
-                                                    </span>
-                                                    <span>
-                                                        <i class="fas fa-comments"></i> <a href="#">5652 Comments</a>
-                                                    </span>
-                                                </div>
+                                            <p>
+                                             It's awesome when we find a good solution for our projects, Porto Admin is <span class="text-primary">#awesome</span>
+                                            </p>
+                                            <div class="tm-meta">
+                                            <span>
+                                            <i class="bx bx-user-circle"></i> By <a href="#">John Doe</a>
+                                            </span>
+                                            <span>
+                                            <i class="fas fa-tag"></i> <a href="#">Porto</a>, <a href="#">Awesome</a>
+                                            </span>
+                                            <span>
+                                            <i class="fas fa-comments"></i> <a href="#">5652 Comments</a>
+                                            </span>
                                             </div>
-                                        </li>
+                                            </div>
+                                            </li>
+                                       
                                         
                                     </ol>
                                     <div class="tm-title">
@@ -276,11 +293,7 @@
                                 </div>
                             </div>
                             <!-- end: page -->
-                            @*Loop to show the history entries for the Ticket*@
-                           @*@foreach (TicketHistory history in Model.History!)
-                            {
-                                
-                            }*@
+                            
                         </div>
                     </div>
                 </div>
