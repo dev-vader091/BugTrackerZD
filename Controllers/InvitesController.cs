@@ -119,7 +119,7 @@ namespace BugHunterBugTrackerZD.Controllers
 
                     Company btCompany  = await _companyService.GetCompanyInfoAsync(companyId);
 
-                    string subject = $"BugHunter : {btCompany.Name} Invite";
+                    string subject = $"BugHunter : {btCompany.CompanyName} Invite";
 
                     await _emailService.SendEmailAsync(destination!, subject, body);
 

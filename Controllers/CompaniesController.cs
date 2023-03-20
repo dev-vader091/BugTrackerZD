@@ -12,9 +12,11 @@ using BugHunterBugTrackerZD.Extensions;
 using BugHunterBugTrackerZD.Services.Interfaces;
 using BugHunterBugTrackerZD.Models.Enums;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BugHunterBugTrackerZD.Controllers
 {
+    [Authorize]
     public class CompaniesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -56,6 +58,7 @@ namespace BugHunterBugTrackerZD.Controllers
 
         // GET: Manage User Roles
         [HttpGet]
+        [Authorize(Roles =nameof(BTRoles.Admin))]
         public async Task<IActionResult> ManageUserRoles()
         {
             // 1. - Add an instance of the ViewModel as a list (model)
@@ -99,6 +102,7 @@ namespace BugHunterBugTrackerZD.Controllers
         // POST: Manage User Roles
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = nameof(BTRoles.Admin))]
         public async Task<IActionResult> ManageUserRoles(ManageUserRolesViewModel viewModel)
         {
             // 1. - Get the companyId
