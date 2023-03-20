@@ -97,10 +97,10 @@
                                             }
                                         </ul>
                                     </td>
-                                    <td colspan="3" class="actions-hover actions-fade">
-                                        <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt"></i> </a>
-                                        <a asp-action="Details" asp-route-id="@item.Id"> <i class='bx bx-detail'></i> </a>
-                                        <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt"></i> </a>
+                                    <td class="actions-hover actions-fade">
+                                        <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt text-warning"></i> </a>
+                                        <a asp-action="Details" asp-route-id="@item.Id"> <i class='bx bx-detail text-info'></i> </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt text-danger"></i> </a>
                                     </td>
 
                                 </tr>
@@ -114,3 +114,23 @@
         </section>
     </div>
 </div>
+
+
+@section Scripts {
+    <!-- Specific Page Vendor -->
+    <script src="~/template/vendor/select2/js/select2.js"></script>
+    <script src="~/template/vendor/datatables/media/js/jquery.dataTables.min.js"></script>
+    <script src="~/template/vendor/datatables/media/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/Buttons-1.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/Buttons-1.4.2/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/Buttons-1.4.2/js/buttons.html5.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/Buttons-1.4.2/js/buttons.print.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/JSZip-2.5.0/jszip.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/pdfmake-0.1.32/pdfmake.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/pdfmake-0.1.32/vfs_fonts.js"></script>
+
+    <!-- Examples -->
+    <script src="~/template/js/examples/examples.datatables.default.js"></script>
+    <script src="~/template/js/examples/examples.datatables.row.with.details.js"></script>
+    <script src="~/template/js/examples/examples.datatables.tabletools.js"></script>
+}
