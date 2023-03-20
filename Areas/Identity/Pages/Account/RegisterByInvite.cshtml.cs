@@ -152,7 +152,7 @@ namespace BugHunterBugTrackerZD.Areas.Identity.Pages.Account
             Input.Email = invite.InviteeEmail;
             Input.FirstName = invite.InviteeFirstName;
             Input.LastName = invite.InviteeLastName;
-            Input.Company = invite.Company.Name;
+            Input.Company = invite.Company.CompanyName;
             Input.CompanyId = companyId;
             Input.ProjectId = invite.ProjectId;
         }
