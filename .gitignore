@@ -361,3 +361,4 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/wwwroot/template/vendor/datatables/media/css/dataTables.bootstrap5.css
