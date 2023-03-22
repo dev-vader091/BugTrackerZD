@@ -213,25 +213,89 @@ namespace BugHunterBugTrackerZD.Controllers
         }
 
         // GET: Archived Projects
-        public async Task<IActionResult> ArchivedProjects()
+        public async Task<IActionResult> ArchivedProjects(int? id)
         {
+            
+
             int companyId = User.Identity!.GetCompanyId();
+
+            
 
 
             IEnumerable<Project> archivedProjects = await _projectService.GetArchivedProjectsAsync(companyId);
 
-
-
             return View(archivedProjects);
+           
+        }
 
-            //int companyId = User.Identity!.GetCompanyId();
+        // GET Unarchive Project
+        public async Task<IActionResult> UnarchiveProject(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-            //IEnumerable<Project> projects = await _projectService.GetProjectsAsync(companyId);
+            int companyId = User.Identity!.GetCompanyId();
+
+            Project project = await _projectService.GetProjectByIdAsync(id, companyId);
 
 
-            //return View(projects);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+
+            return View(project);
+        }
+
+        // POST: Unarchive Project
+        [HttpPost]
+        public async Task<IActionResult> UnarchiveProject(int? id, int projectId)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            int companyId = User.Identity!.GetCompanyId();
+
+
+            //IEnumerable<Project> archivedProjects = await _projectService.GetArchivedProjectsAsync(companyId);
+
+            Project project = await _projectService.GetProjectByIdAsync(id, companyId);
+
+            //Project? project = await _context.Projects
+            //                                .Include(p => p.Company)
+            //                                .Include(p => p.Members)
+            //                                .FirstOrDefaultAsync(p => p.Id == projectId && p.Archived == true);
+
+            List<Ticket> tickets = project.Tickets.ToList();
+
+            //List<Ticket> archivedProjectTickets = new();
+
+            foreach (Ticket ticket in tickets)
+            {
+                if (ticket.ArchivedByProject == true)
+                {
+                    
+
+                    ticket.Archived = false;
+                    ticket.ArchivedByProject = false;
+
+
+                }
+                await _ticketService.UpdateTicketAsync(ticket);
+            }
+            project!.Archived = false;
+            await _projectService.UpdateProjectAsync(project!);
+
+            return RedirectToAction("Index", "Projects");
 
         }
+
+
 
         // GET: Unassigned Projects 
         public async Task<IActionResult> UnassignedProjects()
@@ -266,7 +330,13 @@ namespace BugHunterBugTrackerZD.Controllers
             }
             companyId = User.Identity!.GetCompanyId();
 
-            Project project = await _projectService.GetProjectAsync(id, companyId);        
+            Project project = await _projectService.GetProjectAsync(id, companyId);  
+            
+            //List<BTUser> btUsers = await _projectService.GetProjectMembersByRoleAsync(id, nameof(BTRoles.Developer));
+
+            //List<Project> projects = await _projectService.GetAllProjectsByCompanyAsync(companyId);
+
+
 
             if (project == null)
             {
