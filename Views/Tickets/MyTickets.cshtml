@@ -23,7 +23,7 @@
                 <h2 class="card-title"></h2>
             </header>
             <div class="card-body">
-                <table class="table table-responsive-md table-hover mb-0">
+                <table class="table table-responsive-md table-hover mb-0" id="datatable-default">
                     <thead>
                         <tr>
                             <th>
@@ -43,13 +43,16 @@
                                 @Html.DisplayNameFor(model => model.Project)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.TicketPriority)
+                                @*@Html.DisplayNameFor(model => model.TicketPriority)*@
+                                Ticket Priority
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.TicketType)
+                               @* @Html.DisplayNameFor(model => model.TicketType)*@
+                               Ticket Type
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.TicketStatus)
+                                @*@Html.DisplayNameFor(model => model.TicketStatus)*@
+                                Ticket Status
                             </th>
                             <th>
                                 @*@Html.DisplayNameFor(model => model.DeveloperUser)*@
@@ -62,7 +65,7 @@
                             <th>
                                 Actions
                             </th>
-                            <th></th>
+                            @*<th></th>*@
                         </tr>
                     </thead>
                     <tbody>
@@ -96,10 +99,10 @@
                                         @Html.DisplayFor(modelItem => item.TicketStatus!.Name)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.DeveloperUser.FullName)
+                                        @Html.DisplayFor(modelItem => item.DeveloperUser!.FullName)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.SubmitterUser.FullName)
+                                        @Html.DisplayFor(modelItem => item.SubmitterUser!.FullName)
                                     </td>
                                     <td colspan="2" class="actions-hover actions-fade">
                                         <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt text-warning"></i> </a>
@@ -211,3 +214,26 @@
     </tbody>
 </table>
 *@
+
+@section Scripts {
+    <!-- Specific Page Vendor -->
+    <script src="~/template/vendor/select2/js/select2.js"></script>
+    <script src="~/template/vendor/datatables/media/js/jquery.dataTables.min.js"></script>
+    <script src="~/template/vendor/datatables/media/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/Buttons-1.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/Buttons-1.4.2/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/Buttons-1.4.2/js/buttons.html5.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/Buttons-1.4.2/js/buttons.print.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/JSZip-2.5.0/jszip.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/pdfmake-0.1.32/pdfmake.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/pdfmake-0.1.32/vfs_fonts.js"></script>
+
+    <!-- Examples -->
+    <script src="~/template/js/examples/examples.datatables.default.js"></script>
+    <script src="~/template/js/examples/examples.datatables.row.with.details.js"></script>
+    <script src="~/template/js/examples/examples.datatables.tabletools.js"></script>
+
+
+    
+
+}

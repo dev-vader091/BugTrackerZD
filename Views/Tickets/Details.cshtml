@@ -1,9 +1,11 @@
 ﻿@model BugHunterBugTrackerZD.Models.Ticket
 @using Microsoft.AspNetCore.Identity
 @using BugHunterBugTrackerZD.Services.Interfaces
+@using BugHunterBugTrackerZD.Models.Enums
 
 @inject UserManager<BTUser> UserManager
 @inject IBTFileService _BTFileService
+@inject IBTRolesService _RolesService
 
 @{
     ViewData["Title"] = "Details";
@@ -83,7 +85,7 @@
                             <div class="card-body" style="overflow-y:auto;height:600px;">
                                 @*Form and Logic for authorized users to add comments*@
                                 
-                                @if (User.Identity!.IsAuthenticated && Model.DeveloperUserId == UserManager.GetUserId(User) || Model.SubmitterUserId == UserManager.GetUserId(User) || Model.Project.Members.Contains(user!))
+                                @if (User.Identity!.IsAuthenticated && Model.DeveloperUserId == user?.Id || Model.SubmitterUserId == user?.Id || Model.Project.Members.Contains(user!) || await _RolesService.IsUserInRoleAsync(user, nameof(BTRoles.Admin)))
                                 {
                                     <form asp-controller="Tickets" asp-action="AddTicketComment" method="post">
                                         <input type="hidden" asp-for="Id" name="TicketId">
@@ -181,7 +183,7 @@
                                                 <div class="media-body ml-3">
                                                     <label>
                                                         Description
-                                                        <input asp-for="@Model.Attachments.FirstOrDefault()!.Description" type="text" class="form-control" />
+                                                        <input asp-for="@Model.Attachments.FirstOrDefault()!.Description" type="text" class="form-control mb-2" />
                                                     </label><br />
                                                     <label class="btn btn-outline-primary btn-sm">
                                                         <input asp-for="@Model.Attachments.FirstOrDefault()!.FormFile" type="file" class="form-control-file" />
