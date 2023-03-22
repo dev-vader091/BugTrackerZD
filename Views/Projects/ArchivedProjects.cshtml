@@ -53,10 +53,11 @@
                                     @Html.DisplayNameFor(model => model.Archived)
                                 </th>
 
-                                <th>
+                                @*<th>
                                     Actions
-                                </th>
-                                @if (User.IsInRole("Admin"))
+                                </th>*@     
+                                <th></th>
+                                @*@if (User.IsInRole("Admin"))
                                 {
                                     <th></th>
                                     <th></th>
@@ -64,7 +65,7 @@
                                 else if (User.IsInRole("ProjectManager"))
                                 {
                                     <th></th>
-                                }
+                                }*@
                             </tr>
                         </thead>
                         <tbody class="projectsIndexTable">
@@ -96,15 +97,17 @@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Archived)
                                         </td>
-
-                                        <td class="actions-hover actions-fade">
+                                        <td>
+                                            <a asp-action="UnarchiveProject" asp-controller="Projects" asp-route-id="@item.Id">Unarchive </a>
+                                        </td>
+                                       @* <td class="actions-hover actions-fade">
                                             @if (User.IsInRole("ProjectManager") || User.IsInRole("Admin"))
                                             {
                                                 <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt text-warning"></i> </a>
                                                 <a asp-action="Details" asp-route-id="@item.Id"> <i class='bx bx-detail text-info'></i> </a>
                                                 <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt text-danger"></i> </a>
                                             }
-                                            else if (User.IsInRole("Developer") || User.IsInRole("ProjectManager") || User.IsInRole("Submitter"))
+                                            else if (User.IsInRole("Developer") || User.IsInRole("Submitter"))
                                             {
                                                 <a asp-action="Details" asp-route-id="@item.Id" class="d-flex justify-content-center"> <i class="bx bx-detail text-info"></i> </a>
                                             }
@@ -124,7 +127,7 @@
                                             <td>
                                                 <a asp-action="AssignProjectMembers" asp-route-id="@item.Id"> Assign Project Members</a>
                                             </td>
-                                        }
+                                        }*@
                                     </tr>
                                 
                             }

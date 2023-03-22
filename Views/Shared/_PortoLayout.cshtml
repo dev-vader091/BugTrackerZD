@@ -321,7 +321,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="nav-link" asp-action="Details" asp-controller="Companies">
+                                    <a class="nav-link" asp-action="Index" asp-controller="Companies">
                                         <span class="float-end badge badge-primary">182</span>
                                         <i class="el el-edit" aria-hidden="true"></i>
                                         <span>Company</span>
@@ -333,11 +333,15 @@
                                         <span>Projects</span>
                                     </a>
                                     <ul class="nav nav-children">
-                                        <li>
-                                            <a class="nav-link" asp-action="Create" asp-controller="Projects">
-                                                + Add New Project
-                                            </a>
-                                        </li>
+                                        @if (User.IsInRole(nameof(BTRoles.Admin)) || User.IsInRole(nameof(BTRoles.ProjectManager)))
+                                        {
+                                            <li>
+                                                <a class="nav-link" asp-action="Create" asp-controller="Projects">
+                                                    + Add New Project
+                                                </a>
+                                            </li>
+                                        }
+                                        
                                         @if (!User.IsInRole(nameof(BTRoles.Admin)))
                                         {
                                             <li>
@@ -377,13 +381,16 @@
                                                 + Add New Ticket
                                             </a>
                                         </li>
+                                        @if (!User.IsInRole(nameof(BTRoles.Admin)))
+                                        {
+                                            <li>
+                                                <a class="nav-link" asp-action="MyTickets" asp-controller="Tickets">
+                                                    My Tickets
+                                                </a>
+                                            </li>
+                                        }
                                         <li>
-                                            <a class="nav-link" asp-action="MyTickets" asp-controller="Tickets">
-                                                My Tickets
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="nav-link" asp-action="AllTickets" asp-controller="Tickets">
+                                            <a class="nav-link" asp-action="Index" asp-controller="Tickets">
                                                 All Tickets
                                             </a>
                                         </li>
@@ -392,6 +399,14 @@
                                                 Archived Tickets
                                             </a>
                                         </li>
+                                        @if (User.IsInRole(nameof(BTRoles.Admin)) || User.IsInRole(nameof(BTRoles.ProjectManager)))
+                                        {
+                                            <li>
+                                                <a class="nav-link" asp-action="UnassignedTickets" asp-controller="Tickets">
+                                                    Unassigned Tickets
+                                                </a>
+                                            </li>
+                                        }
                                     </ul>
                                 </li>
                                 @if (User.IsInRole(nameof(BTRoles.Admin)))

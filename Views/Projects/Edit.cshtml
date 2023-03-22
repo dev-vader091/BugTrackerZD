@@ -23,6 +23,7 @@
                 <form asp-action="Edit" class="form-horizontal form-bordered">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <input type="hidden" asp-for="Created" />
+                    <input type="hidden" asp-for="StartDate" />
                     <div class="form-group row pb-4">
                         <label asp-for="Name" class="col-lg-3 control-label text-lg-end pt-2"></label>
                         <div class="col-lg-6">
@@ -37,13 +38,13 @@
                         </div>
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
-                    <div class="form-group row pb-4">
+                    @*<div class="form-group row pb-4">
                         <label asp-for="StartDate" class="col-lg-3 control-label text-lg-end pt-2"></label>
                         <div class="col-lg-6">
                             <input asp-for="StartDate" class="form-control" id="inputDefault">
                         </div>
                         <span asp-validation-for="StartDate" class="text-danger"></span>
-                    </div>
+                    </div>*@
                     <div class="form-group row pb-4">
                         <label asp-for="EndDate" class="col-lg-3 control-label text-lg-end pt-2"></label>
                         <div class="col-lg-6">
@@ -57,12 +58,7 @@
                             <select asp-for="ProjectPriorityId" class="form-control populate" asp-items="ViewBag.ProjectPriorityId"></select>
                         </div>
 
-                    </div>
-                    <div class="form-group form-check">
-                        <label class="form-check-label">
-                            <input class="form-check-input" asp-for="Archived" /> @Html.DisplayNameFor(model => model.Archived)
-                        </label>
-                    </div>
+                    </div>                    
                     <footer class="card-footer text-end">
                         <button type="submit" value="Save" class="mb-1 mt-1 me-1 btn btn-primary">Submit</button>
                         <button type="reset" class="mb-1 mt-1 me-1 btn btn-default">Reset</button>
