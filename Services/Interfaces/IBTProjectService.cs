@@ -1,4 +1,5 @@
 ﻿using BugHunterBugTrackerZD.Models;
+using System.ComponentModel.Design;
 
 namespace BugHunterBugTrackerZD.Services.Interfaces
 {
@@ -9,9 +10,15 @@ namespace BugHunterBugTrackerZD.Services.Interfaces
 
         public Task<IEnumerable<Project>> GetProjectsAsync(int companyId);
 
+        public Task<List<Project>> GetAllProjectsByCompanyAsync(int? companyId);
+
+        public Task<List<BTUser>> GetProjectMembersByRoleAsync(int? projectId, string? roleName);
+
+
         public Task<IEnumerable<Project>> GetArchivedProjectsAsync(int companyId);
 
         public Task<Project> GetProjectAsync(int? id, int companyId);
+
 
         public Task DeleteProjectAsync(Project project);
 
@@ -32,5 +39,7 @@ namespace BugHunterBugTrackerZD.Services.Interfaces
         public Task RemoveProjectManagerAsync(int? projectId);
 
         public Task<bool> RemoveMemberFromProjectAsync(BTUser? member, int? projectId);
+
+        public Task<List<Project>> GetAllProjectsByPriorityAsync(int? companyId, string? priority);
     }
 }

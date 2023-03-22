@@ -74,6 +74,43 @@ namespace BugHunterBugTrackerZD.Services
 
         }
 
+        public async Task<List<Project>> GetAllProjectsByCompanyAsync(int? companyId)
+        {
+            try
+            {
+                List<Project> projects = await _context.Projects
+                                                       .Where(p => p.CompanyId == companyId)
+                                                       .Include(p => p.Company)
+                                                       .Include(p => p.Members)
+                                                       .Include(p => p.ProjectPriority)
+                                                       .Include(p => p.Tickets)
+                                                       .ToListAsync();
+                return projects;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+
+        public async Task<List<Project>> GetAllProjectsByPriorityAsync(int? companyId, string? priority)
+        {
+            try
+            {
+                List<Project> projects = (await GetAllProjectsByCompanyAsync(companyId)).Where(p => p.ProjectPriority!.Name == priority).ToList();
+
+                return projects;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+
         public async Task<IEnumerable<Project>> GetArchivedProjectsAsync(int companyId)
         {
             try
@@ -96,6 +133,7 @@ namespace BugHunterBugTrackerZD.Services
                 throw;
             }
         }
+
 
         public async Task<Project> GetProjectAsync(int? id, int companyId)
         {
@@ -361,7 +399,38 @@ namespace BugHunterBugTrackerZD.Services
             }
         }
 
-       
+        public async Task<List<BTUser>> GetProjectMembersByRoleAsync(int? projectId, string? roleName)
+        {
+            try
+            {
+
+                List<BTUser> projectMembers = new List<BTUser>();
+
+                Project? project = new();
+
+                project = await _context.Projects
+                                        .Include(p => p.Members)
+                                        .FirstOrDefaultAsync(p => p.Id == projectId);
+
+                foreach (BTUser member in project!.Members)
+                {
+                    if (await _roleService.IsUserInRoleAsync(member, roleName))
+                    {
+                        projectMembers.Add(member);
+                    }
+                }
+
+                return projectMembers;
+                                                
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
     }
 
 }
