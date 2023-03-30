@@ -63,7 +63,7 @@ namespace BugHunterBugTrackerZD.Services
 
                 throw;
             }
-        }
+        }        
 
         public async Task<List<Notification>> GetNotificationsByUserIdAsync(string? userId)
         {
@@ -76,11 +76,35 @@ namespace BugHunterBugTrackerZD.Services
 
                     notifications = await _context.Notifications
                                                   .Where(n => n.RecipientId == userId || n.SenderId == userId)
+                                                  .Include(n => n.Project)
+                                                  .Include(n => n.Ticket)
+                                                  .Include(n => n.NotificationType)
                                                   .Include(n => n.Recipient)
                                                   .Include(n => n.Sender)
                                                   .ToListAsync();
                 }
                     return notifications; 
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<Notification> GetNotificationByIdAsync(int? notificationId)
+        {
+            try
+            {
+                Notification? notification = await _context.Notifications
+                .Include(n => n.NotificationType)
+                .Include(n => n.Project)
+                .Include(n => n.Recipient)
+                .Include(n => n.Sender)
+                .Include(n => n.Ticket)
+                .FirstOrDefaultAsync(m => m.Id == notificationId);
+
+                return notification!;
             }
             catch (Exception)
             {

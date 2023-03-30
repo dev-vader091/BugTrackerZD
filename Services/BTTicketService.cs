@@ -51,11 +51,7 @@ namespace BugHunterBugTrackerZD.Services
                                               .Include(t => t.Comments)
                                                 .ThenInclude(c => c.User) 
                                               .FirstOrDefaultAsync(t => t.Id == id);
-                                    
-
-
-
-
+                 
                 return ticket!;
             }
             catch (Exception)
@@ -99,6 +95,15 @@ namespace BugHunterBugTrackerZD.Services
                                     .Include(t => t.TicketStatus)
                                     .Include(t => t.TicketType)
                                     .ToListAsync();
+
+                foreach (Ticket ticket in tickets)
+                {
+                    if (ticket.Project != null && ticket.Project.Archived == true)
+                    {
+                        ticket.ArchivedByProject = true;
+                        await _context.SaveChangesAsync();
+                    }
+                }
 
                 return tickets;
             }
@@ -227,6 +232,23 @@ namespace BugHunterBugTrackerZD.Services
             return ticket;
         }
 
-        
+        public async Task<List<Ticket>> GetTicketsByProjectAsync(int? projectId)
+        {
+            try
+            {
+                List<Ticket> tickets = await _context.Tickets.Where(t => t.ProjectId == projectId)
+                                                         .Include(t => t.Project)
+                                                         .Include(t => t.DeveloperUser)
+                                                         .Include(t => t.SubmitterUser)
+                                                         .ToListAsync();
+
+                return tickets;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }
