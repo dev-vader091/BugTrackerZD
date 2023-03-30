@@ -21,13 +21,47 @@ body {
   margin-bottom: 60px;
 }
 
-.ticket-table th,
+/*.body-sign {
+    display: table;
+    height: 100vh;
+    margin: 0 auto;
+    max-width: 500px;
+    padding: 0 15px;
+    width: 100%;
+}*/
+
+.content {
+    flex: 1 0 auto;
+}
+
+/*.ticket-table th,
 .ticket-table td {
     color: #f1f1f1 !important;
-}
+}*/
 
 .projectsIndexTable > ul {
     list-style-type: none;
     
 }
 
+/* Layout Base - Content Body */
+.content-body {
+    display: table-cell;
+    padding-top: 0 !important;
+    position: relative;
+    vertical-align: top;
+}
+
+.content-body h1 {
+    margin-top: 0 !important;
+}
+
+.dataTables_wrapper {
+    position: relative;
+    padding: 0;
+    margin: 0;
+}
+
+div.table-responsive > div.dataTables_wrapper > div.row {
+    margin: 10px !important;
+}
