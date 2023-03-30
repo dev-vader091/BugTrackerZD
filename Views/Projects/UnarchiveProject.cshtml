@@ -7,14 +7,89 @@
 
 <h1>Projects</h1>
 
-<p>
+<@*p>
     @if (User.IsInRole(nameof(BTRoles.Admin)) || User.IsInRole(nameof(BTRoles.ProjectManager)))
     {
         <a asp-action="Create">Create New</a>
     }
-</p>
+</p>*@
 
-<div class="row">
+<h3>Are you sure you want to unarchive this?</h3>
+<div>
+    <h4>Project</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Created)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Created)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.StartDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.StartDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.EndDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.EndDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ImageFileData)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ImageFileData)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ImageFileType)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ImageFileType)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Archived)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Archived)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Company)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Company!.CompanyName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ProjectPriority)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ProjectPriority!.Id)
+        </dd>
+    </dl>
+
+    <form asp-action="UnarchiveProject">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Unarchive" class="btn btn-danger" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>
+
+
+@*<div class="row">
     <div class="col-md-4">
         <form asp-action="UnarchiveProject">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -47,7 +122,7 @@
                 <label asp-for="ProjectPriorityId" class="control-label"></label>
                 <select asp-for="ProjectPriorityId" class ="form-control" asp-items="ViewBag.ProjectPriorityId"></select>
             </div>*@
-            <div class="form-group form-check">
+            @*<div class="form-group form-check">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="Archived" /> @Html.DisplayNameFor(model => model.Archived)
                 </label>
@@ -58,7 +133,7 @@
             </div>
         </form>
     </div>
-</div>
+</div>*@
 
 <div>
     <a asp-action="Index">Back to List</a>

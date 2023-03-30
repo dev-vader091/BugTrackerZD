@@ -32,31 +32,27 @@
                             <tr>
                                 <th>
                                     @Html.DisplayNameFor(model => model.Name)
-                                </th>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.Description)
-                                </th>
-
+                                </th>                               
                                 <th>
                                     @Html.DisplayNameFor(model => model.StartDate)
                                 </th>
                                 <th>
                                     @Html.DisplayNameFor(model => model.EndDate)
-                                </th>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.Company)
-                                </th>
+                                </th>                              
                                 <th>
                                     Project Priority
                                 </th>
                                 <th>
                                     @Html.DisplayNameFor(model => model.Archived)
                                 </th>
-
-                                @*<th>
+                                <th>
                                     Actions
-                                </th>*@     
-                                <th></th>
+                                </th> 
+                                @if (User.IsInRole(nameof(BTRoles.Admin)))
+                                {
+                                    <th></th>
+                                    
+                                }
                                 @*@if (User.IsInRole("Admin"))
                                 {
                                     <th></th>
@@ -76,20 +72,15 @@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Name)
                                         </td>
-                                        <td>
+                                       @* <td>
                                             @Html.DisplayFor(modelItem => item.Description)
                                         </td>
-
+*@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.StartDate)
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.EndDate)
-                                        </td>
-
-
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.Company!.CompanyName)
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.ProjectPriority!.Name)
@@ -97,22 +88,16 @@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Archived)
                                         </td>
-                                        <td>
-                                            <a asp-action="UnarchiveProject" asp-controller="Projects" asp-route-id="@item.Id">Unarchive </a>
-                                        </td>
-                                       @* <td class="actions-hover actions-fade">
-                                            @if (User.IsInRole("ProjectManager") || User.IsInRole("Admin"))
-                                            {
-                                                <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt text-warning"></i> </a>
-                                                <a asp-action="Details" asp-route-id="@item.Id"> <i class='bx bx-detail text-info'></i> </a>
-                                                <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt text-danger"></i> </a>
-                                            }
-                                            else if (User.IsInRole("Developer") || User.IsInRole("Submitter"))
-                                            {
-                                                <a asp-action="Details" asp-route-id="@item.Id" class="d-flex justify-content-center"> <i class="bx bx-detail text-info"></i> </a>
-                                            }
-                                        </td>
-                                        @if (User.IsInRole("Admin"))
+                                        @if (User.IsInRole(nameof(BTRoles.Admin)))
+                                        {
+                                            <td>
+                                                <a asp-action="UnarchiveProject" asp-controller="Projects" asp-route-id="@item.Id">Unarchive </a>
+                                            </td>
+                                        }                                        
+                                        <td class="actions-hover actions-fade">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="d-flex justify-content-center"> <i class='bx bx-detail text-info'></i> </a>
+                                    </td>
+                                        @*@if (User.IsInRole("Admin"))
                                         {
                                             <td>
                                                 <a asp-action="AssignPM" asp-route-id="@item.Id"> Assign PM</a>
@@ -121,8 +106,8 @@
                                             <td>
                                                 <a asp-action="AssignProjectMembers" asp-route-id="@item.Id"> Assign Project Members</a>
                                             </td>
-                                        }
-                                        @if (User.IsInRole("ProjectManager"))
+                                        }*@
+                                       @* @if (User.IsInRole("ProjectManager"))
                                         {
                                             <td>
                                                 <a asp-action="AssignProjectMembers" asp-route-id="@item.Id"> Assign Project Members</a>
