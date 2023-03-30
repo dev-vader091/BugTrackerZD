@@ -10,6 +10,8 @@ namespace BugHunterBugTrackerZD.Services.Interfaces
 
         public Task<List<Notification>> GetNotificationsByUserIdAsync(string? userId);
 
+        public Task<Notification> GetNotificationByIdAsync(int? notificationId);
+
         public Task<bool> SendAdminEmailNotificationAsync(Notification? notification, string? emailSubject, int? companyId);
 
         public Task<bool> SendEmailNotificationAsync(Notification? notification, string? emailSubject);

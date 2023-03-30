@@ -16,6 +16,8 @@ namespace BugHunterBugTrackerZD.Services.Interfaces
         
         public Task<List<Ticket>> GetTicketsByIdAsync(int? companyId);
 
+        public Task<List<Ticket>> GetTicketsByProjectAsync(int? projectId);
+
         public Task<List<Ticket>> GetArchivedTicketsAsync(int? companyId);
 
         public Task<List<Ticket>> GetUnassignedTicketsAsync(int? companyId);
