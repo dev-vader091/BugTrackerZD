@@ -21,38 +21,119 @@
                 <h2 class="card-title"></h2>
             </header>
             <div class="card-body">
-                <table class="table table-bordered table-striped table-responsive-md table-hover mb-0" id="datatable-unassignedTickets">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-responsive-md table-hover mb-0" id="datatable-default">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Title)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Project)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Created) /  @Html.DisplayNameFor(model => model.Updated)
+                                </th>
+                                <th>
+
+                                    Ticket Priority
+                                </th>
+                                <th>
+
+                                    Ticket Type
+                                </th>
+                                <th>
+
+                                    Ticket Status
+                                </th>
+                                <th>
+
+                                    Submitter
+                                </th>
+                                <th>
+                                    Actions
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody class="projectsIndexTable">
+                            @foreach (var item in Model)
+                            {
+                                if (!item.Archived == true)
+                                {                                    
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Title)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Project!.Name)
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Created)
+                                            @if (item.Updated != null)
+                                            {
+                                                <span class="fw-bold">/</span>  @Html.DisplayFor(modelItem => item.Updated)
+                                            }
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.TicketPriority!.Name)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.TicketType!.Name)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.TicketStatus!.Name)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.SubmitterUser!.FullName)
+                                        </td>
+
+                                        <td class="actions-hover actions-fade">
+                                            <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt text-warning fa-sm"></i> </a>
+                                            <a asp-action="Details" asp-route-id="@item.Id"> <i class="bx bx-detail text-info fa-sm"></i> </a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt text-danger fa-sm"></i> </a>
+                                        </td>
+                                        <td>
+                                            <a asp-action="AssignTicketToUser" asp-route-id="@item.Id">Assign Ticket</a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+@*            <div class="card-body">
+                <table class="table table-bordered table-striped table-responsive-md table-hover mb-0" id="datatable-default">
                     <thead>
                         <tr>
                             <th>
                                 @Html.DisplayNameFor(model => model.Title)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.Description)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Created)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Updated)
-                            </th>
-                            <th>
                                 @Html.DisplayNameFor(model => model.Project)
-                            </th>
+                            </th>                            
                             <th>
-                                @*@Html.DisplayNameFor(model => model.TicketPriority)*@
+                                @Html.DisplayNameFor(model => model.Created) /  @Html.DisplayNameFor(model => model.Updated)
+                            </th>                           
+                            <th>
+                               
                                 Ticket Priority
                             </th>
                             <th>
-                               @* @Html.DisplayNameFor(model => model.TicketType)*@
+                               
                                Ticket Type
                             </th>
                             <th>
-                                @*@Html.DisplayNameFor(model => model.TicketStatus)*@
+                               
                                 Ticket Status
                             </th>                           
                             <th>
-                                @*@Html.DisplayNameFor(model => model.SubmitterUser)*@
+                                
                                 Submitter
                             </th>
                             <th>
@@ -71,17 +152,17 @@
                                         @Html.DisplayFor(modelItem => item.Title)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.Description)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Created)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Updated)
-                                    </td>
-                                    <td>
                                         @Html.DisplayFor(modelItem => item.Project!.Name)
                                     </td>
+                                   
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Created)
+                                        @if (item.Updated != null)
+                                        {
+                                            <span class="fw-bold">/</span>  @Html.DisplayFor(modelItem => item.Updated)
+                                        }
+                                    </td>
+                                   
                                     <td>
                                         @Html.DisplayFor(modelItem => item.TicketPriority!.Name)
                                     </td>
@@ -112,7 +193,7 @@
                     </tbody>
                 </table>
             </div>
-        </section>
+*@        </section>
     </div>
 </div>
 

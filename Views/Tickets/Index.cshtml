@@ -7,9 +7,7 @@
 
 @inject UserManager<BTUser> UserManager
 
-@using X.PagedList;
-@using X.PagedList.Mvc.Core;
-@using X.PagedList.Web.Common;
+
 
 @{
     ViewData["Title"] = "Index";
@@ -37,132 +35,112 @@
                 <h2 class="card-title"></h2>
             </header>
             <div class="card-body">
-
-                <table class="table table-striped table-bordered table-hover mb-0" id="datatable-tickets">
-                    <thead>
-                        <tr>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Title)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Description)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Created)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Updated)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Project)
-                            </th>
-                            <th>
-                                Ticket Priority
-                            </th>
-                            <th>
-                                Ticket Type
-                            </th>
-                            <th>
-                                Ticket Status
-                            </th>
-                            <th>
-                                @*@Html.DisplayNameFor(model => model.DeveloperUser)*@
-                                Developer
-                            </th>
-                            <th>
-                                @*@Html.DisplayNameFor(model => model.SubmitterUser)*@
-                                Submitter
-                            </th>
-                            <th>
-                                Actions
-                            </th>  
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
-                            BTUser? projectManager = await _ProjectService.GetProjectManagerAsync(item.ProjectId);
-                            BTUser? admin = await _CompanyService.GetCompanyAdmin(item.Project!.CompanyId, btUser?.Id);
-                           
-
-                            if (item.Archived == false)
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-responsive-md table-hover mb-0" id="datatable-default">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Title)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Project)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Created) / @Html.DisplayNameFor(model => model.Updated)
+                                </th>
+                                <th>
+                                    Ticket Priority
+                                </th>
+                                <th>
+                                    Ticket Type
+                                </th>
+                                <th>
+                                    Ticket Status
+                                </th>
+                                <th>
+                                    @*@Html.DisplayNameFor(model => model.DeveloperUser)*@
+                                    Developer
+                                </th>
+                                <th>
+                                    @*@Html.DisplayNameFor(model => model.SubmitterUser)*@
+                                    Submitter
+                                </th>
+                                <th>
+                                    Actions
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody class="projectsIndexTable">
+                            @foreach (var item in Model)
                             {
-                                <tr>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Title)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Description)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Created)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Updated)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Project!.Name)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.TicketPriority!.Name)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.TicketType!.Name)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.TicketStatus!.Name)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.DeveloperUser!.FullName)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.SubmitterUser!.FullName)
-                                    </td>
-                                    <td class="actions-hover actions-fade">
-                                        @if (item.DeveloperUserId == UserManager.GetUserId(User) || item.SubmitterUserId == UserManager.GetUserId(User))
-                                        {
-                                            <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt text-warning fa-sm"></i> </a>
-                                            <a asp-action="Details" asp-route-id="@item.Id"> <i class="bx bx-detail text-info fa-sm"></i> </a>
-                                            <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt text-danger fa-sm"></i> </a>
-                                        }
-                                        else if (btUser?.Id == projectManager?.Id || btUser?.Id == admin.Id)
-                                        {
-                                            <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt text-warning fa-sm"></i> </a>
-                                            <a asp-action="Details" asp-route-id="@item.Id"> <i class="bx bx-detail text-info fa-sm"></i> </a>
-                                            <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt text-danger fa-sm"></i> </a>
-                                        }
-                                        else
-                                        {
-                                            <a asp-action="Details" asp-route-id="@item.Id" class="d-flex justify-content-center"> <i class="bx bx-detail text-info fa-sm"></i> </a>
-                                        }
-                                    </td>
-                                    <td>
-                                        <a asp-action="AssignDeveloper" asp-route-id="@item.Id">Assign Ticket</a>
-                                    </td>
+                                if (!item.Archived == true)
+                                {
+                                    BTUser? projectManager = await _ProjectService.GetProjectManagerAsync(item.ProjectId);
+                                    BTUser? admin = await _CompanyService.GetCompanyAdmin(item.Project!.CompanyId, btUser?.Id);
 
-                                </tr>
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Title)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Project!.Name)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Created)
+                                            @if (item.Updated != null)
+                                            {
+                                                <span class="fw-bold">/</span>  @Html.DisplayFor(modelItem => item.Updated)
+                                            }
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.TicketPriority!.Name)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.TicketType!.Name)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.TicketStatus!.Name)
+                                        </td>
+                                        <td>
+                                            @if (item.DeveloperUser != null)
+                                            {
+                                                @Html.DisplayFor(modelItem => item.DeveloperUser!.FullName)
+
+                                            }
+                                            else
+                                            {
+                                                <span class="text-danger">Unassigned</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.SubmitterUser!.FullName)
+                                        </td>
+                                        <td class="actions-hover actions-fade">
+                                            @if (item.DeveloperUserId == UserManager.GetUserId(User) || item.SubmitterUserId == UserManager.GetUserId(User) ||
+                                           (btUser?.Id == projectManager?.Id || btUser?.Id == admin.Id))
+                                            {
+                                                <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt text-warning fa-sm"></i> </a>
+                                                <a asp-action="Details" asp-route-id="@item.Id"> <i class="bx bx-detail text-info fa-sm"></i> </a>
+                                                <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt text-danger fa-sm"></i> </a>
+                                            }
+                                            else
+                                            {
+                                                <a asp-action="Details" asp-route-id="@item.Id" class="d-flex justify-content-center"> <i class="bx bx-detail text-info fa-sm"></i> </a>
+                                            }
+                                        </td>
+                                        <td>
+                                            <a asp-action="AssignDeveloper" asp-route-id="@item.Id">Assign Ticket</a>
+                                        </td>
+                                    </tr>
+                                }
                             }
 
-                        }
-
-                    </tbody>
-                </table>
-
-
-                @*<div>
-                <div>
-                Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+                        </tbody>
+                    </table>
                 </div>
-                @Html.PagedListPager(Model, pageNum => Url.Action("Index", new { pageNum }),
-                new PagedListRenderOptions
-                {
-                LiElementClasses = new string[] {"my-page-item"},
-                PageClasses = new string[] {"my-page-link"}
-                })
-                </div>*@
-
             </div>
+
         </section>
     </div>
 </div>
@@ -186,87 +164,14 @@
     <script src="~/template/js/examples/examples.dashboard.js"></script>
     <script src="~/template/js/examples/examples.datatables.default.js"></script>
     <script src="~/template/js/examples.datatables.tabletools.js"></script>
-    <script src="~/template/js/examples.datatables.row.with.details.js"></script>
+    @*<script src="~/template/js/examples.datatables.row.with.details.js"></script>*@
 
-    <script>
-        (function ($) {
-
-            'use strict';
-
-            var datatableInit = function () {
-                var $table = $('#datatable-tickets');
-
-                // format function for row details
-                var fnFormatDetails = function (datatable, tr) {
-                    var data = datatable.fnGetData(tr);
-
-                    return [
-                        '<table class="table table-striped mb-0">',
-                        '<tr class="b-top-0">',
-                        '<td><label class="mb-0">Rendering engine:</label></td>',
-                        '<td>' + data[1] + ' ' + data[4] + '</td>',
-                        '</tr>',
-                        '<tr>',
-                        '<td><label class="mb-0">Link to source:</label></td>',
-                        '<td>Could provide a link here</td>',
-                        '</tr>',
-                        '<tr>',
-                        '<td><label class="mb-0">Extra info:</label></td>',
-                        '<td>And any further details here (images etc)</td>',
-                        '</tr>',
-                        '</table>'
-                    ].join('');
-                };
-
-                // insert the expand/collapse column
-                var th = document.createElement('th');
-                var td = document.createElement('td');
-                td.innerHTML = '<i data-toggle class="far fa-plus-square text-primary h5 m-0" style="cursor: pointer;"></i>';
-                td.className = "text-center";
-
-                $table
-                    .find('thead tr').each(function () {
-                        this.insertBefore(th, this.childNodes[0]);
-                    });
-
-                $table
-                    .find('tbody tr').each(function () {
-                        this.insertBefore(td.cloneNode(true), this.childNodes[0]);
-                    });
-
-                // initialize
-                var datatable = $table.dataTable({
-                    dom: '<"row"<"col-lg-6"l><"col-lg-6"f>><"table-responsive"t>p',
-                    aoColumnDefs: [{
-                        bSortable: false,
-                        aTargets: [0]
-                    }],
-                    aaSorting: [
-                        [1, 'asc']
-                    ]
-                });
-
-                // add a listener
-                $table.on('click', 'i[data-toggle]', function () {
-                    var $this = $(this),
-                        tr = $(this).closest('tr').get(0);
-
-                    if (datatable.fnIsOpen(tr)) {
-                        $this.removeClass('fa-minus-square').addClass('fa-plus-square');
-                        datatable.fnClose(tr);
-                    } else {
-                        $this.removeClass('fa-plus-square').addClass('fa-minus-square');
-                        datatable.fnOpen(tr, fnFormatDetails(datatable, tr), 'details');
-                    }
-                });
-            };
-
-            $(function () {
-                datatableInit();
-            });
-
-        }).apply(this, [jQuery]);
-    </script>
+    
 
 }
+
+
+
+
+
 

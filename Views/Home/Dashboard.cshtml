@@ -22,6 +22,10 @@
         width: 100%;
         height: 500px;
     }
+
+    .info-pills .body {
+        min-height: 76px;
+    }
 </style>
 
 <h1>Dashboard</h1>
@@ -30,205 +34,260 @@
     [Code: Copy from Ticket/Details]
 </a>
 @* Get The btUser FullName *@
-<strong>[@btUser?.FullName]</strong>
+<strong>@btUser?.FullName</strong>
 <span class="text-muted" style="font-size:x-small;">
     @* Company Name *@
-    <strong>[@Model.Company?.CompanyName]</strong>
+    <strong>@Model.Company?.CompanyName</strong>
 </span>
 
 
 <div>
-        <div classxfont-weighteighteightgetainer-fluid">
-            <div class="row gy-2">
-                <div class="col-md-12 col">
-                    <div class="row col-cols-4 mt-5 bg-primary">
-                        <div class="card col m-1 p-2">
-                            <div class="card-body">
-                                <h5>Projects by Priority</h5>
-                                <p>[Google Charts]</p>
-                                <div id="chart3D"></div>
+    <div class="xfont-weighteighteightge container-fluid">
+        <!-- Info Pills -->
+        <div class="row mt-2 info-pills">
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <a asp-action="Index" asp-controller="Projects" style="text-decoration:none">
+                    <div class="card text-center bg-info">
+                        <div class="body">
+                            <div class="p-15 text-light">
+                                <h3>@Model.Projects?.Where(p => p.StartDate < DateTime.Now && p.EndDate > DateTime.Now).Count()</h3>
+                                <span>Active Projects</span>
                             </div>
                         </div>
-                        <div class="card col m-1 p-2">
-                            <div class="card-body">
-                                <h5>Project Tickets Count (%)</h5>
-                                <p>[Google Charts]</p>
-                                <div id="donut"></div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <a asp-action="Index" asp-controller="Tickets" style="text-decoration:none">
+                    <div class="card text-center bg-danger">
+                        <div class="body">
+                            <div class="p-15 text-light">
+
+                                <h3>@Model.Tickets?.Count()</h3>
+                                <span>Total Tickets</span>
                             </div>
                         </div>
-                    
-                        <div class="card-body">
-                            <h5>Tickets by Priority</h5>
-                            <p>[Morris Charts]</p>
-                            <!-- Morris: Donut -->
-                            <div class="col-md-12">
-                                <div id="legend" class="donut-legend" style="font-size:x-small"></div>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="chart chart-md" id="morrisTicketPriority"></div>
-                            </div>
-                        </div>
-                   
-                        <div class="card col m-1 p-2">
-                            <div class="card-body">
-                                <h5>Tickets by Status</h5>
-                                <p>[ChartJS]</p>
-                                <!-- ChartJS: Pie/Doughnut -->
-                                <div class="col-md-12">
-                                    <!--  Chart.js Canvas Tag -->
-                                    <canvas id="donutChart"></canvas>
-                                </div>
-                            </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card text-center bg-warning">
+                    <div class="body">
+                        <div class="p-15 text-light">
+                            <h3>@Model.Tickets?.Where(t => string.IsNullOrEmpty(t.DeveloperUserId)).Count()</h3>
+                            <span>Unassigned Tickets</span>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="row gy-2">
-                <div class="cols mt-5 bg-primary">
-                    <div class="card col m-1 p-2">
-                        <div class="card-body" style="height:600px">
-                            <h5>Project: Tickets vs Developers</h5>
-                            <p>[amCharts]</p>
-                            <!-- HTML -->
-                            <div id="chartdiv"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row gy-2">
-                <div class="cols mt-5 bg-primary">
-                    <div class="card col m-1 p-2">
-                        <div class="card-body" style="height:600px;overflow-y:auto;">
-                            <h5>Project: Tickets vs Developers</h5>
-                            <p>[Plotly]</p>
-                            <!-- HTML -->
-                            <div id="plotlyChart"></div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card text-center bg-success">
+                    <div class="body">
+                        <div class="p-15 text-light">
+                            <h3>
+                                @(
+                                    Model.Projects?.Count()
+                                    + Model.Tickets?.Count()
+                                    + Model.Members?.Count()
+                                    )
+                            </h3>
+                            <span>Total Data</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <hr />
-        <div class="mt-5 ">
-            <div class="row">
-                @* Projects Table *@
-                <div class="col">
-                    <div class="bg-primary">
-                        <div class="card m-1 p-2">
-                            <div class="card-header">
-                                <h2>Projects</h2>
+        <!-- End Info Pills -->
+        <div class="row gy-2">
+            <div class="col-md-12 col">
+                <div class="row col-cols-4 mt-5 bg-primary">
+                    <div class="card col m-1 p-2">
+                        <div class="card-body">
+                            <h5>Projects by Priority</h5>
+                            <p>[Google Charts]</p>
+                            <div id="chart3D"></div>
+                        </div>
+                    </div>
+                    <div class="card col m-1 p-2">
+                        <div class="card-body">
+                            <h5>Project Tickets Count (%)</h5>
+                            <p>[Google Charts]</p>
+                            <div id="donut"></div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <h5>Tickets by Priority</h5>
+                        <p>[Morris Charts]</p>
+                        <!-- Morris: Donut -->
+                        <div class="col-md-12">
+                            <div id="legend" class="donut-legend" style="font-size:x-small"></div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="chart chart-md" id="morrisTicketPriority"></div>
+                        </div>
+                    </div>
+
+                    <div class="card col m-1 p-2">
+                        <div class="card-body">
+                            <h5>Tickets by Status</h5>
+                            <p>[ChartJS]</p>
+                            <!-- ChartJS: Pie/Doughnut -->
+                            <div class="col-md-12">
+                                <!--  Chart.js Canvas Tag -->
+                                <canvas id="donutChart"></canvas>
                             </div>
-                            <div class="card-body">
-                                @* [Copy and format table from Unassigned Tickets] *@
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-striped table-responsive-md table-hover mb-0" id="datatable-default">                                        
-                                        <thead>
-                                            <tr>
-                                                <th>
-                                                   Project Name
-                                                </th>
-                                                <th>
-                                                   Description
-                                                </th>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row gy-2">
+            <div class="cols mt-5 bg-primary">
+                <div class="card col m-1 p-2">
+                    <div class="card-body" style="height:600px">
+                        <h5>Project: Tickets vs Developers</h5>
+                        <p>[amCharts]</p>
+                        <!-- HTML -->
+                        <div id="chartdiv"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row gy-2">
+            <div class="cols mt-5 bg-primary">
+                <div class="card col m-1 p-2">
+                    <div class="card-body" style="height:600px;overflow-y:auto;">
+                        <h5>Project: Tickets vs Developers</h5>
+                        <p>[Plotly]</p>
+                        <!-- HTML -->
+                        <div id="plotlyChart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div class="mt-5 ">
+        <div class="row">
+            @* Projects Table *@
+            <div class="col">
+                <div class="bg-primary">
+                    <div class="card m-1 p-2">
+                        <div class="card-header">
+                            <h2>Projects</h2>
+                        </div>
+                        <div class="card-body">
+                            @* [Copy and format table from Unassigned Tickets] *@
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped table-responsive-md table-hover mb-0" id="datatable-default">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Project Name
+                                            </th>
+                                            <th>
+                                                Description
+                                            </th>
 
-                                                <th>
-                                                    Start Date
-                                                </th>
-                                                <th>
-                                                    End Date
-                                                </th>
-                                                <th>
-                                                    Company
-                                                </th>
-                                                <th>
-                                                    Project Priority
-                                                </th>
-                                                <th>
-                                                    Archived
-                                                </th>
+                                            <th>
+                                                Start Date
+                                            </th>
+                                            <th>
+                                                End Date
+                                            </th>
+                                            <th>
+                                                Company
+                                            </th>
+                                            <th>
+                                                Project Priority
+                                            </th>
+                                            <th>
+                                                Archived
+                                            </th>
 
-                                                @*<th>
-                                                    Actions
-                                                </th>
-                                                @if (User.IsInRole("Admin"))
-                                                {
-                                                    <th></th>
-                                                    <th></th>
-                                                }
-                                                else if (User.IsInRole("ProjectManager"))
-                                                {
-                                                    <th></th>
-                                                }*@
-                                            </tr>
-                                        </thead>
-                                        
-                                        <tbody class="projectsIndexTable">
-                                            @foreach (var item in Model.Projects!)
-                                            {                                               
-                                                    <tr>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.Name)
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.Description)
-                                                        </td>
-
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.StartDate)
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.EndDate)
-                                                        </td>
-
-
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.Company!.CompanyName)
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.ProjectPriority!.Name)
-                                                        </td>
-                                                        <td class="text-center">
-                                                            @Html.DisplayFor(modelItem => item.Archived)
-                                                        </td>
-
-                                                       @* <td class="actions-hover actions-fade">
-                                                            @if (User.IsInRole("ProjectManager") || User.IsInRole("Admin"))
-                                                            {
-                                                                <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt text-warning"></i> </a>
-                                                                <a asp-action="Details" asp-route-id="@item.Id"> <i class='bx bx-detail text-info'></i> </a>
-                                                                <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt text-danger"></i> </a>
-                                                            }
-                                                            else if (User.IsInRole("Developer") || User.IsInRole("ProjectManager") || User.IsInRole("Submitter"))
-                                                            {
-                                                                <a asp-action="Details" asp-route-id="@item.Id" class="d-flex justify-content-center"> <i class="bx bx-detail text-info"></i> </a>
-                                                            }
-                                                        </td>
-                                                        @if (User.IsInRole("Admin"))
-                                                        {
-                                                            <td>
-                                                                <a asp-action="AssignPM" asp-route-id="@item.Id"> Assign PM</a>
-                                                            </td>
-
-                                                            <td>
-                                                                <a asp-action="AssignProjectMembers" asp-route-id="@item.Id"> Assign Project Members</a>
-                                                            </td>
-                                                        }
-                                                        @if (User.IsInRole("ProjectManager"))
-                                                        {
-                                                            <td>
-                                                                <a asp-action="AssignProjectMembers" asp-route-id="@item.Id"> Assign Project Members</a>
-                                                            </td>
-                                                        }*@
-                                                    </tr>
-                                                
-
+                                            @*<th>
+                                            Actions
+                                            </th>
+                                            @if (User.IsInRole("Admin"))
+                                            {
+                                            <th></th>
+                                            <th></th>
                                             }
-                                            
+                                            else if (User.IsInRole("ProjectManager"))
+                                            {
+                                            <th></th>
+                                            }*@
+                                        </tr>
+                                    </thead>
 
-                                        </tbody>
-                                    </table>
+                                    <tbody class="projectsIndexTable">
+                                        @foreach (var item in Model.Projects!)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Name)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Description)
+                                                </td>
+
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.StartDate)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.EndDate)
+                                                </td>
+
+
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Company!.CompanyName)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.ProjectPriority!.Name)
+                                                </td>
+                                                <td class="text-center">
+                                                    @Html.DisplayFor(modelItem => item.Archived)
+                                                </td>
+
+                                                @* <td class="actions-hover actions-fade">
+                                            @if (User.IsInRole("ProjectManager") || User.IsInRole("Admin"))
+                                            {
+                                            <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt text-warning"></i> </a>
+                                            <a asp-action="Details" asp-route-id="@item.Id"> <i class='bx bx-detail text-info'></i> </a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt text-danger"></i> </a>
+                                            }
+                                            else if (User.IsInRole("Developer") || User.IsInRole("ProjectManager") || User.IsInRole("Submitter"))
+                                            {
+                                            <a asp-action="Details" asp-route-id="@item.Id" class="d-flex justify-content-center"> <i class="bx bx-detail text-info"></i> </a>
+                                            }
+                                            </td>
+                                            @if (User.IsInRole("Admin"))
+                                            {
+                                            <td>
+                                            <a asp-action="AssignPM" asp-route-id="@item.Id"> Assign PM</a>
+                                            </td>
+
+                                            <td>
+                                            <a asp-action="AssignProjectMembers" asp-route-id="@item.Id"> Assign Project Members</a>
+                                            </td>
+                                            }
+                                            @if (User.IsInRole("ProjectManager"))
+                                            {
+                                            <td>
+                                            <a asp-action="AssignProjectMembers" asp-route-id="@item.Id"> Assign Project Members</a>
+                                            </td>
+                                            }*@
+                                            </tr>
+
+
+                                        }
+
+
+                                    </tbody>
+                                </table>
                             </div>
-                            
+
                         </div>
                     </div>
                 </div>
@@ -240,40 +299,136 @@
                                 <h2>Tickets</h2>
                             </div>
                             <div class="card-body">
-
                                 @* Copy and format table from Unassigned Tickets *@
-                            </div>
-                            <div class="card-footer">
+
+                                <div class="card-body">
+                                    <table class="table table-bordered table-striped table-responsive-md table-hover mb-0" id="datatable-tickets">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    Title
+                                                </th>
+                                                <th>
+                                                    Project
+                                                </th>
+                                                @*<th>
+                                                @Html.DisplayNameFor(model => model.Description)
+                                                </th>*@
+                                                <th>
+                                                    Created / Updated
+                                                </th>
+                                                @* <th>
+                                                @Html.DisplayNameFor(model => model.Updated)
+                                                </th>*@
+                                                <th>
+                                                    @*@Html.DisplayNameFor(model => model.TicketPriority)*@
+                                                    Ticket Priority
+                                                </th>
+                                                <th>
+                                                    @* @Html.DisplayNameFor(model => model.TicketType)*@
+                                                    Ticket Type
+                                                </th>
+                                                <th>
+                                                    @*@Html.DisplayNameFor(model => model.TicketStatus)*@
+                                                    Ticket Status
+                                                </th>
+                                                <th>
+                                                    @*@Html.DisplayNameFor(model => model.SubmitterUser)*@
+                                                    Submitter
+                                                </th>
+                                                <th>
+                                                    Actions
+                                                </th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model.Tickets!)
+                                            {
+                                                if (item.Archived == false)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Title)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Project!.Name)
+                                                        </td>
+                                                        @* <td>
+                                                @Html.DisplayFor(modelItem => item.Description)
+                                                </td>*@
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Created)
+                                                            @if (item.Updated != null)
+                                                            {
+                                                                <span class="fw-bold">/</span>  @Html.DisplayFor(modelItem => item.Updated)
+                                                            }
+                                                        </td>
+                                                        @* <td>
+                                                @Html.DisplayFor(modelItem => item.Updated)
+                                                </td>*@
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.TicketPriority!.Name)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.TicketType!.Name)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.TicketStatus!.Name)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.SubmitterUser!.FullName)
+                                                        </td>
+
+                                                        <td class="actions-hover actions-fade">
+                                                            <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt text-warning fa-sm"></i> </a>
+                                                            <a asp-action="Details" asp-route-id="@item.Id"> <i class="bx bx-detail text-info fa-sm"></i> </a>
+                                                            <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt text-danger fa-sm"></i> </a>
+                                                        </td>
+                                                        <td>
+                                                            <a asp-action="AssignTicketToUser" asp-route-id="@item.Id">Assign Ticket</a>
+                                                        </td>
+
+                                                    </tr>
+                                                }
+
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-2 ">
-                    <div class="bg-dark">
-                        <div class="card m-1 p-2">
-                            <div class="card-header">
-                                <h2>Members</h2>
-                                <hr />
-                            </div>
-                            <div class="card-body" style="overflow-y:auto;height:600px;background-color:antiquewhite">
-                                @* Looop over Company members. Display Name and Role *@
-                                <ul class="list-unstyled">
-                                @foreach (BTUser member in Model.Members!)
-                                {
-                                    <li>
-                                        <strong>@member?.FullName -
-                                        <span class="text-muted" style="font-size:x-small;">
-                                            @foreach (var role in await UserManager.GetRolesAsync(member!))
-                                            {
-                                                <strong>[@role]</strong>
-                                        
-                                            }
-                                        </span>
-                                        </strong>
-                                    </li>
-                                }
+                    <div class="col-md-4 ">
+                        <div class="bg-dark">
+                            <div class="card m-1 p-2">
+                                <div class="card-header">
+                                    <h2>Members</h2>
+                                    <hr />
+                                </div>
+                                <div class="card-body" style="overflow-y:auto;height:600px;background-color:antiquewhite">
+                                    @* Looop over Company members. Display Name and Role *@
+                                    <ul class="list-unstyled">
+                                        @foreach (BTUser member in Model.Members!)
+                                        {
+                                            <li>
+                                                <strong>
+                                                    @member?.FullName -
+                                                    <span class="text-muted" style="font-size:x-small;">
+                                                        @foreach (var role in await UserManager.GetRolesAsync(member!))
+                                                        {
+                                                            <strong>@role</strong>
 
-                                </ul>
+                                                        }
+                                                    </span>
+                                                </strong>
+                                            </li>
+                                        }
+
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -328,7 +483,7 @@
         function drawChart() {
             $.ajax({
                 type: "POST",
-                url: "/Home/GglProjectPriority",
+                url: "/Home/GglProjectTickets",
                 data: '{}',
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
@@ -374,7 +529,7 @@
         @Model.Tickets!.Where(t=> t.TicketStatus!.Name == nameof(BTTicketStatuses.New)).Count(),
         @Model.Tickets!.Where(t=> t.TicketStatus!.Name == nameof(BTTicketStatuses.Resolved)).Count(),
         @Model.Tickets!.Where(t=> t.TicketStatus!.Name == nameof(BTTicketStatuses.Testing)).Count()
-                            ],
+                                            ],
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
@@ -404,8 +559,6 @@
         });
     </script>
     <!-- *** End Chart JS Donut *** -->
-
-
     <!-- Load plotly.js into the DOM -->
     <script src='https://cdn.plot.ly/plotly-2.4.2.min.js'></script>
     <script>
@@ -440,21 +593,21 @@
         var morrisDonutData = [{
             label: "Low",
             value: @Model.Tickets!.Where(t=>t.TicketPriority!.Name == nameof(BTTicketPriorities.Low)).Count()
-            }, {
+                            }, {
             label: "Medium",
             value: @Model.Tickets!.Where(t=>t.TicketPriority!.Name == nameof(BTTicketPriorities.Medium)).Count()
-            }, {
+                            }, {
             label: "High",
             value: @Model.Tickets!.Where(t=>t.TicketPriority!.Name == nameof(BTTicketPriorities.High)).Count()
-            }, {                                           
-            label: "Urgent",                               
+                            }, {
+            label: "Urgent",
             value: @Model.Tickets!.Where(t=>t.TicketPriority!.Name == nameof(BTTicketPriorities.Urgent)).Count()
-            }];
+                            }];
 
 
 
         /* Morris: Donut */
-       
+
         if ($('#morrisTicketPriority').get(0)) {
             var donutChart = Morris.Donut({
                 resize: true,
@@ -557,6 +710,46 @@
     </script>
 
     <!-- *** End AM Charts *** -->
+
+    <!-- Specific Page Vendor -->
+    <script src="~/template/vendor/select2/js/select2.js"></script>
+    <script src="~/template/vendor/datatables/media/js/jquery.dataTables.min.js"></script>
+    <script src="~/template/vendor/datatables/media/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/Buttons-1.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/Buttons-1.4.2/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/Buttons-1.4.2/js/buttons.html5.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/Buttons-1.4.2/js/buttons.print.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/JSZip-2.5.0/jszip.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/pdfmake-0.1.32/pdfmake.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/pdfmake-0.1.32/vfs_fonts.js"></script>
+
+    <!-- Examples -->
+    <script src="~/template/js/examples/examples.datatables.default.js"></script>
+    <script src="~/template/js/examples/examples.datatables.row.with.details.js"></script>
+    <script src="~/template/js/examples/examples.datatables.tabletools.js"></script>
+
+        
+    <script>
+        (function ($) {
+
+            'use strict';
+
+            var datatableInit = function () {
+
+                $('#datatable-tickets').dataTable({
+                    dom: '<"row"<"col-lg-6"l><"col-lg-6"f>><"table-responsive"t>p'
+                });
+
+            };
+
+            $(function () {
+                datatableInit();
+            });
+
+        }).apply(this, [jQuery]);
+    </script>
+
+
 
 }
 

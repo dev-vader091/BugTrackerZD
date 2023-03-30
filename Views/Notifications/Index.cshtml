@@ -22,10 +22,10 @@
                 @Html.DisplayNameFor(model => model.Created)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.HasBeenViewed)
+                Has Been Viewed
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.NotificationType)
+                Notification Type
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Ticket)
@@ -54,23 +54,23 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Created)
             </td>
-            <td>
+            <td class="text-center">
                 @Html.DisplayFor(modelItem => item.HasBeenViewed)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.NotificationType.Id)
+                @Html.DisplayFor(modelItem => item.NotificationType!.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Ticket.Description)
+                @Html.DisplayFor(modelItem => item.Ticket!.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Project.Description)
+                @Html.DisplayFor(modelItem => item.Project!.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Sender.Id)
+                @Html.DisplayFor(modelItem => item.Sender!.FullName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Recipient.Id)
+                @Html.DisplayFor(modelItem => item.Recipient!.FullName)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
