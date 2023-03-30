@@ -1,0 +1,135 @@
+﻿@using BugHunterBugTrackerZD.Models.Enums;
+@model BugHunterBugTrackerZD.Models.Ticket
+
+<h1>Tickets</h1>
+
+<p>
+    @* @if (User.IsInRole(nameof(BTRoles.Submitter)) || User.IsInRole(nameof(BTRoles.Developer)))
+    {
+    <a asp-action="Create">Create New</a>
+    }*@
+</p>
+
+<div>
+    <h4>Project</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Created)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Created)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DeveloperUser)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DeveloperUser!.FullName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.SubmitterUser)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.SubmitterUser!.FullName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Archived)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Archived)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ArchivedByProject)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Project!.Name)
+        </dd>
+        @*<dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ProjectPriority)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ProjectPriority!.Id)
+        </dd>*@
+    </dl>
+
+    <form asp-action="UnarchiveTicket">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Unarchive" class="btn btn-danger" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>
+
+
+@*<div class="row">
+    <div class="col-md-4">
+        <form asp-action="UnarchiveTicket">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="ProjectId" />
+            <input type="hidden" asp-for="Created" />
+            <input type="hidden" asp-for="SubmitterUserId" />
+            <input type="hidden" asp-for="DeveloperUserId" />
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProjectId" class="control-label"></label>
+                <select asp-for="ProjectId" class="form-control" asp-items="ViewBag.ProjectId"></select>
+                <span asp-validation-for="ProjectId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TicketTypeId" class="control-label"></label>
+                <select asp-for="TicketTypeId" class="form-control" asp-items="ViewBag.TicketTypeId"></select>
+                <span asp-validation-for="TicketTypeId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TicketStatusId" class="control-label"></label>
+                <select asp-for="TicketStatusId" class="form-control" asp-items="ViewBag.TicketStatusId"></select>
+                <span asp-validation-for="TicketStatusId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TicketPriorityId" class="control-label"></label>
+                <select asp-for="TicketPriorityId" class="form-control" asp-items="ViewBag.TicketPriorityId"></select>
+                <span asp-validation-for="TicketPriorityId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+            <label asp-for="DeveloperUserId" class="control-label"></label>
+            <select asp-for="DeveloperUserId" class="form-control" asp-items="ViewBag.DeveloperUserId"></select>
+            <span asp-validation-for="DeveloperUserId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+            <label asp-for="SubmitterUserId" class="control-label"></label>
+            <select asp-for="SubmitterUserId" class="form-control" asp-items="ViewBag.SubmitterUserId"></select>
+            <span asp-validation-for="SubmitterUserId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+*@
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+
