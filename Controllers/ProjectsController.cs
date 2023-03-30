@@ -63,6 +63,8 @@ namespace BugHunterBugTrackerZD.Controllers
         [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> AssignProjectMembers(int? id)
         {
+           
+
             if (id == null)
             {
                 return NotFound();
@@ -251,48 +253,38 @@ namespace BugHunterBugTrackerZD.Controllers
         }
 
         // POST: Unarchive Project
-        [HttpPost]
-        public async Task<IActionResult> UnarchiveProject(int? id, int projectId)
+        [HttpPost, ActionName("UnarchiveProject")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UnarchiveProjectConfirmed(int id)
         {
-            if (id == null)
+
+            if (_context.Projects == null)
             {
-                return NotFound();
+                return Problem("Entity set 'ApplicationDbContext.Projects'  is null.");
             }
 
             int companyId = User.Identity!.GetCompanyId();
 
 
-            //IEnumerable<Project> archivedProjects = await _projectService.GetArchivedProjectsAsync(companyId);
-
-            Project project = await _projectService.GetProjectByIdAsync(id, companyId);
-
-            //Project? project = await _context.Projects
-            //                                .Include(p => p.Company)
-            //                                .Include(p => p.Members)
-            //                                .FirstOrDefaultAsync(p => p.Id == projectId && p.Archived == true);
-
-            List<Ticket> tickets = project.Tickets.ToList();
-
-            //List<Ticket> archivedProjectTickets = new();
+            Project project = await _projectService.GetProjectAsync(id, companyId);
+            List<Ticket> tickets = await _ticketService.GetTicketsByProjectAsync(project.Id);
 
             foreach (Ticket ticket in tickets)
             {
-                if (ticket.ArchivedByProject == true)
-                {
-                    
-
-                    ticket.Archived = false;
-                    ticket.ArchivedByProject = false;
-
-
-                }
+                ticket.Archived = true;
+                ticket.ArchivedByProject = false;
                 await _ticketService.UpdateTicketAsync(ticket);
             }
-            project!.Archived = false;
-            await _projectService.UpdateProjectAsync(project!);
 
-            return RedirectToAction("Index", "Projects");
+            //var project = await _context.Projects.FindAsync(id);
+            if (project != null)
+            {
+                project.Archived = false;
+                await _projectService.UpdateProjectAsync(project);
+            }
 
+            //await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
 
@@ -330,13 +322,7 @@ namespace BugHunterBugTrackerZD.Controllers
             }
             companyId = User.Identity!.GetCompanyId();
 
-            Project project = await _projectService.GetProjectAsync(id, companyId);  
-            
-            //List<BTUser> btUsers = await _projectService.GetProjectMembersByRoleAsync(id, nameof(BTRoles.Developer));
-
-            //List<Project> projects = await _projectService.GetAllProjectsByCompanyAsync(companyId);
-
-
+            Project project = await _projectService.GetProjectAsync(id, companyId);                          
 
             if (project == null)
             {

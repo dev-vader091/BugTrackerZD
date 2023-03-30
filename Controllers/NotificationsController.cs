@@ -7,23 +7,35 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BugHunterBugTrackerZD.Data;
 using BugHunterBugTrackerZD.Models;
+using BugHunterBugTrackerZD.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace BugHunterBugTrackerZD.Controllers
 {
     public class NotificationsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IBTNotificationService _notificationService;
+        private readonly UserManager<BTUser> _userManager;
 
-        public NotificationsController(ApplicationDbContext context)
+        public NotificationsController(ApplicationDbContext context, IBTNotificationService notificationService, UserManager<BTUser> userManager)
         {
             _context = context;
+            _notificationService = notificationService;
+            _userManager = userManager;
         }
 
         // GET: Notifications
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Notifications.Include(n => n.NotificationType).Include(n => n.Project).Include(n => n.Recipient).Include(n => n.Sender).Include(n => n.Ticket);
-            return View(await applicationDbContext.ToListAsync());
+            string? userId = _userManager.GetUserId(User);
+
+            //var applicationDbContext = _context.Notifications.Include(n => n.NotificationType).Include(n => n.Project).Include(n => n.Recipient).Include(n => n.Sender).Include(n => n.Ticket);
+            //return View(await applicationDbContext.ToListAsync());
+
+            IEnumerable<Notification> notifications = new List<Notification>();
+            notifications = await _notificationService.GetNotificationsByUserIdAsync(userId);
+            return View(notifications);
         }
 
         // GET: Notifications/Details/5
@@ -34,13 +46,13 @@ namespace BugHunterBugTrackerZD.Controllers
                 return NotFound();
             }
 
-            var notification = await _context.Notifications
-                .Include(n => n.NotificationType)
-                .Include(n => n.Project)
-                .Include(n => n.Recipient)
-                .Include(n => n.Sender)
-                .Include(n => n.Ticket)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Notification? notification = await _notificationService.GetNotificationByIdAsync(id);
+                
+
+            notification!.HasBeenViewed = true;
+            await _context.SaveChangesAsync();
+
+
             if (notification == null)
             {
                 return NotFound();

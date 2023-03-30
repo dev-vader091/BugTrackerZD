@@ -119,11 +119,6 @@ namespace BugHunterBugTrackerZD.Controllers
                 string? userId = _userManager.GetUserId(User);
                 ticketComment.UserId = userId;
 
-                //if (ticketComment.Ticket!.DeveloperUserId == userId || ticketComment.Ticket.SubmitterUserId == userId || ticketComment.Ticket.Project!.Members.Contains(btUser!))
-                //{
-
-                //}
-
                 ticketComment.Created = DataUtility.GetPostGresDate(DateTime.Now);
 
 
@@ -149,6 +144,52 @@ namespace BugHunterBugTrackerZD.Controllers
 
 
             return View(archivedTickets);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> UnarchiveTicket(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            int companyId = User.Identity!.GetCompanyId();
+
+            Ticket? ticket = await _ticketService.GetTicketByIdAsync(id, companyId);
+
+
+            if (ticket == null)
+            {
+                return NotFound();
+            }
+
+            return View(ticket);
+        }
+
+        [HttpPost, ActionName("UnarchiveTicket")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UnarchiveTicketConfirm(int id)
+        {
+
+            if (_context.Tickets == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Tickets'  is null.");
+            }
+
+            int companyId = User.Identity!.GetCompanyId();
+
+            Ticket ticket = await _ticketService.GetTicketByIdAsync(id, companyId);
+
+            //var ticket = await _context.Tickets.FindAsync(id);
+            if (ticket != null)
+            {
+                ticket.Archived = false;
+                await _ticketService.UpdateTicketAsync(ticket);
+            }
+
+            return RedirectToAction(nameof(Index));          
+
         }
         
         // GET: Assign Developer 
@@ -194,6 +235,7 @@ namespace BugHunterBugTrackerZD.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignDeveloper(TicketUsersViewModel viewModel)
         {
+            BTUser? user = await _userManager.GetUserAsync(User);
             string? userId = _userManager.GetUserId(User);
             int companyId = User.Identity!.GetCompanyId();
 
@@ -214,6 +256,30 @@ namespace BugHunterBugTrackerZD.Controllers
                 await _historyService.AddHistoryAsync(oldticket, newTicket, userId);
 
                 // TODO: Add Ticket Notification
+                //BTUser? projectManager = await _projectService.GetProjectManagerAsync(newTicket.ProjectId);
+
+                //Notification? notification = new()
+                //{
+                //    TicketId = newTicket.Id,
+                //    ProjectId = newTicket.ProjectId,
+                //    Title = "New Ticket Added",
+                //    Message = $"New Ticket: {newTicket.Title} was created by: {user!.FullName}. ",
+                //    Created = DataUtility.GetPostGresDate(DateTime.Now),
+                //    SenderId = user.Id,
+                //    RecipientId = projectManager.Id,
+                //    NotificationTypeId = (await _context.NotificationTypes.FirstOrDefaultAsync(n => n.Name == nameof(BTNotificationTypes.Ticket)))!.Id
+                //};
+
+                //if (projectManager != null)
+                //{
+                //    await _notificationService.AddNotificationAsync(notification);
+                //    await _notificationService.SendEmailNotificationAsync(notification, "New Ticket Added");
+                //}
+                //else
+                //{
+                //    await _notificationService.AdminNotificationAsync(notification, companyId);
+                //    await _notificationService.SendAdminEmailNotificationAsync(notification, "New Project Ticket Added", companyId);
+                //}
 
                 return RedirectToAction("Details", new { id = viewModel.Ticket?.Id });
             }
@@ -282,6 +348,7 @@ namespace BugHunterBugTrackerZD.Controllers
         // GET: Tickets
         public async Task<IActionResult> Index()
         {
+           
             string? userId = _userManager.GetUserId(User);
             int companyId = User.Identity!.GetCompanyId();
 
@@ -380,12 +447,11 @@ namespace BugHunterBugTrackerZD.Controllers
             if (ModelState.IsValid)
             {
                 BTUser? user = await _userManager.GetUserAsync(User);
-
                 ticket.Created = DataUtility.GetPostGresDate(DateTime.Now);
                 ticket.SubmitterUserId = user!.Id;
 
                 // TODO: Set ticket status through context 
-
+                ticket.TicketStatus = await _context.TicketStatuses.FirstOrDefaultAsync(t => t.Name == nameof(BTTicketStatuses.New));
 
                 
 
@@ -401,35 +467,43 @@ namespace BugHunterBugTrackerZD.Controllers
                 // Notification
                 BTUser? projectManager = await _projectService.GetProjectManagerAsync(ticket.ProjectId);
 
-                Notification? notification = new()
-                {
-                    TicketId = ticket.Id,
-                    ProjectId = ticket.ProjectId,
-                    Title = "New Ticket Added",
-                    Message = $"New Ticket: {ticket.Title} was created by: {user.FullName}. ",
-                    Created = DataUtility.GetPostGresDate(DateTime.Now),
-                    SenderId = user.Id,
-                    RecipientId = projectManager.Id,
-                    NotificationTypeId = (await _context.NotificationTypes.FirstOrDefaultAsync(n => n.Name == nameof(BTNotificationTypes.Ticket)))!.Id
-                };
+                // TODO??: Add a Sweet Alert/Modal error msg if no project manager is found for Project Ticket is associated with
+           
+                    if (projectManager != null)
+                    {
+                        Notification? notification = new()
+                        {
+                            TicketId = ticket.Id,
+                            ProjectId = ticket.ProjectId,
+                            Title = "New Ticket Added",
+                            Message = $"New Ticket: {ticket.Title} was created by: {user.FullName}. ",
+                            Created = DataUtility.GetPostGresDate(DateTime.Now),
+                            SenderId = user.Id,
+                            RecipientId = projectManager.Id,
+                            NotificationTypeId = (await _context.NotificationTypes.FirstOrDefaultAsync(n => n.Name == nameof(BTNotificationTypes.Ticket)))!.Id
+                        };
 
-                if (projectManager != null)
-                {
-                    await _notificationService.AddNotificationAsync(notification);
-                    await _notificationService.SendEmailNotificationAsync(notification, "New Ticket Added");
+                        if (projectManager != null)
+                        {
+                            await _notificationService.AddNotificationAsync(notification);
+                            await _notificationService.SendEmailNotificationAsync(notification, "New Ticket Added");
+                        }
+                        else
+                        {
+                            await _notificationService.AdminNotificationAsync(notification, companyId);
+                            await _notificationService.SendAdminEmailNotificationAsync(notification, "New Project Ticket Added", companyId);
+                        }
                 }
-                else
-                {
-                    await _notificationService.AdminNotificationAsync(notification, companyId);
-                    await _notificationService.SendAdminEmailNotificationAsync(notification, "New Project Ticket Added", companyId);
-                }
+               
+
+                
                 return RedirectToAction(nameof(AssignDeveloper), new {id = ticket.Id});
             }
             //ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
             ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", ticket.ProjectId);
             //ViewData["SubmitterUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.SubmitterUserId);
             ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Name", ticket.TicketPriorityId);
-            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Name", ticket.TicketStatusId);
+            //ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Name", ticket.TicketStatusId);
             ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Name", ticket.TicketTypeId);
             return View(ticket);
         }
@@ -503,8 +577,8 @@ namespace BugHunterBugTrackerZD.Controllers
                     {
                         TicketId = ticket.Id,
                         ProjectId = ticket.ProjectId,
-                        Title = "New Ticket Added",
-                        Message = $"New Ticket: {ticket.Title} was created by: {user.FullName}. ",
+                        Title = "A Ticket Has Been Updated",
+                        Message = $"Old Ticket: {oldTicket.Title} was modified by: {user.FullName}. ",
                         Created = DataUtility.GetPostGresDate(DateTime.Now),
                         SenderId = user.Id,
                         RecipientId = projectManager.Id,
@@ -514,12 +588,12 @@ namespace BugHunterBugTrackerZD.Controllers
                     if (projectManager != null)
                     {
                         await _notificationService.AddNotificationAsync(notification);
-                        await _notificationService.SendEmailNotificationAsync(notification, "New Ticket Added");
+                        await _notificationService.SendEmailNotificationAsync(notification, "Ticket Update");
                     }
                     else
                     {
                         await _notificationService.AdminNotificationAsync(notification, companyId);
-                        await _notificationService.SendAdminEmailNotificationAsync(notification, "New Project Ticket Added", companyId);
+                        await _notificationService.SendAdminEmailNotificationAsync(notification, "A Project Ticket Has Been Updated", companyId);
                     }
 
                 }
@@ -539,9 +613,9 @@ namespace BugHunterBugTrackerZD.Controllers
             //ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
             ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Description", ticket.ProjectId);
             //ViewData["SubmitterUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.SubmitterUserId);
-            ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Id", ticket.TicketPriorityId);
-            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Id", ticket.TicketStatusId);
-            ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Id", ticket.TicketTypeId);
+            ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Name", ticket.TicketPriorityId);
+            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Name", ticket.TicketStatusId);
+            ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Name", ticket.TicketTypeId);
             return View(ticket);
         }
 
@@ -571,6 +645,13 @@ namespace BugHunterBugTrackerZD.Controllers
                 return NotFound();
             }
 
+            //ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
+            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", ticket.ProjectId);
+            //ViewData["SubmitterUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.SubmitterUserId);
+            ViewData["TicketPriorityId"] = new SelectList(_context.TicketPriorities, "Id", "Name", ticket.TicketPriorityId);
+            ViewData["TicketStatusId"] = new SelectList(_context.TicketStatuses, "Id", "Name", ticket.TicketStatusId);
+            ViewData["TicketTypeId"] = new SelectList(_context.TicketTypes, "Id", "Name", ticket.TicketTypeId);
+
             return View(ticket);
         }
 
@@ -595,12 +676,6 @@ namespace BugHunterBugTrackerZD.Controllers
                 await _ticketService.UpdateTicketAsync(ticket);
             }
 
-            //if (ticket!.Project!.Archived == true)
-            //{
-            //    ticket.ArchivedByProject = true;
-            //    await _ticketService.UpdateTicketAsync(ticket);
-            //}
-            //await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

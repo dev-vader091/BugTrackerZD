@@ -22,21 +22,23 @@ namespace BugHunterBugTrackerZD.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IBTCompanyService _companyService;
         private readonly IBTRolesService _rolesService;
+        private readonly IBTProjectService _projectService;
 
-        public CompaniesController(ApplicationDbContext context, IBTCompanyService companyService, IBTRolesService rolesService)
+        public CompaniesController(ApplicationDbContext context, IBTCompanyService companyService, IBTRolesService rolesService, IBTProjectService projectService)
         {
             _context = context;
             _companyService = companyService;
             _rolesService = rolesService;
+            _projectService = projectService;
         }
 
         // GET: Companies
-        public async Task<IActionResult> Index()
-        {
-              return _context.Companies != null ? 
-                          View(await _context.Companies.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Companies'  is null.");
-        }
+        //public async Task<IActionResult> Index()
+        //{
+        //      return _context.Companies != null ? 
+        //                  View(await _context.Companies.ToListAsync()) :
+        //                  Problem("Entity set 'ApplicationDbContext.Companies'  is null.");
+        //}
 
         // GET: Companies/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -46,8 +48,13 @@ namespace BugHunterBugTrackerZD.Controllers
                 return NotFound();
             }
 
-            var company = await _context.Companies
-                .FirstOrDefaultAsync(m => m.Id == id);
+            int companyId = User.Identity!.GetCompanyId();
+
+            var company = await _companyService.GetCompanyInfoAsync(companyId);
+
+            List<Project> projects = await _projectService.GetAllProjectsByCompanyAsync(id);
+
+                                       
             if (company == null)
             {
                 return NotFound();
