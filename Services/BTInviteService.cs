@@ -137,6 +137,26 @@ namespace BugHunterBugTrackerZD.Services
             }
         }
 
+        public async Task<List<Invite>> GetInvitesAsync(int? companyId)
+        {
+            try
+            {
+                List<Invite> invites = await _context.Invites
+                                                     .Where(i => i.CompanyId == companyId)
+                                                     .Include(i => i.Company)
+                                                     .Include(i => i.Project)
+                                                     .Include(i => i.Invitor)
+                                                     .Include(i => i.Invitee)
+                                                     .ToListAsync();
+                return invites;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
         public async Task<bool> ValidateInviteCodeAsync(Guid? token)
         {
             try

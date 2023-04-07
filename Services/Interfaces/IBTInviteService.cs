@@ -10,6 +10,8 @@ namespace BugHunterBugTrackerZD.Services.Interfaces
 
         public Task<bool> AnyInviteAsync(Guid? token, string? email, int? companyId);
 
+        public Task<List<Invite>> GetInvitesAsync(int? companyId);
+
         public Task<Invite?> GetInviteAsync(int? inviteId, int? companyId);
 
         public Task<Invite?> GetInviteAsync(Guid? token, string? email, int? companyId);
