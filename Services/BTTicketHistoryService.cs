@@ -139,7 +139,7 @@ namespace BugHunterBugTrackerZD.Services
                             NewValue = newTicket.DeveloperUser?.FullName,
                             Created = DataUtility.GetPostGresDate(DateTime.Now),
                             UserId = userId,
-                            Description = $"Changed ticket developer from: {oldTicket.DeveloperUser?.FullName} to : {newTicket.DeveloperUser?.FullName}"
+                            Description = $"Changed ticket developer from: {oldTicket.DeveloperUser?.FullName ?? "Unassigned"} to : {newTicket.DeveloperUser?.FullName}"
                         };
 
                         await _context.TicketHistories.AddAsync(history);
