@@ -42,13 +42,13 @@
 
 
 <div>
-    <div class="xfont-weighteighteightge container-fluid">
+    <div class="container-fluid">
         <!-- Info Pills -->
-        <div class="row mt-2 info-pills">
+        <div class="row gy-3 my-2 info-pills">
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <a asp-action="Index" asp-controller="Projects" style="text-decoration:none">
                     <div class="card text-center bg-info">
-                        <div class="body">
+                        <div class="card-body  bg-info">
                             <div class="p-15 text-light">
                                 <h3>@Model.Projects?.Where(p => p.StartDate < DateTime.Now && p.EndDate > DateTime.Now).Count()</h3>
                                 <span>Active Projects</span>
@@ -60,7 +60,7 @@
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <a asp-action="Index" asp-controller="Tickets" style="text-decoration:none">
                     <div class="card text-center bg-danger">
-                        <div class="body">
+                        <div class="card-body bg-danger">
                             <div class="p-15 text-light">
 
                                 <h3>@Model.Tickets?.Count()</h3>
@@ -72,7 +72,7 @@
             </div>
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div class="card text-center bg-warning">
-                    <div class="body">
+                    <div class="card-body bg-warning">
                         <div class="p-15 text-light">
                             <h3>@Model.Tickets?.Where(t => string.IsNullOrEmpty(t.DeveloperUserId)).Count()</h3>
                             <span>Unassigned Tickets</span>
@@ -82,7 +82,7 @@
             </div>
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div class="card text-center bg-success">
-                    <div class="body">
+                    <div class="card-body bg-success">
                         <div class="p-15 text-light">
                             <h3>
                                 @(
@@ -99,51 +99,57 @@
         </div>
         <!-- End Info Pills -->
         <div class="row gy-2">
-            <div class="col-md-12 col">
-                <div class="row col-cols-4 mt-5 bg-primary">
-                    <div class="card col m-1 p-2">
-                        <div class="card-body">
-                            <h5>Projects by Priority</h5>
-                            <p>[Google Charts]</p>
-                            <div id="chart3D"></div>
-                        </div>
-                    </div>
-                    <div class="card col m-1 p-2">
-                        <div class="card-body">
-                            <h5>Project Tickets Count (%)</h5>
-                            <p>[Google Charts]</p>
-                            <div id="donut"></div>
-                        </div>
-                    </div>
-
+            @*<div class="col-md-12 col">*@
+            @*<div class="row col-cols-4 mt-5">*@
+            <div class="col-12 col-md-6">
+                <div class="card">
                     <div class="card-body">
-                        <h5>Tickets by Priority</h5>
-                        <p>[Morris Charts]</p>
-                        <!-- Morris: Donut -->
-                        <div class="col-md-12">
-                            <div id="legend" class="donut-legend" style="font-size:x-small"></div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="chart chart-md" id="morrisTicketPriority"></div>
-                        </div>
+                        <h5>Projects by Priority</h5>
+                        <p>[Google Charts]</p>
+                        <div id="chart3D"></div>
                     </div>
-
-                    <div class="card col m-1 p-2">
-                        <div class="card-body">
-                            <h5>Tickets by Status</h5>
-                            <p>[ChartJS]</p>
-                            <!-- ChartJS: Pie/Doughnut -->
-                            <div class="col-md-12">
-                                <!--  Chart.js Canvas Tag -->
-                                <canvas id="donutChart"></canvas>
-                            </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Project Tickets Count (%)</h5>
+                        <p>[Google Charts]</p>
+                        <div id="donut"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card-body">
+                    <h5>Tickets by Priority</h5>
+                    <p>[Morris Charts]</p>
+                    <!-- Morris: Donut -->
+                    <div class="col-md-12">
+                        <div id="legend" class="donut-legend" style="font-size:x-small"></div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="chart chart-md" id="morrisTicketPriority"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Tickets by Status</h5>
+                        <p>[ChartJS]</p>
+                        <!-- ChartJS: Pie/Doughnut -->
+                        <div class="col-md-12">
+                            <!--  Chart.js Canvas Tag -->
+                            <canvas id="donutChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
+            @*</div>*@
+            @*</div>*@
         </div>
         <div class="row gy-2">
-            <div class="cols mt-5 bg-primary">
+            <div class="col">
                 <div class="card col m-1 p-2">
                     <div class="card-body" style="height:600px">
                         <h5>Project: Tickets vs Developers</h5>
@@ -155,7 +161,7 @@
             </div>
         </div>
         <div class="row gy-2">
-            <div class="cols mt-5 bg-primary">
+            <div class="cols mt-5">
                 <div class="card col m-1 p-2">
                     <div class="card-body" style="height:600px;overflow-y:auto;">
                         <h5>Project: Tickets vs Developers</h5>
@@ -167,13 +173,12 @@
             </div>
         </div>
     </div>
-    <hr />
     <div class="mt-5 ">
         <div class="row">
             @* Projects Table *@
             <div class="col">
-                <div class="bg-primary">
-                    <div class="card m-1 p-2">
+                
+                    <div class="card">
                         <div class="card-header">
                             <h2>Projects</h2>
                         </div>
@@ -187,122 +192,59 @@
                                                 Project Name
                                             </th>
                                             <th>
-                                                Description
-                                            </th>
-
-                                            <th>
                                                 Start Date
                                             </th>
                                             <th>
                                                 End Date
                                             </th>
                                             <th>
-                                                Company
-                                            </th>
-                                            <th>
                                                 Project Priority
                                             </th>
-                                            <th>
-                                                Archived
-                                            </th>
-
-                                            @*<th>
-                                            Actions
-                                            </th>
-                                            @if (User.IsInRole("Admin"))
-                                            {
-                                            <th></th>
-                                            <th></th>
-                                            }
-                                            else if (User.IsInRole("ProjectManager"))
-                                            {
-                                            <th></th>
-                                            }*@
                                         </tr>
                                     </thead>
 
                                     <tbody class="projectsIndexTable">
                                         @foreach (var item in Model.Projects!)
                                         {
-                                            <tr>
-                                                <td>
-                                                    @Html.DisplayFor(modelItem => item.Name)
-                                                </td>
-                                                <td>
-                                                    @Html.DisplayFor(modelItem => item.Description)
-                                                </td>
-
-                                                <td>
-                                                    @Html.DisplayFor(modelItem => item.StartDate)
-                                                </td>
-                                                <td>
-                                                    @Html.DisplayFor(modelItem => item.EndDate)
-                                                </td>
-
-
-                                                <td>
-                                                    @Html.DisplayFor(modelItem => item.Company!.CompanyName)
-                                                </td>
-                                                <td>
-                                                    @Html.DisplayFor(modelItem => item.ProjectPriority!.Name)
-                                                </td>
-                                                <td class="text-center">
-                                                    @Html.DisplayFor(modelItem => item.Archived)
-                                                </td>
-
-                                                @* <td class="actions-hover actions-fade">
-                                            @if (User.IsInRole("ProjectManager") || User.IsInRole("Admin"))
+                                            @if (item.Archived == false)
                                             {
-                                            <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt text-warning"></i> </a>
-                                            <a asp-action="Details" asp-route-id="@item.Id"> <i class='bx bx-detail text-info'></i> </a>
-                                            <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt text-danger"></i> </a>
+                                                <tr>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.Name)
+                                                    </td>
+
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.StartDate)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.EndDate)
+                                                    </td>
+
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.ProjectPriority!.Name)
+                                                    </td>
+                                                </tr>
                                             }
-                                            else if (User.IsInRole("Developer") || User.IsInRole("ProjectManager") || User.IsInRole("Submitter"))
-                                            {
-                                            <a asp-action="Details" asp-route-id="@item.Id" class="d-flex justify-content-center"> <i class="bx bx-detail text-info"></i> </a>
-                                            }
-                                            </td>
-                                            @if (User.IsInRole("Admin"))
-                                            {
-                                            <td>
-                                            <a asp-action="AssignPM" asp-route-id="@item.Id"> Assign PM</a>
-                                            </td>
-
-                                            <td>
-                                            <a asp-action="AssignProjectMembers" asp-route-id="@item.Id"> Assign Project Members</a>
-                                            </td>
-                                            }
-                                            @if (User.IsInRole("ProjectManager"))
-                                            {
-                                            <td>
-                                            <a asp-action="AssignProjectMembers" asp-route-id="@item.Id"> Assign Project Members</a>
-                                            </td>
-                                            }*@
-                                            </tr>
-
-
                                         }
-
-
                                     </tbody>
                                 </table>
                             </div>
 
                         </div>
                     </div>
-                </div>
+                
                 @* Tickets Table *@
-                <div class="col">
-                    <div class="bg-primary">
-                        <div class="card m-1 p-2">
+                <div class="col-12">
+                    @*<div class="">*@
+                        <div class="card">
                             <div class="card-header">
                                 <h2>Tickets</h2>
                             </div>
-                            <div class="card-body">
+                            @*<div class="card-body">*@
                                 @* Copy and format table from Unassigned Tickets *@
 
                                 <div class="card-body">
-                                    <table class="table table-bordered table-striped table-responsive-md table-hover mb-0" id="datatable-tickets">
+                                    <table class="table table-bordered table-striped table-hover mb-0" id="datatable-tickets">
                                         <thead>
                                             <tr>
                                                 <th>
@@ -311,41 +253,28 @@
                                                 <th>
                                                     Project
                                                 </th>
-                                                @*<th>
-                                                @Html.DisplayNameFor(model => model.Description)
-                                                </th>*@
                                                 <th>
                                                     Created / Updated
                                                 </th>
-                                                @* <th>
-                                                @Html.DisplayNameFor(model => model.Updated)
-                                                </th>*@
                                                 <th>
-                                                    @*@Html.DisplayNameFor(model => model.TicketPriority)*@
                                                     Ticket Priority
                                                 </th>
                                                 <th>
-                                                    @* @Html.DisplayNameFor(model => model.TicketType)*@
                                                     Ticket Type
                                                 </th>
                                                 <th>
-                                                    @*@Html.DisplayNameFor(model => model.TicketStatus)*@
                                                     Ticket Status
                                                 </th>
                                                 <th>
-                                                    @*@Html.DisplayNameFor(model => model.SubmitterUser)*@
                                                     Submitter
                                                 </th>
-                                                <th>
-                                                    Actions
-                                                </th>
-                                                <th></th>
+
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody class="projectsIndexTable">
                                             @foreach (var item in Model.Tickets!)
                                             {
-                                                if (item.Archived == false)
+                                                if (!item.Archived == true)
                                                 {
                                                     <tr>
                                                         <td>
@@ -354,9 +283,7 @@
                                                         <td>
                                                             @Html.DisplayFor(modelItem => item.Project!.Name)
                                                         </td>
-                                                        @* <td>
-                                                @Html.DisplayFor(modelItem => item.Description)
-                                                </td>*@
+
                                                         <td>
                                                             @Html.DisplayFor(modelItem => item.Created)
                                                             @if (item.Updated != null)
@@ -364,9 +291,7 @@
                                                                 <span class="fw-bold">/</span>  @Html.DisplayFor(modelItem => item.Updated)
                                                             }
                                                         </td>
-                                                        @* <td>
-                                                @Html.DisplayFor(modelItem => item.Updated)
-                                                </td>*@
+
                                                         <td>
                                                             @Html.DisplayFor(modelItem => item.TicketPriority!.Name)
                                                         </td>
@@ -379,58 +304,53 @@
                                                         <td>
                                                             @Html.DisplayFor(modelItem => item.SubmitterUser!.FullName)
                                                         </td>
-
-                                                        <td class="actions-hover actions-fade">
-                                                            <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt text-warning fa-sm"></i> </a>
-                                                            <a asp-action="Details" asp-route-id="@item.Id"> <i class="bx bx-detail text-info fa-sm"></i> </a>
-                                                            <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt text-danger fa-sm"></i> </a>
-                                                        </td>
-                                                        <td>
-                                                            <a asp-action="AssignTicketToUser" asp-route-id="@item.Id">Assign Ticket</a>
-                                                        </td>
-
+                                                        @* <td class="actions-hover actions-fade">
+                                                <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt text-warning fa-sm"></i> </a>
+                                                <a asp-action="Details" asp-route-id="@item.Id"> <i class="bx bx-detail text-info fa-sm"></i> </a>
+                                                <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt text-danger fa-sm"></i> </a>
+                                                </td>
+                                                <td>
+                                                <a asp-action="AssignTicketToUser" asp-route-id="@item.Id">Assign Ticket</a>
+                                                </td>*@
                                                     </tr>
                                                 }
-
                                             }
 
                                         </tbody>
                                     </table>
                                 </div>
-                                
+
+                            @*</div>*@
+                        </div>
+                    @*</div>*@
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>Members</h2>
+                            </div>
+                            <div class="card-body">
+                                @* Looop over Company members. Display Name and Role *@
+                                <ul class="list-unstyled">
+                                    @foreach (BTUser member in Model.Members!)
+                                    {
+                                        <li>
+                                            <strong>
+                                                @member?.FullName -
+                                                <span class="text-muted" style="font-size:x-small;">
+                                                    @foreach (var role in await UserManager.GetRolesAsync(member!))
+                                                    {
+                                                        <strong>@role</strong>
+
+                                                    }
+                                                </span>
+                                            </strong>
+                                        </li>
+                                    }
+
+                                </ul>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-4 ">
-                        <div class="bg-dark">
-                            <div class="card m-1 p-2">
-                                <div class="card-header">
-                                    <h2>Members</h2>
-                                    <hr />
-                                </div>
-                                <div class="card-body" style="overflow-y:auto;height:600px;background-color:antiquewhite">
-                                    @* Looop over Company members. Display Name and Role *@
-                                    <ul class="list-unstyled">
-                                        @foreach (BTUser member in Model.Members!)
-                                        {
-                                            <li>
-                                                <strong>
-                                                    @member?.FullName -
-                                                    <span class="text-muted" style="font-size:x-small;">
-                                                        @foreach (var role in await UserManager.GetRolesAsync(member!))
-                                                        {
-                                                            <strong>@role</strong>
 
-                                                        }
-                                                    </span>
-                                                </strong>
-                                            </li>
-                                        }
-
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -529,7 +449,7 @@
         @Model.Tickets!.Where(t=> t.TicketStatus!.Name == nameof(BTTicketStatuses.New)).Count(),
         @Model.Tickets!.Where(t=> t.TicketStatus!.Name == nameof(BTTicketStatuses.Resolved)).Count(),
         @Model.Tickets!.Where(t=> t.TicketStatus!.Name == nameof(BTTicketStatuses.Testing)).Count()
-                                            ],
+                                                    ],
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
@@ -593,16 +513,16 @@
         var morrisDonutData = [{
             label: "Low",
             value: @Model.Tickets!.Where(t=>t.TicketPriority!.Name == nameof(BTTicketPriorities.Low)).Count()
-                            }, {
+                                    }, {
             label: "Medium",
             value: @Model.Tickets!.Where(t=>t.TicketPriority!.Name == nameof(BTTicketPriorities.Medium)).Count()
-                            }, {
+                                    }, {
             label: "High",
             value: @Model.Tickets!.Where(t=>t.TicketPriority!.Name == nameof(BTTicketPriorities.High)).Count()
-                            }, {
+                                    }, {
             label: "Urgent",
             value: @Model.Tickets!.Where(t=>t.TicketPriority!.Name == nameof(BTTicketPriorities.Urgent)).Count()
-                            }];
+                                    }];
 
 
 
@@ -710,7 +630,6 @@
     </script>
 
     <!-- *** End AM Charts *** -->
-
     <!-- Specific Page Vendor -->
     <script src="~/template/vendor/select2/js/select2.js"></script>
     <script src="~/template/vendor/datatables/media/js/jquery.dataTables.min.js"></script>
@@ -728,7 +647,7 @@
     <script src="~/template/js/examples/examples.datatables.row.with.details.js"></script>
     <script src="~/template/js/examples/examples.datatables.tabletools.js"></script>
 
-        
+
     <script>
         (function ($) {
 
@@ -748,8 +667,6 @@
 
         }).apply(this, [jQuery]);
     </script>
-
-
 
 }
 

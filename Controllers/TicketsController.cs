@@ -239,59 +239,62 @@ namespace BugHunterBugTrackerZD.Controllers
             string? userId = _userManager.GetUserId(User);
             int companyId = User.Identity!.GetCompanyId();
 
-            Ticket? oldticket = await _ticketService.GetTicketByIdAsync(viewModel.Ticket!.Id, companyId);
+            //Ticket? oldTicket = await _ticketService.GetTicketByIdAsync(viewModel.Ticket!.Id, companyId);
+            Ticket? oldTicket = await _ticketService.GetTicketAsNoTrackingAsync(viewModel.Ticket!.Id, companyId);
+
+            //Ticket ticket = new Ticket();
 
             if (!string.IsNullOrEmpty(viewModel.SelectedDeveloperId))
             {
+                Ticket newTicket = await _ticketService.GetTicketByIdAsync(viewModel.Ticket.Id, companyId);
 
                 // Add developerId to ticket              
-                await _ticketService.AssignTicketToDeveloperAsync(viewModel.Ticket.Id, viewModel.SelectedDeveloperId, companyId);
-
+                await _ticketService.AssignTicketToDeveloperAsync(newTicket.Id, viewModel.SelectedDeveloperId, companyId);
 
                 // TODO: Add Ticket History
-                await _ticketService.UpdateTicketAsync(oldticket);
+                await _ticketService.UpdateTicketAsync(newTicket);
 
-                Ticket? newTicket = await _ticketService.GetTicketAsNoTrackingAsync(oldticket.Id, companyId);
+                Ticket ticket = await _ticketService.GetTicketAsNoTrackingAsync(newTicket.Id, companyId);
 
-                await _historyService.AddHistoryAsync(oldticket, newTicket, userId);
+                await _historyService.AddHistoryAsync(oldTicket, ticket, userId);
 
                 // TODO: Add Ticket Notification
-                //BTUser? projectManager = await _projectService.GetProjectManagerAsync(newTicket.ProjectId);
+                BTUser? projectManager = await _projectService.GetProjectManagerAsync(newTicket.ProjectId);
 
-                //Notification? notification = new()
-                //{
-                //    TicketId = newTicket.Id,
-                //    ProjectId = newTicket.ProjectId,
-                //    Title = "New Ticket Added",
-                //    Message = $"New Ticket: {newTicket.Title} was created by: {user!.FullName}. ",
-                //    Created = DataUtility.GetPostGresDate(DateTime.Now),
-                //    SenderId = user.Id,
-                //    RecipientId = projectManager.Id,
-                //    NotificationTypeId = (await _context.NotificationTypes.FirstOrDefaultAsync(n => n.Name == nameof(BTNotificationTypes.Ticket)))!.Id
-                //};
+                Notification? notification = new()
+                {
+                    TicketId = oldTicket.Id,
+                    ProjectId = oldTicket.ProjectId,
+                    Title = "A Ticket Has Been Updated",
+                    Message = $"Old Ticket: {oldTicket.Title} was modified by: {user!.FullName}. ",
+                    Created = DataUtility.GetPostGresDate(DateTime.Now),
+                    SenderId = user.Id,
+                    RecipientId = projectManager.Id,
+                    NotificationTypeId = (await _context.NotificationTypes.FirstOrDefaultAsync(n => n.Name == nameof(BTNotificationTypes.Ticket)))!.Id
+                };
 
-                //if (projectManager != null)
-                //{
-                //    await _notificationService.AddNotificationAsync(notification);
-                //    await _notificationService.SendEmailNotificationAsync(notification, "New Ticket Added");
-                //}
-                //else
-                //{
-                //    await _notificationService.AdminNotificationAsync(notification, companyId);
-                //    await _notificationService.SendAdminEmailNotificationAsync(notification, "New Project Ticket Added", companyId);
-                //}
+                if (projectManager != null)
+                {
+                    await _notificationService.AddNotificationAsync(notification);
+                    await _notificationService.SendEmailNotificationAsync(notification, "Ticket Update");
+                }
+                else
+                {
+                    await _notificationService.AdminNotificationAsync(notification, companyId);
+                    await _notificationService.SendAdminEmailNotificationAsync(notification, "A Project Ticket Has Been Updated", companyId);
+                }
+
+               
 
                 return RedirectToAction("Details", new { id = viewModel.Ticket?.Id });
             }
 
-            //// TODO: Add Ticket History
-            //await _ticketService.UpdateTicketAsync(oldticket);
+            // TODO: Add Ticket History
+            ////await _ticketService.UpdateTicketAsync(oldTicket);
 
-            //Ticket? newTicket = await _ticketService.GetTicketAsNoTrackingAsync(oldticket.Id, companyId);
+            ////Ticket? newTicket = await _ticketService.GetTicketAsNoTrackingAsync(oldTicket.Id, companyId);
 
-            //await _historyService.AddHistoryAsync(oldticket, newTicket, userId);
-
-            //// TODO: Add Ticket Notification
+            ////await _historyService.AddHistoryAsync(oldTicket, newTicket, userId);
 
             return View(viewModel);
         }

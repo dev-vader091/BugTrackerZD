@@ -36,7 +36,7 @@
     <div class ="container-fluid">
         <div class="row gy-2">
             <div class="col-md-12 col">
-                <div class="row col-cols-2 mt-5 bg-primary"> 
+                <div class="row col-cols-2 mt-5"> 
                     <div class="card col m-1 p-2">
                         <div class="card-body">
                             @* Project Name *@
@@ -81,7 +81,7 @@
             </div>
             <div class="col-md-8 col col-cols-2 mt-5 ">
                 <div class="col">
-                    <div class="bg-primary">
+                    <div class="">
                         <div class="card m-1 p-2">
                             <div class="card-header">
                                 <h2>Comments</h2>
@@ -161,23 +161,21 @@
                                     }
                                 </ul>
                             </div>
-                            <div class="card-footer">
-                            </div>
+                           
                         </div>
                     </div>
                 </div>
                 <div class="col">
-                    <div class="bg-primary">
+                    <div class="">
                         <div class="card m-1 p-2">
                             <div class="card-header">
                                 <h2>Attachments</h2>
                             </div>
                             <div class="card-body" style="overflow-y:auto;height:300px;">
-
                                 @* Refer to the Ticket Attachments document for this section *@
-
+                                
                                 @* Ticket attachments part 1 here *@
-                                @if (User.Identity!.IsAuthenticated && Model.DeveloperUserId == UserManager.GetUserId(User) || Model.SubmitterUserId == UserManager.GetUserId(User) || Model.Project.Members.Any(m => m.Id == UserManager.GetUserId(User)))
+                                @if (User.Identity!.IsAuthenticated && Model.DeveloperUserId == UserManager.GetUserId(User) || Model.SubmitterUserId == UserManager.GetUserId(User) || Model.Project.Members.Any(m => m.Id == UserManager.GetUserId(User)) || User.IsInRole(nameof(BTRoles.Admin)))
                                 {
                                     <div class="row clearfix">
                                         <div>
@@ -228,8 +226,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-footer">
-                            </div>
+                            
                         </div>
                     </div>
                 </div>

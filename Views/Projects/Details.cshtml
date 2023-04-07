@@ -24,38 +24,38 @@
 </style>
 
 
-<div>
+
 
     <div class="container-fluid">
-        <div class="row gy-2">
-            <div class="col-6 col-md-12">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="card m-1 p-2">
+        <div class="row gy-3 mb-5">
+            @*<div class="col-12">*@
+                @*<div class="row">*@
+                    <div class="col-lg-3">
+                        <div class="card">
                             <div class="card-body">
                                 @* Project Name *@
                                 <h4>Project Description</h4>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-9">
-                        <div class="card m-1 p-2">
+                    <div class="col-lg-9">
+                        <div class="card">
                             <div class="card-body">
                                 @* Project Description *@
                                 <textarea class="editor">@Model.Description</textarea>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                @*</div>*@
+            @*</div>*@
         </div>
 
 
-        <div class="row gy-2">
-            <div class="col-md-12 col-6">
-                <div class="row">
+        <div class="row gy-3 mb-5">
+            @*<div class=" col-6 col-sm-12">
+                <div class="row">*@
                     <div class="col-md-6">
-                        <div class="card m-1 p-2">
+                        <div class="card">
                             <div class="card-body">
                                 <div class="progress-container progress-info m-b-25">
                                     <span class="progress-badge" style="font-size:small">Project Status</span>
@@ -78,7 +78,7 @@
 
                     </div>
                     <div class="col-md-6">
-                        <div class="card m-1 p-2">
+                        <div class="card">
                             <div class="card-body">
                                 <ul class=" list-unstyled basic-list">
                                     <li class="text-dark">Start Date: <span class="text-dark">[@Model.StartDate]</span></li>
@@ -86,20 +86,28 @@
                                     <li class="text-dark">Priority: <span class="text-dark">[@Model.ProjectPriority!.Name]</span></li>
                                     @* if() logic *@
                                     [Project Active/Inactive]
+
+                                    @{
+                                        //var start = Model.StartDate;
+                                        //var end = Model.EndDate!.Value;
+                                        //var today = DateTime.Now;
+                                        var active = today >= end ? 100 : today < start ? 0 : Math.Round((today.Subtract(start!.Value)) / (end.Subtract(start.Value)) * 100);
+                                    }
+
                                 </ul>
                             </div>
                     </div>
                 </div>
-                </div>
-            </div>
+                @*</div>*@
+            @*</div>*@
         </div>
 
         <div class="row gy-2">
-            <div class="col-6 col-md-12">
-                <div class="row">
+            @*<div class="col-6 col-md-12">*@
+                @*<div class="row">*@
                     <div class="col-md-4">
                         <div class="">
-                            <div class="card m-1 p-2">
+                            <div class="card">
                                 <div class="">
                                     <h2>Project Manager</h2>
                                     <hr />
@@ -127,7 +135,7 @@
                     </div>
                     <div class="col-md-4">
                         <div class="">
-                            <div class="card m-1 p-2">
+                            <div class="card">
                                 <div class="">
                                     <h2>Project Team</h2>
                                     <hr />
@@ -162,14 +170,14 @@
                     </div>
                     <div class="col-md-4">
                         <div class="">
-                            <div class="card m-1 p-2">
+                            <div class="card">
                                 <div class="">
                                     <h2>Project Activity</h2>
                                     <hr />
                                 </div>
                                 <div class="card-body" style="overflow-y:auto;height:300px;">
                                     @* Project Activity loop *@
-                                    [Project Activity  e.g. Ticket History]
+                                    @*[Project Activity  e.g. Ticket History]*@
 
                                     <div class="timeline">
                                         <div class="tm-body">
@@ -244,14 +252,14 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                @*</div>*@
+            @*</div>*@
         </div>
 
         <div class="row gy-2">
-            <div class="col-6 col-md-12">
+            <div class="col-12">
                 @*<div class="mt-5 bg-primary">*@
-                    <div class="card col-12 m-1 p-2">
+                    <div class="card">
                         <div class="">
                             <h2>@Model.Name - Tickets</h2>
                         </div>
@@ -354,7 +362,7 @@
             </div>
         </div>
     </div>
-</div>
+
 
 @section scripts {
 

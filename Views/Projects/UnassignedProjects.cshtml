@@ -5,14 +5,14 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Projects</h1>
+@*<h1>Projects</h1>*@
 
-<p>
+@*<p>
     @if (User.IsInRole(nameof(BTRoles.Admin)) || User.IsInRole(nameof(BTRoles.ProjectManager)))
     {
         <a asp-action="Create">Create New</a>
     }
-</p>
+</p>*@
 
 <div class="row">
     <div class="col-lg-12">
@@ -23,7 +23,7 @@
                     <a href="#" class="card-action card-action-dismiss" data-card-dismiss></a>
                 </div>
 
-                <h2 class="card-title"></h2>
+                <h2 class="card-title">Unassigned Projects</h2>
             </header>
             <div class="card-body">
                 <div class="table-responsive">
@@ -32,25 +32,17 @@
                             <tr>
                                 <th>
                                     @Html.DisplayNameFor(model => model.Name)
-                                </th>
-                                
-
+                                </th>                                
                                 <th>
                                     @Html.DisplayNameFor(model => model.StartDate)
                                 </th>
                                 <th>
                                     @Html.DisplayNameFor(model => model.EndDate)
                                 </th>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.Company)
-                                </th>
+                                
                                 <th>
                                     Project Priority
-                                </th>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.Archived)
-                                </th>
-
+                                </th>                                
                                 <th>
                                     Actions
                                 </th>
@@ -73,26 +65,17 @@
                                     <tr>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Name)
-                                        </td>
-                                        
-
+                                        </td>                                        
                                         <td>
                                             @Html.DisplayFor(modelItem => item.StartDate)
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.EndDate)
-                                        </td>
-
-
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.Company!.CompanyName)
-                                        </td>
+                                        </td>                                       
                                         <td>
                                             @Html.DisplayFor(modelItem => item.ProjectPriority!.Name)
                                         </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.Archived)
-                                        </td>
+                                       
 
                                         <td class="actions-hover actions-fade">
                                             @if (User.IsInRole("ProjectManager") || User.IsInRole("Admin"))

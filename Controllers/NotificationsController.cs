@@ -46,11 +46,16 @@ namespace BugHunterBugTrackerZD.Controllers
                 return NotFound();
             }
 
-            Notification? notification = await _notificationService.GetNotificationByIdAsync(id);
-                
+            string? userId = _userManager.GetUserId(User);
 
-            notification!.HasBeenViewed = true;
-            await _context.SaveChangesAsync();
+            Notification? notification = await _notificationService.GetNotificationByIdAsync(id);
+
+            if (notification.RecipientId == userId)
+            {
+                notification!.HasBeenViewed = true;
+                await _context.SaveChangesAsync();
+            }
+
 
 
             if (notification == null)
@@ -191,14 +196,14 @@ namespace BugHunterBugTrackerZD.Controllers
             {
                 _context.Notifications.Remove(notification);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool NotificationExists(int id)
         {
-          return (_context.Notifications?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Notifications?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

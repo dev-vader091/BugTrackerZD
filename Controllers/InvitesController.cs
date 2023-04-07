@@ -49,8 +49,11 @@ namespace BugHunterBugTrackerZD.Controllers
         // GET: Invites
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Invites.Include(i => i.Company).Include(i => i.Invitee).Include(i => i.Invitor).Include(i => i.Project);
-            return View(await applicationDbContext.ToListAsync());
+            int companyId = User.Identity!.GetCompanyId();
+
+            List<Invite> invites = await _inviteService.GetInvitesAsync(companyId);
+
+            return View(invites);
         }
 
         // GET: Invites/Details/5

@@ -99,6 +99,11 @@
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.DeveloperUser!.FullName)
+
+                                            @if (item.DeveloperUser == null)
+                                            {
+                                                <span class="text-danger">Unassigned</span>
+                                            }
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.SubmitterUser!.FullName)

@@ -1,7 +1,9 @@
 ﻿@model BugHunterBugTrackerZD.Models.Company
+@using BugHunterBugTrackerZD.Models.Enums;
 @using BugHunterBugTrackerZD.Services.Interfaces
 
 @inject IBTProjectService _ProjectService
+@inject IBTRolesService _RolesService
 
 @{
     ViewData["Title"] = "Details";
@@ -12,8 +14,8 @@
 <div class="container-fluid">
     <div class="row gy-2">
         <div class="col">
-            <div class="row bg-primary">
-                <div class="card col m-1 p-2">
+            <div class="row">
+                <div class="card">
                     <div class="card-body">
                         @* Company Name *@
                         <h2 class="fw-bold">@Model.CompanyName</h2>
@@ -32,12 +34,20 @@
             <div class="col text-center">
                 <h3 class="lead mt-5 fw-bold">Projects</h3>
             </div>
-            <div class="row bg-primary">
-                <div class="card col m-1 p-2">
+            <div class="row">
+                <div class="card">
+                    <header class="card-header">
+                        <div class="card-actions">
+                            <a href="#" class="card-action card-action-toggle" data-card-toggle></a>
+                            <a href="#" class="card-action card-action-dismiss" data-card-dismiss></a>
+                        </div>
+
+                        @* <h2 class="Project"></h2>*@
+                    </header>
                     <div class="card-body">
                         <div class="table-responsive">
                             @*Table Goes Here*@
-                            <table class="table">
+                            <table class="table table-bordered table-striped table-responsive-md table-hover mb-0" id="datatable-default">
                                 <thead>
                                     <tr>
                                         <th>Project Name</th>
@@ -48,145 +58,169 @@
                                         <th>Members</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody class="projectsIndexTable">
                                     @foreach (Project project in Model.Projects)
                                     {
-                                        <tr>
-                                            <td>
-                                                @project.Name
-                                            </td>
-                                            @if (await _ProjectService.GetProjectManagerAsync(project.Id) != null)
-                                            {
-                                                string? projectManager = (await _ProjectService.GetProjectManagerAsync(project.Id)).FullName;
+                                        if (!project.Archived == true)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @project.Name
+                                                </td>
+                                                @if (await _ProjectService.GetProjectManagerAsync(project.Id) != null)
+                                                {
+                                                    string? projectManager = (await _ProjectService.GetProjectManagerAsync(project.Id)).FullName;
 
-                                                <td>@projectManager</td>
-                                            }
-                                            else
-                                            {
-                                                <td class="text-danger">Unassigned</td>
-                                            }
-                                            <td>
-                                                @Html.DisplayFor(model => project.StartDate)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(model => project.EndDate)
-                                            </td>
-                                            <td>
-                                                @project.Tickets.Count()
-                                            </td>
-                                            <td>
-                                                @project.Members.Count()
-                                            </td>
+                                                    <td>@projectManager</td>
+                                                }
+                                                else
+                                                {
+                                                    <td class="text-danger">Unassigned</td>
+                                                }
+                                                <td>
+                                                    @Html.DisplayFor(model => project.StartDate)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(model => project.EndDate)
+                                                </td>
+                                                <td>
+                                                    @project.Tickets.Count()
+                                                </td>
+                                                <td>
+                                                    @project.Members.Count()
+                                                </td>
 
-                                        </tr>
+                                            </tr>
+
+                                        }
                                     }
                                 </tbody>
                             </table>
+
+
                         </div>
                     </div>
                 </div>
                 @*<div class="card col m-1 p-2">
                 <div class="card-body">
 
+
                 </div>
                 </div>*@
             </div>
         </div>
-        <div class="col-12 col mt-5 ">
-            <div class="bg-primary">
-                <div class="card m-1 p-2">
-                    <div class="">
-                        <h2>Company Members</h2>
-                        <hr />
+
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12">           
+            <div class="col-12 my-2 d-flex flex-column flex-md-row align-items-center">
+                <h3 class="fw-bold text-center text-md-start">Company Members</h3>
+                @if (User.IsInRole(nameof(BTRoles.Admin)))
+                {
+                    <div class="ms-md-auto mt-3 mt-md-0 text-center">
+                        <a asp-action="Create" asp-controller="Invites" class="btn btn-primary btn-sm">Invite New Members</a>
+                        <a asp-action="ManageUserRoles" asp-controller="Companies" class="btn btn-dark btn-sm ms-2">Manage Roles</a>
                     </div>
-                    <div class="card-body" style="overflow-y:auto;height:300px;">
-                        <ul class="right_chat list-unstyled mb-0 text-dark">
-                            @* Logic for avatars *@
-                            @foreach (BTUser member in Model.Members)
-                            {
-                                @* TODO: Add if() statement for adding avatar next to name using imageFormFile *@
-                                <li>
-                                    <figure class="profile-picture">
-                                        @*@if (member.ImageFormFile != null)
-                                    {
+                }
+            </div>
 
-                                    }*@
-                                        <img src="/img/DefaultUserImage.png" alt="@member?.FullName" class="rounded-circle" data-lock-picture="/img/DefaultUserImage.png" height="35" />
-                                        <span class="name ms-2">@member?.FullName</span>
-                                    </figure>
-
-                                </li>
-                                @*<li class="text-dark">
-                            @member.FullName
-                            </li>*@
-                            }
-                        </ul>
-
-                    </div>
+            <div class="row">
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="text-muted my-2">Administrators</div>
+                    @{
+                        List<BTUser> admins = await _RolesService.GetUsersInRoleAsync(nameof(BTRoles.Admin), Model.Id);
+                    }
+                    @foreach (BTUser admin in admins)
+                    {
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex flex-row align-items-center p-2">
+                                    <span class="me-3"><i class='bx bx-key bx-sm'></i></span>
+                                    <span> @admin.FullName</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    
                 </div>
 
-            </div>
-        </div>
-        @* <div class="col-12 col">
-        <div class="mt-5 bg-primary">
-        <div class="card m-1 p-2">
-        <div class="">
-        <h2>Tickets</h2>
-        </div>
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="text-muted my-2">Project Managers</div>
+                    @{
+                        List<BTUser> projectManagers = await _RolesService.GetUsersInRoleAsync(nameof(BTRoles.ProjectManager), Model.Id);
+                    }
+                    @foreach (BTUser pm in projectManagers)
+                    {
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex flex-row align-items-center p-2">
+                                    <span class="me-3"><i class='bx bx-coffee bx-sm'></i></span>
+                                    <span> @pm.FullName</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="text-muted my-2">Developers</div>
+                    @{
+                        List<BTUser> developers = await _RolesService.GetUsersInRoleAsync(nameof(BTRoles.Developer), Model.Id);
+                    }
+                    @foreach (BTUser dev in developers)
+                    {
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex flex-row align-items-center p-2">
+                                    <span class="me-3"><i class='bx bx-code bx-sm'></i></span>
+                                    <span> @dev.FullName</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="text-muted my-2">Submitters</div>
+                    @{
+                        List<BTUser> submitters = await _RolesService.GetUsersInRoleAsync(nameof(BTRoles.Submitter), Model.Id);
+                    }
+                    @foreach (BTUser submitter in submitters)
+                    {
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex flex-row align-items-center p-2">
+                                    <span class="me-3"><i class='bx bx-user bx-sm'></i></span>
+                                    <span> @submitter.FullName</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>                                  
         </div>
 
-        </div>
-        </div>*@
     </div>
 </div>
 
 
+@section Scripts {
+    <!-- Specific Page Vendor -->
+    <script src="~/template/vendor/select2/js/select2.js"></script>
+    <script src="~/template/vendor/datatables/media/js/jquery.dataTables.min.js"></script>
+    <script src="~/template/vendor/datatables/media/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/Buttons-1.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/Buttons-1.4.2/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/Buttons-1.4.2/js/buttons.html5.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/Buttons-1.4.2/js/buttons.print.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/JSZip-2.5.0/jszip.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/pdfmake-0.1.32/pdfmake.min.js"></script>
+    <script src="~/template/vendor/datatables/extras/TableTools/pdfmake-0.1.32/vfs_fonts.js"></script>
 
-
-
-@*<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Project Name</th>
-            <th>Project Manager</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>Tickets</th>
-            <th>Members</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (Project project in Model.Projects)
-        {
-
-            <tr>
-                <td>
-                    @project.Name
-                </td>
-                @if (await _ProjectService.GetProjectManagerAsync(project.Id) != null)
-                {
-                    string? projectManager = (await _ProjectService.GetProjectManagerAsync(project.Id)).FullName;
-
-                    <td>@projectManager</td>
-                }
-                else
-                {
-                    <td class="text-danger">Unassigned</td>
-                }
-                <td>
-                    @project.StartDate
-                </td>
-                <td>
-                    @project.EndDate
-                </td>
-                <td>
-                    @project.Tickets.Count()
-                </td>
-                <td>
-                    @project.Members.Count()
-                </td>
-
-            </tr>
-        }
-    </tbody>
-</table>*@
+    <!-- Examples -->
+    <script src="~/template/js/examples/examples.datatables.default.js"></script>
+    <script src="~/template/js/examples/examples.datatables.row.with.details.js"></script>
+    <script src="~/template/js/examples/examples.datatables.tabletools.js"></script>
+}

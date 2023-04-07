@@ -51,18 +51,8 @@
                                 </th>
                                 <th>
                                     Ticket Status
-                                </th>
+                                </th>                                
                                 <th>
-
-                                    Developer
-                                </th>
-                                <th>
-
-                                    Submitter
-                                </th>
-
-                                <th>
-
                                     Archived By Project
                                 </th>
                                 <th>
@@ -79,7 +69,7 @@
                         <tbody class="projectsIndexTable">
                             @foreach (var item in Model)
                             {
-                                if (!item.Archived == true)
+                                if (item.Archived == true)
                                 {
                                     BTUser? projectManager = await _ProjectService.GetProjectManagerAsync(item.ProjectId);
                                     BTUser? admin = await _CompanyService.GetCompanyAdmin(item.Project!.CompanyId, btUser?.Id);
@@ -106,14 +96,7 @@
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.TicketStatus!.Name)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.DeveloperUser!.FullName)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.SubmitterUser!.FullName)
-                                        </td>
-
+                                        </td>                                       
                                         <td>
                                             @Html.DisplayFor(modelItem => item.ArchivedByProject)
                                         </td>
