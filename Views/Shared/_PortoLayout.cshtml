@@ -201,20 +201,20 @@
                             <ul class="nav nav-main">
                                 <li>
                                     <a class="nav-link" asp-action="Dashboard" asp-controller="Home">
-                                        <i class="bx bx-home-alt" aria-hidden="true"></i>
-                                        <span>Dashboard</span>
+                                        <i class='bx bxs-home' aria-hidden="true"></i>
+                                        <span>Home</span>
                                     </a>
                                 </li>
                                 <li>
                                     <a class="nav-link" asp-action="Details" asp-controller="Companies" asp-route-id=" @User.Identity!.GetCompanyId()">
                                        
-                                        <i class="el el-edit" aria-hidden="true"></i>
+                                        <i class='bx bxs-building' aria-hidden="true"></i>
                                         <span>Company</span>
                                     </a>
                                 </li>
                                 <li class="nav-parent">
                                     <a class="nav-link" href="#">
-                                        <i class="bx bx-library" aria-hidden="true"></i>
+                                        <i class="fa fa-project-diagram" aria-hidden="true"></i>
                                         <span>Projects</span>
                                     </a>
                                     <ul class="nav nav-children">
@@ -257,7 +257,7 @@
                                 </li>
                                 <li class="nav-parent">
                                     <a class="nav-link" href="#">
-                                        <i class="fa fa-ticket" aria-hidden="true"></i>
+                                        <i class="fa fa-ticket-alt" aria-hidden="true"></i>
                                         <span>Tickets</span>
                                     </a>
                                     <ul class="nav nav-children">
@@ -298,7 +298,7 @@
                                 {
                                     <li class="nav-parent">
                                         <a class="nav-link" href="#">
-                                            <i class="fa fa-ticket" aria-hidden="true"></i>
+                                            <i class="fa fa-unlock-alt" aria-hidden="true"></i>
                                             <span>Admin</span>
                                         </a>
                                         <ul class="nav nav-children">
@@ -312,16 +312,7 @@
                                                     Member Role Management
                                                 </a>
                                             </li>
-                                            <li>
-                                                <a class="nav-link" asp-action="" asp-controller="">
-                                                    Project Management
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a class="nav-link" asp-action="" asp-controller="">
-                                                    Ticket Management
-                                                </a>
-                                            </li>
+                                            
                                         </ul>
                                     </li>
                                 }
@@ -330,42 +321,6 @@
 
                         <hr class="separator" />
 
-                        <div class="sidebar-widget widget-tasks">
-                            <div class="widget-header">
-                                <h6>High Priority Projects</h6>
-                                <div class="widget-toggle">+</div>
-                            </div>
-                            <div class="widget-content">
-                                <ul class="list-unstyled m-0">
-                                    @foreach (Project project in await _ProjectService.GetProjectsAsync(User.Identity!.GetCompanyId()))
-                                    {
-                                        var start = DataUtility.GetPostGresDate(project.StartDate!.Value);
-                                        var end = DataUtility.GetPostGresDate(project.EndDate!.Value); ;
-                                        var today = DateTime.Now;
-                                        var percent = today >= end ? 100 : today < start ? 0 : Math.Round((today.Subtract(start)) / (end.Subtract(start)) * 100);
-
-                                        <li>
-                                            <a href="#">@project.Name</a>
-                                            @*<span class="stats-title">Project: @project.Name</span>
-                                        <span class="stats-complete">@percent%</span>*@
-                                            @*<div class="progress progress-xs progress-squared m-2 light">
-                                        <div class="progress-bar progress-bar-primary progress-without-number" role="progressbar" aria-valuenow="@((int)percent)" aria-valuemin="0" aria-valuemax="100" style="width: @percent%;">
-                                        <span class="">@percent% Complete</span>
-                                        </div>
-                                        </div>*@
-                                            <div class="row text-center">
-                                                <div class="col-lg-6">
-                                                    <div class="gauge-chart">
-                                                        <canvas class="gaugeBasic" width="200" height="50" data-plugin-options='{ "value": @((int)percent), "maxValue": 100 }'></canvas>
-                                                        <label id="">@percent%</label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    }
-                                </ul>
-                            </div>
-                        </div>
                     </div>
 
                     <script>
