@@ -5,7 +5,7 @@
     Layout = "/Views/Shared/_LoginLayout.cshtml";
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1>@ViewData["Title"] Your Company</h1>
 
 <!-- start: page -->
 <div class="panel card-sign">
@@ -50,14 +50,14 @@
             </div>
 
             <div class="row">
-                <div class="col-sm-8">
+               @* <div class="col-sm-8">
                     <div class="checkbox-custom checkbox-default">
                         <input id="AgreeTerms" name="agreeterms" type="checkbox" />
                         <label for="AgreeTerms">I agree with <a href="#">terms of use</a></label>
                     </div>
-                </div>
-                <div class="col-sm-4 text-right">
-                    <button id="registerSubmit" type="submit" class="btn btn-primary mt-2">Sign Up</button>
+                </div>*@
+                <div class="col-12 text-center">
+                    <button id="registerSubmit" type="submit" class="btn btn-primary mt-2">Register</button>
                 </div>
             </div>
 
@@ -65,11 +65,11 @@
                 <span>or</span>
             </span>
 
-            <div class="mb-1 text-center">
+           @* <div class="mb-1 text-center">
                 <a class="btn btn-facebook mb-3 ms-1 me-1" href="#">Connect with <i class="fab fa-facebook-f"></i></a>
                 <a class="btn btn-twitter mb-3 ms-1 me-1" href="#">Connect with <i class="fab fa-twitter"></i></a>
             </div>
-
+*@
             <p class="text-center">Already have an account? <a asp-area="Identity" asp-page="/Account/Login">Sign In!</a></p>
 
         </form>
