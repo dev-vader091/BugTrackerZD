@@ -85,7 +85,7 @@
                                             @Html.DisplayFor(modelItem => item.Created)
                                             @if (item.Updated != null)
                                             {
-                                                <span class="fw-bold">/</span>  @Html.DisplayFor(modelItem => item.Updated)
+                                                <span>/</span>  @Html.DisplayFor(modelItem => item.Updated)
                                             }
                                         </td>
                                         <td>
@@ -104,13 +104,13 @@
                                             @if (item.DeveloperUserId == UserManager.GetUserId(User) || item.SubmitterUserId == UserManager.GetUserId(User) ||
                                            btUser?.Id == projectManager?.Id || btUser?.Id == admin.Id)
                                             {
-                                                <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt text-warning fa-sm"></i> </a>
-                                                <a asp-action="Details" asp-route-id="@item.Id"> <i class="bx bx-detail text-info fa-sm"></i> </a>
-                                                <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt text-danger fa-sm"></i> </a>
+                                                <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt text-primary"></i> </a>
+                                                <a asp-action="Details" asp-route-id="@item.Id"> <i class="bx bx-detail text-info"></i> </a>
+                                                <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt text-danger"></i> </a>
                                             }
                                             else
                                             {
-                                                <a asp-action="Details" asp-route-id="@item.Id" class="d-flex justify-content-center"> <i class="bx bx-detail text-info fa-sm"></i> </a>
+                                                <a asp-action="Details" asp-route-id="@item.Id" class="d-flex justify-content-center"> <i class="bx bx-detail text-info"></i> </a>
                                             }
                                         </td>
                                         @if (item.DeveloperUserId == UserManager.GetUserId(User) || item.SubmitterUserId == UserManager.GetUserId(User) ||
