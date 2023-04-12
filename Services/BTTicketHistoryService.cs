@@ -1,6 +1,7 @@
 ﻿using BugHunterBugTrackerZD.Data;
 using BugHunterBugTrackerZD.Models;
 using BugHunterBugTrackerZD.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace BugHunterBugTrackerZD.Services
 {
@@ -201,9 +202,24 @@ namespace BugHunterBugTrackerZD.Services
             throw new NotImplementedException();
         }
 
-        public Task<List<TicketHistory>> GetProjectTicketHistoriesAsync(int? projectId, int? companyId)
+        public async Task<List<TicketHistory>> GetProjectTicketHistoriesAsync(int? projectId, int? companyId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                List<TicketHistory> histories = await _context.TicketHistories.Where(h => h.Ticket!.ProjectId == projectId && h.Ticket!.Project!.CompanyId == companyId)
+                                                                              .Include(h => h.Ticket)
+                                                                                .ThenInclude(t => t!.Project)
+                                                                              .Include(h => h.User)
+                                                                              .OrderByDescending(h => h.Created)
+                                                                              .ToListAsync();
+
+                return histories;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }
