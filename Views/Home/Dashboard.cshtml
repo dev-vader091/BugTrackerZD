@@ -7,6 +7,8 @@
 @inject UserManager<BTUser> UserManager
 
 @inject IBTRolesService _RolesService
+@inject IBTProjectService _ProjectService
+@inject IBTTicketHistoryService _TicketHistoryService
 
 @{
     ViewData["Title"] = "Dashboard";
@@ -31,21 +33,101 @@
     }
 </style>
 
-@*<h1>Dashboard</h1>*@
-<a href="javascript:void(0);">
-    @* User Info *@
+
+
+@*<a href="javascript:void(0);">
+     User Info
     [Code: Copy from Ticket/Details]
 </a>
-@* Get The btUser FullName *@
+*@
+
+@* Get The btUser FullName
 <strong>@btUser?.FullName</strong>
 <span class="text-muted" style="font-size:x-small;">
-    @* Company Name *@
+     Company Name
     <strong>@Model.Company?.CompanyName</strong>
 </span>
-
+*@
 
 <div>
     <div class="container-fluid">
+        <div class="row">
+            @*<div class="col-12">*@
+            <div class="col-12">
+                <h3 class="mb-5">Overview</h3>
+                <section class="card">
+                    @*<div class="card-header">*@
+                    @*</div>*@
+                    <div class="card-body">
+                        <div class="col-12 d-flex flex-row align-items-center">
+                            <h3>@btUser!.FullName</h3>
+                            @{
+                                List<string> userRoles = (await _RolesService.GetUserRolesAsync(btUser)).ToList();
+                                foreach (var role in userRoles)
+                                {
+                                    <span class=" ms-auto badge badge-md badge-danger">@role</span>
+                                }
+                            }
+                        </div>
+                        <div class="col-12 mb-2">
+                            <span>Developer for @Model.Tickets!.Where(t => t.DeveloperUserId == btUser.Id).Count() Tickets</span>
+                        </div>
+                        <div class="col-12 mb-2">
+                            <span>Submitted @Model.Tickets!.Where(t => t.SubmitterUserId == btUser.Id).Count() Tickets</span>
+                        </div>
+                        <div class="col-12">
+                            <span>Member On @Model.Projects!.SelectMany(p => p.Members).Any(m => m.Id == btUser.Id).ToString().Count() Projects</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            @*<div class="col-md-5">
+                <h3 class="mb-5">Recent Activity</h3>
+                <section class="card">
+                    <div class="card-body">
+                    </div>
+                </section>
+            </div>*@
+            @* </div>*@
+        </div>
+
+        @*@foreach (Ticket ticket in Model.Projects!.SelectMany(p => p.Tickets))
+        {
+        List<TicketHistory> histories = (await _TicketHistoryService.GetProjectTicketHistoriesAsync(ticket.ProjectId, Model.Company!.Id)).Take(4).ToList();
+
+        @foreach (TicketHistory history in histories)
+        {
+
+
+        <div class="item">
+
+        <h3>@history.Ticket!.Title</h3>
+        <span>@history.User?.FullName</span>
+        <span class="text-muted mb-3">@history.Description</span>
+        <span>@history.Created</span>
+        </div>
+
+        }
+        }*@
+
+
+        @*@foreach (Ticket ticket in Model.Tickets!)
+        {
+        List<TicketHistory> histories = (await _TicketHistoryService.GetProjectTicketHistoriesAsync(ticket.ProjectId, Model.Company!.Id)).Take(4).ToList();
+
+        @foreach (TicketHistory history in histories)
+        {
+        <div class="item">
+
+        <h3>@history.Ticket!.Title</h3>
+        <span>@history.User?.FullName</span>
+        <span class="text-muted mb-3">@history.Description</span>
+        <span>@history.Created</span>
+        </div>
+
+        }
+        }*@
+
         <!-- Info Pills -->
         <div class="row gy-3 my-2 info-pills">
             <div class="col-lg-3 col-md-6 col-sm-6">
@@ -101,7 +183,7 @@
             </div>
         </div>
         <!-- End Info Pills -->
-        <div class="row gy-3">
+        <div class="row gy-3 mt-2">
             <div class="col-12 col-md-6">
                 <div class="card">
                     <div class="card-body">
@@ -239,80 +321,83 @@
                     @* Copy and format table from Unassigned Tickets *@
 
                     <div class="card-body">
-                        <table class="table table-bordered table-striped table-hover mb-0" id="datatable-tickets">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        Title
-                                    </th>
-                                    <th>
-                                        Project
-                                    </th>
-                                    <th>
-                                        Created / Updated
-                                    </th>
-                                    <th>
-                                        Ticket Priority
-                                    </th>
-                                    <th>
-                                        Ticket Type
-                                    </th>
-                                    <th>
-                                        Ticket Status
-                                    </th>
-                                    <th>
-                                        Submitter
-                                    </th>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-hover mb-0" id="datatable-tickets">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Title
+                                        </th>
+                                        <th>
+                                            Project
+                                        </th>
+                                        <th>
+                                            Created / Updated
+                                        </th>
+                                        <th>
+                                            Ticket Priority
+                                        </th>
+                                        <th>
+                                            Ticket Type
+                                        </th>
+                                        <th>
+                                            Ticket Status
+                                        </th>
+                                        <th>
+                                            Submitter
+                                        </th>
 
-                                </tr>
-                            </thead>
-                            <tbody class="projectsIndexTable">
-                                @foreach (var item in Model.Tickets!)
-                                {
-                                    if (!item.Archived == true)
+                                    </tr>
+                                </thead>
+                                <tbody class="projectsIndexTable">
+                                    @foreach (var item in Model.Tickets!)
                                     {
-                                        <tr>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.Title)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.Project!.Name)
-                                            </td>
+                                        if (!item.Archived == true)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Title)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Project!.Name)
+                                                </td>
 
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.Created)
-                                                @if (item.Updated != null)
-                                                {
-                                                    <span>/</span>  @Html.DisplayFor(modelItem => item.Updated)
-                                                }
-                                            </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Created)
+                                                    @if (item.Updated != null)
+                                                    {
+                                                        <span>/</span>  @Html.DisplayFor(modelItem => item.Updated)
+                                                    }
+                                                </td>
 
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.TicketPriority!.Name)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.TicketType!.Name)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.TicketStatus!.Name)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.SubmitterUser!.FullName)
-                                            </td>
-                                            @* <td class="actions-hover actions-fade">
-                                    <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt text-warning fa-sm"></i> </a>
-                                    <a asp-action="Details" asp-route-id="@item.Id"> <i class="bx bx-detail text-info fa-sm"></i> </a>
-                                    <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt text-danger fa-sm"></i> </a>
-                                    </td>
-                                    <td>
-                                    <a asp-action="AssignTicketToUser" asp-route-id="@item.Id">Assign Ticket</a>
-                                    </td>*@
-                                        </tr>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.TicketPriority!.Name)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.TicketType!.Name)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.TicketStatus!.Name)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.SubmitterUser!.FullName)
+                                                </td>
+                                                @* <td class="actions-hover actions-fade">
+                                        <a asp-action="Edit" asp-route-id="@item.Id"> <i class="fas fa-pencil-alt text-warning fa-sm"></i> </a>
+                                        <a asp-action="Details" asp-route-id="@item.Id"> <i class="bx bx-detail text-info fa-sm"></i> </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="delete-row"> <i class="far fa-trash-alt text-danger fa-sm"></i> </a>
+                                        </td>
+                                        <td>
+                                        <a asp-action="AssignTicketToUser" asp-route-id="@item.Id">Assign Ticket</a>
+                                        </td>*@
+                                            </tr>
+                                        }
                                     }
-                                }
 
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+
+                        </div>
                     </div>
 
                     @*</div>*@
@@ -462,6 +547,9 @@
 
 @section Scripts{
 
+    <!--Carousel -->
+    <script src="~/template/vendor/owl.carousel/owl.carousel.js"></script>
+
     <!--Google Charts-->
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
@@ -534,7 +622,7 @@
     </script>
 
     <!-- *** Begin Chart JS Pie/Donut *** -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
     <script>
 
         var donutChartCanvas = $('#donutChart').get(0).getContext('2d');
@@ -552,7 +640,7 @@
         @Model.Tickets!.Where(t=> t.TicketStatus!.Name == nameof(BTTicketStatuses.New)).Count(),
         @Model.Tickets!.Where(t=> t.TicketStatus!.Name == nameof(BTTicketStatuses.Resolved)).Count(),
         @Model.Tickets!.Where(t=> t.TicketStatus!.Name == nameof(BTTicketStatuses.Testing)).Count()
-                                                                            ],
+                                                                                                                            ],
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
@@ -582,6 +670,8 @@
         });
     </script>
     <!-- *** End Chart JS Donut *** -->
+
+
     <!-- Load plotly.js into the DOM -->
     <script src='https://cdn.plot.ly/plotly-2.4.2.min.js'></script>
     <script>
@@ -616,16 +706,16 @@
         var morrisDonutData = [{
             label: "Low",
             value: @Model.Tickets!.Where(t=>t.TicketPriority!.Name == nameof(BTTicketPriorities.Low)).Count()
-                                                            }, {
+                                                                                                            }, {
             label: "Medium",
             value: @Model.Tickets!.Where(t=>t.TicketPriority!.Name == nameof(BTTicketPriorities.Medium)).Count()
-                                                            }, {
+                                                                                                            }, {
             label: "High",
             value: @Model.Tickets!.Where(t=>t.TicketPriority!.Name == nameof(BTTicketPriorities.High)).Count()
-                                                            }, {
+                                                                                                            }, {
             label: "Urgent",
             value: @Model.Tickets!.Where(t=>t.TicketPriority!.Name == nameof(BTTicketPriorities.Urgent)).Count()
-                                                            }];
+                                                                                                            }];
 
 
 
@@ -733,6 +823,7 @@
     </script>
 
     <!-- *** End AM Charts *** -->
+
     <!-- Specific Page Vendor -->
     <script src="~/template/vendor/select2/js/select2.js"></script>
     <script src="~/template/vendor/datatables/media/js/jquery.dataTables.min.js"></script>
