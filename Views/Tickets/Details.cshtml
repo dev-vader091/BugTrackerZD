@@ -38,7 +38,7 @@
             <div class="col-12">
                 <div class="row gy-2">
                     <div class="col-lg-4">
-                        <div class="card h-100">
+                        <div class="card">
                             <div class="card-body">
                                 @* Project Name *@
                                 <h4 class="fw-bold">@Model.Project!.Name</h4>
@@ -47,7 +47,7 @@
 
                                 <div class="progress-container progress-info m-b-25">
                                     <span class="progress-badge" style="font-size:small">Project Status</span>
-                                    <div class="progress">
+                                    <div class="progress mt-3">
                                         @* Razor code block *@
                                         @{
                                             var start = Model.Project.StartDate;
@@ -78,7 +78,7 @@
                                     </div>
                                 </div>
                                 <div class="row gy-2 mt-3">
-                                    <div class="col-md-3">
+                                    <div class="col-md-6 col-xl-3">
                                         <div class="card">
                                             <div class="card-body" style="background:#282d36">
                                                 <div><i class='bx bx-wrench text-danger'></i></div>
@@ -87,7 +87,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-6 col-xl-3">
                                         <div class="card">
                                             <div class="card-body" style="background:#282d36">
                                                 <div><i class='bx bxs-flag-alt text-primary'></i></div>
@@ -96,7 +96,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-6 col-xl-3">
                                         <div class="card">
                                             <div class="card-body" style="background:#282d36">
                                                 <div><i class='bx bx-pulse text-success'></i></div>
@@ -105,7 +105,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-6 col-xl-3">
                                         <div class="card">
                                             <div class="card-body" style="background:#282d36">
                                                 <div><i class='bx bx-code text-warning'></i></div>
