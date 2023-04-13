@@ -12,6 +12,7 @@
 
 @{
     ViewData["Title"] = "Dashboard";
+
     @* Instantiate the btUser *@
     BTUser? btUser = await UserManager.GetUserAsync(User);
 }
@@ -75,8 +76,23 @@
                         <div class="col-12 mb-2">
                             <span>Submitted @Model.Tickets!.Where(t => t.SubmitterUserId == btUser.Id).Count() Tickets</span>
                         </div>
+                        @{
+                            IEnumerable<Project> projects = await _ProjectService.GetProjectsAsync(Model.Company!.Id);
+
+                            List<Project> userProjects = new List<Project>();
+
+                            foreach (var project in projects)
+                            {
+                                if (project.Members.Contains(btUser!))
+                                {
+                                    userProjects.Add(project);
+                                }
+                            }
+
+                            userProjects.Count();
+                        }
                         <div class="col-12">
-                            <span>Member On @Model.Projects!.SelectMany(p => p.Members).Any(m => m.Id == btUser.Id).ToString().Count() Projects</span>
+                            <span>Member On @userProjects.Count() Projects</span>
                         </div>
                     </div>
                 </section>
