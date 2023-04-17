@@ -414,6 +414,7 @@ namespace BugHunterBugTrackerZD.Controllers
             return View(ticket);
         }
 
+
         // GET: Tickets/Create
         public async Task<IActionResult> Create()
         {
