@@ -97,7 +97,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex flex-row align-items-center p-2">
-                        <span class="me-3"><i class='bx bx-coffee bx-sm'></i></span>
+                        @*<span class="me-3"><i class='bx bx-coffee bx-sm'></i></span>*@
                         <span>@((projectManager?.FullName ?? "Unassigned"))</span>
                     </div>
                 </div>
@@ -108,30 +108,45 @@
                 <h3>Project Team</h3>
                 <hr />
             </div>
-            @foreach (BTUser member in Model.Members)
+            @if (Model.Members.Count == 0)
             {
-                @if (!await _RolesService.IsUserInRoleAsync(member, nameof(BTRoles.ProjectManager)))
-                {
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex flex-row align-items-center p-2">
-                                @if (await _RolesService.IsUserInRoleAsync(member, nameof(BTRoles.Submitter)))
-                                {
-                                    <span class="me-3"><i class='bx bx-user bx-sm'></i></span>
-                                    <span>@((member?.FullName ?? "Unassigned"))</span>
-
-                                }
-                                else if (await _RolesService.IsUserInRoleAsync(member, nameof(BTRoles.Developer)))
-                                {
-                                    <span class="me-3"><i class='bx bx-code bx-sm'></i></span>
-                                    <span> @member.FullName</span>
-                                }
-                            </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex flex-row align-items-center p-2">
+                            @*<span class="me-3"><i class='bx bx-coffee bx-sm'></i></span>*@
+                            <span>Unassigned</span>
                         </div>
                     </div>
-                }
-
+                </div>
             }
+            else
+            {
+                @foreach (BTUser member in Model.Members)
+                {
+                    @if (!await _RolesService.IsUserInRoleAsync(member, nameof(BTRoles.ProjectManager)))
+                    {
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex flex-row align-items-center p-2">
+                                    @if (await _RolesService.IsUserInRoleAsync(member, nameof(BTRoles.Submitter)))
+                                    {
+                                        <span class="me-3"><i class='bx bx-user bx-sm'></i></span>
+                                        <span>@((member?.FullName ?? "Unassigned"))</span>
+
+                                    }
+                                    else if (await _RolesService.IsUserInRoleAsync(member, nameof(BTRoles.Developer)))
+                                    {
+                                        <span class="me-3"><i class='bx bx-code bx-sm'></i></span>
+                                        <span> @member.FullName</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                }
+            }
+            
         </div>
         <div class="col-md-4">
             <div class="">
@@ -176,14 +191,20 @@
 
                                                             <div class="msg">
 
-                                                                <p>The ticket <b>@history.PropertyName</b>  was edited</p>
+                                                                @if (history.PropertyName == string.Empty)
+                                                                {
+                                                                    <p>The ticket was created</p>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <p>The ticket <b>@history.PropertyName</b>  was edited</p>
 
-                                                                <p>@($"Previous {history.PropertyName}:  {history.OldValue}")</p>
+                                                                    <p>@($"Previous {history.PropertyName}:  {history.OldValue}")</p>
 
-                                                                <p>@($"Current {history.PropertyName}:  {history.NewValue}")</p>
+                                                                    <p>@($"Current {history.PropertyName}:  {history.NewValue}")</p>
 
-
-
+                                                                }
+                                                                    
                                                                 <div class="media">
 
                                                                     @*<img class="media-object rounded width40 mr-3" src="~/assets/images/xs/pngegg-26.png" alt="" />*@

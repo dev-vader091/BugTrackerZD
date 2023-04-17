@@ -81,7 +81,9 @@
                                     <div class="col-md-6 col-xl-3">
                                         <div class="card">
                                             <div class="card-body" style="background:#282d36">
-                                                <div><i class='bx bx-wrench text-danger'></i></div>
+                                                <div class="d-flex flex-row justify-content-between mb-2">
+                                                    <i class='bx bx-wrench text-danger'></i>
+                                                </div>
                                                 <span class="">@Model.TicketType!.Name</span>
                                                 <div class="text-muted text-nowrap">Ticket Type</div>
                                             </div>
@@ -90,7 +92,9 @@
                                     <div class="col-md-6 col-xl-3">
                                         <div class="card">
                                             <div class="card-body" style="background:#282d36">
-                                                <div><i class='bx bxs-flag-alt text-primary'></i></div>
+                                                <div class="d-flex flex-row justify-content-between mb-2">
+                                                    <i class='bx bxs-flag-alt text-primary'></i>
+                                                </div>
                                                 <span class="">@Model.TicketPriority!.Name</span>
                                                 <div class="text-muted text-nowrap">Ticket Priority</div>
                                             </div>
@@ -99,7 +103,9 @@
                                     <div class="col-md-6 col-xl-3">
                                         <div class="card">
                                             <div class="card-body" style="background:#282d36">
-                                                <div><i class='bx bx-pulse text-success'></i></div>
+                                                <div class="d-flex flex-row justify-content-between mb-2">
+                                                    <i class='bx bx-pulse text-success'></i>
+                                                </div>
                                                 <span class="">@Model.TicketStatus!.Name</span>
                                                 <div class="text-muted text-nowrap">Ticket Status</div>
                                             </div>
@@ -108,7 +114,9 @@
                                     <div class="col-md-6 col-xl-3">
                                         <div class="card">
                                             <div class="card-body" style="background:#282d36">
-                                                <div><i class='bx bx-code text-warning'></i></div>
+                                                <div class="d-flex flex-row justify-content-between mb-2">
+                                                    <i class='bx bx-code text-info'></i>
+                                                </div>
                                                 <span class="">@Model.DeveloperUser?.FullName</span>
                                                 <div class="text-muted">Developer</div>
                                             </div>
@@ -116,8 +124,8 @@
                                     </div>
                                 </div>
                                 @* <ul class="list-unstyled">*@
-                                
-                                
+
+
                                 @*Ticket type*@
                                 @* <li><strong>Type:</strong> <span class="">@Model.TicketType!.Name</span></li>*@
                                 @* Ticket priority*@
@@ -329,13 +337,19 @@
 
                                                             <div class="msg">
 
-                                                                <p>The ticket <b>@history.PropertyName</b>  was edited</p>
+                                                                @if (history.PropertyName == string.Empty)
+                                                                {
+                                                                    <p>The ticket was created</p>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <p>The ticket <b>@history.PropertyName</b>  was edited</p>
 
-                                                                <p>@($"Previous {history.PropertyName}:  {history.OldValue}")</p>
+                                                                    <p>@($"Previous {history.PropertyName}:  {history.OldValue}")</p>
 
-                                                                <p>@($"Current {history.PropertyName}:  {history.NewValue}")</p>
+                                                                    <p>@($"Current {history.PropertyName}:  {history.NewValue}")</p>
 
-
+                                                                }
 
                                                                 <div class="media">
 
@@ -370,6 +384,7 @@
         </div>
     </div>
 </div>
+
 
 @section Scripts {
     @{
