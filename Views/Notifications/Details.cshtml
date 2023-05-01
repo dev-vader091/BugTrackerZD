@@ -4,7 +4,7 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+
 
 <div>
     <h4>Notification</h4>
@@ -38,32 +38,20 @@
             @Html.DisplayNameFor(model => model.NotificationType)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NotificationType.Id)
+            @Html.DisplayFor(model => model.NotificationType!.Id)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Ticket)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ticket.Description)
+            @Html.DisplayFor(model => model.Ticket!.Description)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Project)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Project.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Sender)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Sender.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Recipient)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Recipient.Id)
-        </dd>
+            @Html.DisplayFor(model => model.Project!.Description)
+        </dd>        
     </dl>
 </div>
 <div>
