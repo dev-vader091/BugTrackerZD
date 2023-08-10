@@ -392,9 +392,7 @@ namespace BugHunterBugTrackerZD.Controllers
                 
                 await _projectService.AddProjectAsync(project);
 
-                // TODO: add members to project
-                //await _projectService.AddMemberToProjectAsync(selected, project.Id);
-                
+                                
                 return RedirectToAction(nameof(Index));
             }
 
