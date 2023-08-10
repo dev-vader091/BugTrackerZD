@@ -18,6 +18,7 @@ namespace BugHunterBugTrackerZD.Services
             _userManager = userManager;
         }
 
+        // Section: CRUD Operations
         public async Task AddTicketAsync(Ticket ticket)
         {
             try
@@ -79,6 +80,8 @@ namespace BugHunterBugTrackerZD.Services
         {
             throw new NotImplementedException();
         }
+
+        // Section End: CRUD Operations
 
         public async Task<List<Ticket>> GetArchivedTicketsAsync(int? companyId)
         {
@@ -201,7 +204,7 @@ namespace BugHunterBugTrackerZD.Services
             try
             {
                 Ticket? ticket = await _context.Tickets
-                                                 .Include(t => t.Project)
+                                                .Include(t => t.Project)
                                                     .ThenInclude(p => p!.Company)
                                                 .Include(t => t.Attachments)
                                                 .Include(t => t.Comments)
