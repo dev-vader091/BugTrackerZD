@@ -16,6 +16,7 @@ using BugHunterBugTrackerZD.Models.ViewModels;
 using BugHunterBugTrackerZD.Services;
 using System.ComponentModel.Design;
 using System.IO;
+using X.PagedList;
 
 namespace BugHunterBugTrackerZD.Controllers
 {
@@ -33,6 +34,7 @@ namespace BugHunterBugTrackerZD.Controllers
         private readonly IBTNotificationService _notificationService;
         private readonly IBTCompanyService _companyService;
 
+        // Constructor
         public TicketsController(ApplicationDbContext context,
                                  UserManager<BTUser> userManager,
                                  IBTTicketService ticketService,
@@ -70,8 +72,8 @@ namespace BugHunterBugTrackerZD.Controllers
 
                 Ticket? ticket = await _context.Tickets
                                                .Include(t => t.Attachments)
-                                               .Include(t => t.DeveloperUserId)
-                                               .Include(t => t.SubmitterUserId)
+                                               .Include(t => t.DeveloperUser)
+                                               .Include(t => t.SubmitterUser)
                                                .FirstOrDefaultAsync(t => t.Id == ticketAttachment.TicketId);
 
                 //if (ticket!.DeveloperUserId == ticketAttachment.BTUserId || ticket.SubmitterUserId == ticketAttachment.BTUserId)
@@ -405,7 +407,8 @@ namespace BugHunterBugTrackerZD.Controllers
             int companyId = User.Identity!.GetCompanyId();
 
             Ticket ticket = await _ticketService.GetTicketByIdAsync(id, companyId);
-            
+
+                        
             if (ticket == null)
             {
                 return NotFound();
@@ -456,13 +459,9 @@ namespace BugHunterBugTrackerZD.Controllers
 
                 // TODO: Set ticket status through context 
                 ticket.TicketStatus = await _context.TicketStatuses.FirstOrDefaultAsync(t => t.Name == nameof(BTTicketStatuses.New));
-
                 
-
                 await _ticketService.AddTicketAsync(ticket);
-
-                
-
+               
                 int companyId = User.Identity!.GetCompanyId();
                 Ticket? newTicket = await _ticketService.GetTicketAsNoTrackingAsync(ticket.Id, companyId);
 
@@ -470,9 +469,7 @@ namespace BugHunterBugTrackerZD.Controllers
 
                 // Notification
                 BTUser? projectManager = await _projectService.GetProjectManagerAsync(ticket.ProjectId);
-
-                // TODO??: Add a Sweet Alert/Modal error msg if no project manager is found for Project Ticket is associated with
-           
+          
                     if (projectManager != null)
                     {
                         Notification? notification = new()
@@ -498,9 +495,7 @@ namespace BugHunterBugTrackerZD.Controllers
                             await _notificationService.SendAdminEmailNotificationAsync(notification, "New Project Ticket Added", companyId);
                         }
                 }
-               
-
-                
+                               
                 return RedirectToAction(nameof(AssignDeveloper), new {id = ticket.Id});
             }
             //ViewData["DeveloperUserId"] = new SelectList(_context.Users, "Id", "Id", ticket.DeveloperUserId);
