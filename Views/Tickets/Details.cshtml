@@ -341,6 +341,10 @@
                                                                 {
                                                                     <p>The ticket was created</p>
                                                                 }
+                                                                else if (history.PropertyName == "Ticket Comment")
+                                                                {
+                                                                    <p>A new <b>@history.PropertyName.ToLower()</b>  was added.</p>
+                                                                }
                                                                 else
                                                                 {
                                                                     <p>The ticket <b>@history.PropertyName</b>  was edited</p>
