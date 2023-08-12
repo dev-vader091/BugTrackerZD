@@ -121,11 +121,48 @@ namespace BugHunterBugTrackerZD.Controllers
                 string? userId = _userManager.GetUserId(User);
                 ticketComment.UserId = userId;
 
+                int companyId = User.Identity!.GetCompanyId();
+
+                // NEW
+                Ticket oldTicket = await _ticketService.GetTicketAsNoTrackingAsync(ticketComment.TicketId, companyId);
+
                 ticketComment.Created = DataUtility.GetPostGresDate(DateTime.Now);
+
 
 
                 _context.Add(ticketComment);
                 await _context.SaveChangesAsync();
+
+                // TODO: Add Ticket History
+                await _historyService.AddHistoryAsync(ticketComment.TicketId, "Ticket Comment", userId);
+
+                // TODO: Add Ticket Notification
+                Ticket? ticket = ticketComment.Ticket;
+                BTUser? projectManager = await _projectService.GetProjectManagerAsync(oldTicket.ProjectId);
+
+                Notification? notification = new()
+                {
+                    TicketId = oldTicket.Id,
+                    ProjectId = oldTicket.ProjectId,
+                    Title = "A Ticket Has Been Updated",
+                    Message = $"Old Ticket: {oldTicket.Title} was modified by: {btUser!.FullName}. ",
+                    Created = DataUtility.GetPostGresDate(DateTime.Now),
+                    SenderId = btUser.Id,
+                    RecipientId = projectManager.Id,
+                    NotificationTypeId = (await _context.NotificationTypes.FirstOrDefaultAsync(n => n.Name == nameof(BTNotificationTypes.Ticket)))!.Id
+                };
+
+                if (projectManager != null)
+                {
+                    await _notificationService.AddNotificationAsync(notification);
+                    await _notificationService.SendEmailNotificationAsync(notification, "Ticket Update");
+                }
+                else
+                {
+                    await _notificationService.AdminNotificationAsync(notification, companyId);
+                    await _notificationService.SendAdminEmailNotificationAsync(notification, "A Project Ticket Has Been Updated", companyId);
+                }
+
                 return RedirectToAction(nameof(Index));
 
             }
